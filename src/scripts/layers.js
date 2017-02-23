@@ -33,8 +33,9 @@ require([
             'showGroupHeading': false,
             'includeInLayerList': true,
             'layers': {
-                'Revised Polygons' : {
+                'CBRS Units' : {
                     'url': 'https://fws.wim.usgs.gov/arcgis/rest/services/CBRAMapper/GeoCBRA/MapServer',
+                    'visibleLayers': [4,5],
                     'options': {
                         'id': 'wetlands',
                         'opacity': 0.75,
@@ -49,13 +50,13 @@ require([
                         'includeLegend' : true,
                     }
                 },
-                'Existing Polygons' : {
-                    'url': 'https://fwsmapper.wim.usgs.gov/ArcGIS/rest/services/Riparian/MapServer',
+                'CBRS Footprints' : {
+                    'url': 'https://fws.wim.usgs.gov/arcgis/rest/services/CBRAMapper/GeoCBRA/MapServer',
                     'visibleLayers': [0],
                     'options': {
                         'id': 'riparian',
                         'opacity': 0.75,
-                        'visible': false
+                        'visible': true
                     },
                     'wimOptions': {
                         'type': 'layer',
@@ -66,9 +67,9 @@ require([
                         'includeLegend' : true
                     }
                 },
-                    'Change Polygons' : {
-                    'url': 'https://fwsmapper.wim.usgs.gov/ArcGIS/rest/services/Riparian/MapServer',
-                    'visibleLayers': [0],
+                    'CBRS Buffer Zone' : {
+                    'url': 'https://fws.wim.usgs.gov/arcgis/rest/services/CBRAMapper/GeoCBRA/MapServer',
+                    'visibleLayers': [2],
                     'options': {
                         'id': 'riparian',
                         'opacity': 0.75,

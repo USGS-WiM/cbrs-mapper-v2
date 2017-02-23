@@ -290,7 +290,7 @@ require([
     identifyParams.width  = map.width;
     identifyParams.height = map.height;
     //identifyTask = new esri.tasks.IdentifyTask("http://50.17.205.92/arcgis/rest/services/NAWQA/DecadalMap/MapServer");
-    identifyTask = new IdentifyTask(allLayers[0].layers["Revised Polygons"].url);
+    identifyTask = new IdentifyTask(allLayers[0].layers["CBRS Units"].url);
 
     //code for adding draggability to infoWindow. http://www.gavinr.com/2015/04/13/arcgis-javascript-draggable-infowindow/
     var handle = query(".title", map.infoWindow.domNode)[0];
