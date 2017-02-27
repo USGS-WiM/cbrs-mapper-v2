@@ -450,3 +450,28 @@ input[type="checkbox"], input[type="radio"] {
     background-repeat: no-repeat;
     background-position: -51px 53%;
 }
+
+/* PopUp CSS*/
+
+.siteInfoClass {
+    position:absolute;
+    width:450px;
+    height:325px;
+    z-index:2;
+    color: black;
+    background-color: rgb(255,255,255);
+    background-color: rgba(255,255,255,0.8);
+    box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+    /*min-width: 150px;*/
+    border-radius: 4px;
+    visibility: hidden;
+}
+#siteInfoMin,
+#dropdown-toggle,
+.dropdown-toggle{
+    display: none;
+}
+#siteInfoClose{
+    box-sizing: border-box;
+    padding: 3px 10px;
+}
