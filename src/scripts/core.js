@@ -330,7 +330,7 @@ require([
         identifyParams.geometry = evt.mapPoint;
         identifyParams.mapExtent = map.extent;
 
-        if (map.getLevel() >= 10 && $("#huc-download-alert")[0].scrollHeight == 0) {
+        if (map.getLevel() >= 8 && $("#huc-download-alert")[0].scrollHeight == 0) {
             //the deferred variable is set to the parameters defined above and will be used later to build the contents of the infoWindow.
             identifyTask = new IdentifyTask(allLayers[0].layers["CBRS Units"].url);
             var deferredResult = identifyTask.execute(identifyParams);
@@ -347,20 +347,30 @@ require([
                     var attrStatus;
 
                     for (var i = 0; i < response.length; i++) {
+                        feature = response[i].feature;
+                        attr = feature.attributes;
+                         // Code for adding wetland highlight
+                        var symbol;
                         if (response[i].layerId == 0) {
-                            feature = response[i].feature;
-                            attr = feature.attributes;
-                        } else if (response[i].layerId == 1) {
-                            attrStatus = response[i].feature.attributes;
+                            symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
+                                new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
+                                    new dojo.Color([255,255,0]), 2), new dojo.Color([98,194,204,0])
+                            );
+                        } else if (response[i].layerId == 4) {
+                            symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
+                                new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
+                                    new dojo.Color([255,0,255]), 2), new dojo.Color([98,194,204,0])
+                            );
                         }
+                        feature.geometry.spatialReference = map.spatialReference;
+                        var graphic = feature;
+                        graphic.setSymbol(symbol);
+
+                        map.graphics.add(graphic);
 
                     }
 
                     // Code for adding wetland highlight
-                    var symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
-                        new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
-                        new dojo.Color([255,255,0]), 2), new dojo.Color([98,194,204,0])
-                    );
                     feature.geometry.spatialReference = map.spatialReference;
                     var graphic = feature;
                     graphic.setSymbol(symbol);
@@ -579,7 +589,7 @@ require([
             identifyParameters.mapExtent = map.extent;
             identifyParameters.spatialReference = map.spatialReference;
 
-            var identifyTask = new IdentifyTask(allLayers[0].layers["footprints"].url);
+            var identifyTask = new IdentifyTask(allLayers[0].layers["CBRS Units"].url);
             var hucDeffered = identifyTask.execute(identifyParameters);
 
             hucDeffered.addCallback(function(response) {

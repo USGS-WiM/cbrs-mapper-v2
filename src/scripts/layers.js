@@ -54,7 +54,7 @@ require([
                     'url': 'https://fws.wim.usgs.gov/arcgis/rest/services/CBRAMapper/GeoCBRA/MapServer',
                     'visibleLayers': [0],
                     'options': {
-                        'id': 'cbrs_footprints',
+                        'id': 'footprints',
                         'opacity': 0.75,
                         'visible': false
                     },
