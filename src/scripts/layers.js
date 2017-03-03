@@ -35,9 +35,9 @@ require([
             'layers': {
                 'CBRS Units' : {
                     'url': 'https://fws.wim.usgs.gov/arcgis/rest/services/CBRAMapper/GeoCBRA/MapServer',
-                    'visibleLayers': [4,5],
+                    'visibleLayers': [0,2,4,5],
                     'options': {
-                        'id': 'wetlands',
+                        'id': 'cbrs',
                         'opacity': 0.75,
                         'visible': false
                     },
@@ -54,7 +54,7 @@ require([
                     'url': 'https://fws.wim.usgs.gov/arcgis/rest/services/CBRAMapper/GeoCBRA/MapServer',
                     'visibleLayers': [0],
                     'options': {
-                        'id': 'riparian',
+                        'id': 'cbrs_footprints',
                         'opacity': 0.75,
                         'visible': false
                     },

@@ -16,7 +16,7 @@ var measurement;
 
 var identifyTask, identifyParams;
 
-var aoiClicked = false;
+var cbrsClicked = false;
 
 require([
     'esri/map',
@@ -287,6 +287,7 @@ require([
     identifyParams.tolerance = 0;
     identifyParams.returnGeometry = true;
     identifyParams.layerOption = IdentifyParameters.LAYER_OPTION_ALL;
+    identifyParams.layerIds = [0,2,4];
     identifyParams.width  = map.width;
     identifyParams.height = map.height;
     //identifyTask = new esri.tasks.IdentifyTask("http://50.17.205.92/arcgis/rest/services/NAWQA/DecadalMap/MapServer");
@@ -312,8 +313,8 @@ require([
     //map click handler
     on(map, "click", function(evt) {
 
-        if (aoiClicked == true) {
-            aoiClicked = false;
+        if (cbrsClicked == true) {
+            cbrsClicked = false;
             return;
         }
 
@@ -329,21 +330,10 @@ require([
         identifyParams.geometry = evt.mapPoint;
         identifyParams.mapExtent = map.extent;
 
-        if (map.getLevel() >= 12 && $("#huc-download-alert")[0].scrollHeight == 0) {
+        if (map.getLevel() >= 10 && $("#huc-download-alert")[0].scrollHeight == 0) {
             //the deferred variable is set to the parameters defined above and will be used later to build the contents of the infoWindow.
-            identifyTask = new IdentifyTask(allLayers[0].layers["Wetlands"].url);
+            identifyTask = new IdentifyTask(allLayers[0].layers["CBRS Units"].url);
             var deferredResult = identifyTask.execute(identifyParams);
-
-            //Historic Wetland Identify task
-            var historicIdentifyParameters = new IdentifyParameters();
-            historicIdentifyParameters.returnGeometry = true;
-            historicIdentifyParameters.tolerance = 0;
-            historicIdentifyParameters.width = map.width;
-            historicIdentifyParameters.height = map.height;
-            historicIdentifyParameters.geometry = evt.mapPoint;
-            historicIdentifyParameters.layerOption = IdentifyParameters.LAYER_OPTION_ALL;
-            historicIdentifyParameters.mapExtent = map.extent;
-            historicIdentifyParameters.layerIds = [0,1];
 
             setCursorByID("mainDiv", "wait");
             map.setCursor("wait");
@@ -377,7 +367,7 @@ require([
 
                     map.graphics.add(graphic);
 
-                    var projmeta = '';
+                    /*var projmeta = '';
                     if (attrStatus.SUPPMAPINFO == 'None') {
                         projmeta = " NONE";
                     } else {
@@ -386,19 +376,18 @@ require([
 
                     if (attrStatus.IMAGE_DATE == "<Null>" || attrStatus.IMAGE_DATE == "0" || attrStatus.IMAGE_DATE == 0) {
                         attrStatus.IMAGE_DATE = projmeta;
-                    }
+                    }*/
 
-                    var template = new esri.InfoTemplate("Wetland",
-                        "<b>Classification:</b> " + attr.ATTRIBUTE + " (<a target='_blank' href='https://fwsmapper.wim.usgs.gov/decoders/SWI.aspx?CodeURL=" + attr.ATTRIBUTE + "''>decode</a>)<br/>"+
-                        "<p><b>Wetland Type:</b> " + attr.WETLAND_TYPE + "<br/>" +
-                        "<b>Acres:</b> " + Number(attr.ACRES).toFixed(2) + "<br/>" +
-                        "<b>Image Date(s):</b> " + attrStatus.IMAGE_DATE + "<br/>" +
-                        "<b>Project Metadata:</b>" + projmeta +
-                        "<br/><p><a id='infoWindowLink' href='javascript:void(0)'>Zoom to wetland</a></p>");
+                    var template = new esri.InfoTemplate("CBRS Units",
+                        "<b>Map Link:</b> " + attr.Map_Link + " (<a target='_blank' href='https://fwsmapper.wim.usgs.gov/decoders/SWI.aspx?CodeURL=" + attr.ATTRIBUTE + "''>decode</a>)<br/>"+
+                        "<p><b>Title:</b> " + attr.Title + "<br/>" +
+                        "<b>Title 2:</b> " + attr.Title_2 + "<br/>" +
+                        "<b>Title 3:</b> " + attr.Title_3 +
+
 
                     //ties the above defined InfoTemplate to the feature result returned from a click event
 
-                    feature.setInfoTemplate(template);
+                    feature.setInfoTemplate(template));
 
                     map.infoWindow.setFeatures([feature]);
                     map.infoWindow.show(evt.mapPoint, map.getInfoWindowAnchor(evt.screenPoint));
@@ -446,29 +435,24 @@ require([
                             }
 
                             // Code for adding wetland highlight
-                            var symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
-                                new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
-                                new dojo.Color([255,255,0]), 2), new dojo.Color([98,194,204,0])
-                            );
-                            feature.geometry.spatialReference = map.spatialReference;
+                            /*feature.geometry.spatialReference = map.spatialReference;
                             var graphic = feature;
                             graphic.setSymbol(symbol);
 
-                            map.graphics.add(graphic);
+                            map.graphics.add(graphic);*/
 
-                            var projmeta = '';
+                            /*var projmeta = '';
                             if (attrStatus.SUPPMAPINFO == 'None') {
                                 projmeta = " NONE";
                             } else {
                                 projmeta = " <a target='_blank' href='" + attrStatus.SUPPMAPINFO + "'>click here</a>";
-                            }
+                            }*/
 
-                            var template = new esri.InfoTemplate("Riparian",
+                            var template = new esri.InfoTemplate("cbrs",
                                 "<b>Classification:</b> " + attr.ATTRIBUTE + " (<a target='_blank' href='https://fwsmapper.wim.usgs.gov/decoders/riparian.aspx?CodeURL=" + attr.ATTRIBUTE + "''>decode</a>)<br/>"+
                                 "<p><b>Wetland Type:</b> " + attr.WETLAND_TYPE + "<br/>" +
                                 "<b>Acres:</b> " + Number(attr.ACRES).toFixed(2) + "<br/>" +
-                                "<b>Image Date(s):</b> " + attrStatus.IMAGE_DATE + "<br/>" +
-                                "<b>Project Metadata:</b>" + projmeta +
+                                "<b>Image Date(s):</b> " + attrStatus.IMAGE_DATE + 
                                 "<br/><p><a id='infoWindowLink' href='javascript:void(0)'>Zoom to wetland</a></p>");
 
                             //ties the above defined InfoTemplate to the feature result returned from a click event
@@ -595,7 +579,7 @@ require([
             identifyParameters.mapExtent = map.extent;
             identifyParameters.spatialReference = map.spatialReference;
 
-            var identifyTask = new IdentifyTask(allLayers[0].layers["HUC8"].url);
+            var identifyTask = new IdentifyTask(allLayers[0].layers["footprints"].url);
             var hucDeffered = identifyTask.execute(identifyParameters);
 
             hucDeffered.addCallback(function(response) {
@@ -1039,10 +1023,10 @@ require([
             //layer.addTo(map);
             map.addLayer(layer);
 
-            if (layer.id == 'aoi') {
+            if (layer.id == 'cbrs') {
                 on(layer, 'load', function(evt) {
                     on(layer, 'click', function (evt) {
-                        aoiClicked = true;
+                        cbrsClicked = true;
                         var linkValue = evt.graphic.attributes.HYPERLINK_2;
                         if (linkValue == "None") {
                             var template = new InfoTemplate("${NAME}",
@@ -1526,3 +1510,28 @@ $(document).ready(function () {
     //});
 
 });
+
+// lobipanel implementation: https://github.com/arboshiki/lobipanel
+
+    $("#siteInfoDiv").lobiPanel({
+        unpin: false,
+        reload: false,
+        minimize: false,
+        close: false,
+        expand: false,
+        editTitle: false,
+        maxWidth: 800,
+        maxHeight: 500
+    });
+
+    $("#siteInfoDiv .dropdown").prepend("<div id='siteInfoClose' title='close'><b>X</b></div>");
+    $("#siteInfoDiv .dropdown").prepend("<div id='siteInfoMin' title='collapse'><b>_</b></div>");
+
+    $("#siteInfoMin").click(function(){
+        $("#siteInfoDiv").css("visibility", "hidden");
+    });
+
+    $("#siteInfoClose").click(function(){
+        $("#siteInfoDiv").css("visibility", "hidden");
+        map.graphics.clear();
+    });
