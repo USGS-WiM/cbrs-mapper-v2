@@ -127,10 +127,10 @@ require([
                             proxyUrl: "http://52.70.106.103/serviceProxy/proxy.ashx",
                             urlPrefix: "http://52.70.106.103/arcgis/rest/services/Historic_Wetlands"
                         });*/
-
+// unablet to add infoWindow: popup
     map = new Map('mapDiv', {
         basemap: 'hybrid',
-        extent: new Extent(-14638882.654811008, 2641706.3772205533, -6821514.898031538, 6403631.161302788, new SpatialReference({ wkid:3857 }))
+        extent: new Extent(-14638882.654811008, 2641706.3772205533, -6821514.898031538, 6403631.161302788, new SpatialReference({ wkid:3857 })),
     });
 
     var home = new HomeButton({
@@ -283,32 +283,56 @@ require([
         map.removeLayer(nationalMapBasemap);
     })
 
+        //start LobiPanel
+    $("#selectionDiv").lobiPanel({
+        unpin: false,
+        reload: false,
+        minimize: false,
+        close: false,
+        expand: false,
+        editTitle: false,
+        maxWidth: 800,
+        maxHeight: 500,
+    });
+
+    /*$('#selectionDiv').lobiPanel({
+        reload: false,
+        close: false,
+        editTitle: false
+    });*/
+
+    $("#selectionDiv .dropdown").prepend("<div id='selectionClose' tite='close'><b>X</b></div>");
+    $("#selectionDiv .dropdown").prepend("<div id='selectionMin' title='collapse'><b>_</b></div>");
+
+    $("#selectionMin").click(function(){
+        $("#selectionDiv").css("visibility", "hidden");
+        /*$("#selection-tools-alert").slideDown(250);*/
+    });
+
+    $("#selectionClose").click(function(){
+        $("#selectionDiv").css("visibility", "hidden");
+    });
+
+/*    $("#selectionToolsOpen").click(function(){
+        $("#selectionDiv").css("visibility", "visible");
+    });*/
+
+    
+    //End LobiPanel
+
+
     identifyParams = new IdentifyParameters();
     identifyParams.tolerance = 0;
     identifyParams.returnGeometry = true;
     identifyParams.layerOption = IdentifyParameters.LAYER_OPTION_ALL;
     identifyParams.layerIds = [0,2,4];
+    identifyParams.spatialReference = map.spatialReference;
     identifyParams.width  = map.width;
     identifyParams.height = map.height;
     //identifyTask = new esri.tasks.IdentifyTask("http://50.17.205.92/arcgis/rest/services/NAWQA/DecadalMap/MapServer");
     identifyTask = new IdentifyTask(allLayers[0].layers["CBRS Units"].url);
 
-    //code for adding draggability to infoWindow. http://www.gavinr.com/2015/04/13/arcgis-javascript-draggable-infowindow/
-    var handle = query(".title", map.infoWindow.domNode)[0];
-    var dnd = new Moveable(map.infoWindow.domNode, {
-        handle: handle
-    });
     
-    // when the infoWindow is moved, hide the arrow:
-    on(dnd, 'FirstMove', function() {
-        // hide pointer and outerpointer (used depending on where the pointer is shown)
-        var arrowNode =  query(".outerPointer", map.infoWindow.domNode)[0];
-        domClass.add(arrowNode, "hidden");
-        
-        var arrowNode =  query(".pointer", map.infoWindow.domNode)[0];
-        domClass.add(arrowNode, "hidden");
-    }.bind(this));
-    //end code for adding draggability to infoWindow
 
     //map click handler
     on(map, "click", function(evt) {
@@ -352,6 +376,10 @@ require([
                          // Code for adding wetland highlight
                         var symbol;
                         if (response[i].layerId == 0) {
+                            $("#mapDate").text(attr["Map_Date"]);
+                            $("#titleOne").text(attr["Title"]);
+                            $("#titleTwo").text(attr["Title_2"]);
+                            $("#titleThree").text(attr["Title_3"]);
                             symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
                                 new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
                                     new dojo.Color([255,255,0]), 2), new dojo.Color([98,194,204,0])
@@ -370,12 +398,33 @@ require([
 
                     }
 
+                    $("#selectionDiv").css("visibility", "visible");
+                        var instance = $('#selectionDiv').data('lobiPanel');
+                        var docHeight = $(document).height();
+                        var docWidth = $(document).width();
+                        var percentageOfScreen = 0.9;
+                        var floodToolsHeight = docHeight*percentageOfScreen
+                        var floodToolsWidth = docWidth*percentageOfScreen;
+                        if (docHeight < 500) {
+                            $("#selectionDiv").height(floodToolsHeight);
+                        }
+                        if (docWidth < 500) {
+                            $("#selectionDiv").width(floodToolsWidth);
+                        }
+
+                        var instanceX = docWidth*0.5-$("#selectionDiv").width()*0.5;
+                        var instanceY = docHeight*0.5-$("#selectionDiv").height()*0.5;
+
+                        instance.setPosition(instanceX, instanceY);
+                        if (instance.isPinned() == true) {
+                            instance.unpin();
+                        }
                     // Code for adding wetland highlight
-                    feature.geometry.spatialReference = map.spatialReference;
+                    /*feature.geometry.spatialReference = map.spatialReference;
                     var graphic = feature;
                     graphic.setSymbol(symbol);
 
-                    map.graphics.add(graphic);
+                    map.graphics.add(graphic);*/
 
                     /*var projmeta = '';
                     if (attrStatus.SUPPMAPINFO == 'None') {
@@ -389,18 +438,18 @@ require([
                     }*/
 
                     var template = new esri.InfoTemplate("CBRS Units",
-                        "<b>Map Link:</b> " + attr.Map_Link + " (<a target='_blank' href='https://fwsmapper.wim.usgs.gov/decoders/SWI.aspx?CodeURL=" + attr.ATTRIBUTE + "''>decode</a>)<br/>"+
+                        "<b>Map Link:</b> " + attr.Map_Link + "<br/>" +
                         "<p><b>Title:</b> " + attr.Title + "<br/>" +
                         "<b>Title 2:</b> " + attr.Title_2 + "<br/>" +
                         "<b>Title 3:</b> " + attr.Title_3 +
-
+                    
 
                     //ties the above defined InfoTemplate to the feature result returned from a click event
 
                     feature.setInfoTemplate(template));
 
                     map.infoWindow.setFeatures([feature]);
-                    map.infoWindow.show(evt.mapPoint, map.getInfoWindowAnchor(evt.screenPoint));
+                   // map.infoWindow.show(evt.mapPoint, map.getInfoWindowAnchor(evt.screenPoint));
 
                     var infoWindowClose = dojo.connect(map.infoWindow, "onHide", function(evt) {
                         map.graphics.clear();
@@ -420,163 +469,11 @@ require([
 
                     ////map.infoWindow.show(evt.mapPoint);
 
-                } else if (response.length <= 1) {
-
-                    identifyTask = new IdentifyTask(allLayers[0].layers["Riparian"].url);
-
-                    var deferredResult = identifyTask.execute(identifyParams);
-
-                    deferredResult.addCallback(function(response) {
-
-                        if (response.length > 1) {
-
-                            var feature;
-                            var attr;
-                            var attrStatus;
-
-                            for (var i = 0; i < response.length; i++) {
-                                if (response[i].layerId == 0) {
-                                    feature = response[i].feature;
-                                    attr = feature.attributes;
-                                } else if (response[i].layerId == 1) {
-                                    attrStatus = response[i].feature.attributes;
-                                }
-
-                            }
-
-                            // Code for adding wetland highlight
-                            /*feature.geometry.spatialReference = map.spatialReference;
-                            var graphic = feature;
-                            graphic.setSymbol(symbol);
-
-                            map.graphics.add(graphic);*/
-
-                            /*var projmeta = '';
-                            if (attrStatus.SUPPMAPINFO == 'None') {
-                                projmeta = " NONE";
-                            } else {
-                                projmeta = " <a target='_blank' href='" + attrStatus.SUPPMAPINFO + "'>click here</a>";
-                            }*/
-
-                            var template = new esri.InfoTemplate("cbrs",
-                                "<b>Classification:</b> " + attr.ATTRIBUTE + " (<a target='_blank' href='https://fwsmapper.wim.usgs.gov/decoders/riparian.aspx?CodeURL=" + attr.ATTRIBUTE + "''>decode</a>)<br/>"+
-                                "<p><b>Wetland Type:</b> " + attr.WETLAND_TYPE + "<br/>" +
-                                "<b>Acres:</b> " + Number(attr.ACRES).toFixed(2) + "<br/>" +
-                                "<b>Image Date(s):</b> " + attrStatus.IMAGE_DATE + 
-                                "<br/><p><a id='infoWindowLink' href='javascript:void(0)'>Zoom to wetland</a></p>");
-
-                            //ties the above defined InfoTemplate to the feature result returned from a click event
-
-                            feature.setInfoTemplate(template);
-
-                            map.infoWindow.setFeatures([feature]);
-                            map.infoWindow.show(evt.mapPoint);
-
-                            var infoWindowClose = dojo.connect(map.infoWindow, "onHide", function(evt) {
-                                map.graphics.clear();
-                                dojo.disconnect(map.infoWindow, infoWindowClose);
-                            });
-
-                            setCursorByID("mainDiv", "default");
-                            map.setCursor("default");
-
-                            $("#infoWindowLink").click(function(event) {
-                                var convertedGeom = webMercatorUtils.webMercatorToGeographic(feature.geometry);
-
-                                var featExtent = convertedGeom.getExtent();
-
-                                map.setExtent(featExtent, true);
-                            });
-
-                            //map.infoWindow.show(evt.mapPoint);
-
-                        } else if (response.length <= 1) {
-
-                            var historicIdentifyTask = new IdentifyTask(allLayers[2].layers["Historic Wetland Data"].url);
-                            var deferredHistoric = historicIdentifyTask.execute(historicIdentifyParameters);
-
-                            deferredHistoric.addCallback(function(response) {
-
-                                if (response.length >= 1) {
-
-                                    var feature;
-                                    var attr;
-                                    var attrStatus;
-
-                                    for (var i = 0; i < response.length; i++) {
-                                        if (response[i].layerId == 0) {
-                                            feature = response[i].feature;
-                                            attr = feature.attributes;
-                                        } else if (response[i].layerId == 1) {
-                                            attrStatus = response[i].feature.attributes;
-                                        }
-
-                                    }
-
-                                    // Code for adding wetland highlight
-                                    var symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
-                                        new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
-                                            new dojo.Color([255,255,0]), 2), new dojo.Color([98,194,204,0])
-                                    );
-                                    feature.geometry.spatialReference = map.spatialReference;
-                                    var graphic = feature;
-                                    graphic.setSymbol(symbol);
-
-                                    map.graphics.add(graphic);
-
-                                    var projmeta = '';
-                                    if (attrStatus.SUPPMAPINFO == 'None') {
-                                        projmeta = " NONE";
-                                    } else {
-                                        projmeta = " <a target='_blank' href='" + attrStatus.SUPPMAPINFO + "'>click here</a>";
-                                    }
-
-                                    if (attrStatus.IMAGE_DATE == "<Null>" || attrStatus.IMAGE_DATE == "0" || attrStatus.IMAGE_DATE == 0) {
-                                        attrStatus.IMAGE_DATE = projmeta;
-                                    }
-
-                                    var template = new esri.InfoTemplate("Historic Wetland",
-                                        "<p><b>Wetland Type:</b> " + attr.WETLAND_TYPE + "<br/>" +
-                                        "<b>Acres:</b> " + Number(attr.ACRES).toFixed(2) + "<br/>" +
-                                        "<b>Project Metadata:</b>" + projmeta +
-                                        "<br/><p><a id='infoWindowLink' href='javascript:void(0)'>Zoom to wetland</a></p>");
-
-                                    //ties the above defined InfoTemplate to the feature result returned from a click event
-
-                                    feature.setInfoTemplate(template);
-
-                                    map.infoWindow.setFeatures([feature]);
-                                    map.infoWindow.show(evt.mapPoint, map.getInfoWindowAnchor(evt.screenPoint));
-
-                                    var infoWindowClose = dojo.connect(map.infoWindow, "onHide", function(evt) {
-                                        map.graphics.clear();
-                                        dojo.disconnect(map.infoWindow, infoWindowClose);
-                                    });
-
-                                    setCursorByID("mainDiv", "default");
-                                    map.setCursor("default");
-
-                                    $("#infoWindowLink").click(function(event) {
-                                        var convertedGeom = webMercatorUtils.webMercatorToGeographic(feature.geometry);
-
-                                        var featExtent = convertedGeom.getExtent();
-
-                                        map.setExtent(featExtent, true);
-                                    });
-
-                                    //map.infoWindow.show(evt.mapPoint);
-
-                                } else {
-                                    setCursorByID("mainDiv", "default");
-                                    map.setCursor("default");
-                                    map.infoWindow.hide();
-                                }
-                            });
-                        }
-                    });
                 }
             });
-        } else if ($("#huc-download-alert")[0].scrollHeight > 0) {
+    
+
+        } /*else if ($("#huc-download-alert")[0].scrollHeight > 0) {
             //watershed identify task
             //watershedGraphicsLayer.clear();
             var identifyParameters = new IdentifyParameters();
@@ -590,9 +487,9 @@ require([
             identifyParameters.spatialReference = map.spatialReference;
 
             var identifyTask = new IdentifyTask(allLayers[0].layers["CBRS Units"].url);
-            var hucDeffered = identifyTask.execute(identifyParameters);
+            var cbrsDeffered = identifyTask.execute(identifyParameters);
 
-            hucDeffered.addCallback(function(response) {
+            cbrsDeffered.addCallback(function(response) {
                 if (response.length >= 1) {
 
                     var feature;
@@ -601,7 +498,7 @@ require([
                     // Code for adding HUC highlight
                     var symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
                         new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
-                            new dojo.Color([255,255,0]), 2), new dojo.Color([98,194,204,0])
+                            new dojo.Color([0,255,225]), 2), new dojo.Color([98,194,204,0])
                     );
                     feature.geometry.spatialReference = map.spatialReference;
                     var graphic = feature;
@@ -622,17 +519,7 @@ require([
                         "<br/><p onclick='hucLinkListener("+HUCNumber+")'><a target='_blank' href='http://www.fws.gov/wetlands/downloads/Watershed/HU8_" + HUCNumber + "_watershed.zip'>HUC " + HUCNumber + "</a></p>";
                 }
             });
-        }
-    });
-
-    $(document).on("click", "#showHUCs", function() {
-        event.preventDefault();
-        $("#getDataModal").modal("hide");
-        $("#huc-download-alert").slideDown(250);
-        map.getLayer("huc8").setVisibility(true);
-        dojo.byId('innerAlert').innerHTML = "<h4><b>Download Data</b></h4>" +
-        "<p>Please review the Data Download (<a target='_blank' href='https://www.fws.gov/wetlands/Data/Data-Download.html'>www.fws.gov/wetlands/Data/Data-Download.html</a>) page for information on how to download data, what is included in the download and data use limitations and disclaimer.</p>" +
-        "<br/><p><b>Click the map to select a watershed from which to extract wetland data.</b></p>";
+        }*/
     });
 
     var geocoder = new Geocoder({
@@ -1520,28 +1407,3 @@ $(document).ready(function () {
     //});
 
 });
-
-// lobipanel implementation: https://github.com/arboshiki/lobipanel
-
-    $("#siteInfoDiv").lobiPanel({
-        unpin: false,
-        reload: false,
-        minimize: false,
-        close: false,
-        expand: false,
-        editTitle: false,
-        maxWidth: 800,
-        maxHeight: 500
-    });
-
-    $("#siteInfoDiv .dropdown").prepend("<div id='siteInfoClose' title='close'><b>X</b></div>");
-    $("#siteInfoDiv .dropdown").prepend("<div id='siteInfoMin' title='collapse'><b>_</b></div>");
-
-    $("#siteInfoMin").click(function(){
-        $("#siteInfoDiv").css("visibility", "hidden");
-    });
-
-    $("#siteInfoClose").click(function(){
-        $("#siteInfoDiv").css("visibility", "hidden");
-        map.graphics.clear();
-    });

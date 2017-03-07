@@ -453,6 +453,22 @@ input[type="checkbox"], input[type="radio"] {
 
 /* PopUp CSS*/
 
+.selectionToolsClass {
+    position:absolute;
+    top:100px;
+    left:100px;
+    width:650px;
+    height:450px;
+    z-index:3;
+    color: black;
+    background-color: rgb(255,255,255);
+    background-color: rgba(255,255,255,0.8);
+    box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+    /*min-width: 150px;*/
+    border-radius: 4px;
+    visibility: hidden;
+}
+
 .siteInfoClass {
     position:absolute;
     width:450px;
@@ -466,12 +482,20 @@ input[type="checkbox"], input[type="radio"] {
     border-radius: 4px;
     visibility: hidden;
 }
-#siteInfoMin,
-#dropdown-toggle,
-.dropdown-toggle{
-    display: none;
+
+#selectionMin {
+    cursor: pointer;
+    display: inline;
+    padding-right: 15px;
+    font-size: 20px;
+    font-weight: bold;
 }
-#siteInfoClose{
-    box-sizing: border-box;
-    padding: 3px 10px;
+
+#selectionClose {
+    cursor: pointer;
+    display: inline;
+    padding-top: 3px;
+    padding-right: 6px;
+    font-size: 14px;
+    font-weight: bold;
 }
