@@ -302,7 +302,7 @@ require([
     });*/
 
     $("#selectionDiv .dropdown").prepend("<div id='selectionClose' tite='close'><b>X</b></div>");
-    $("#selectionDiv .dropdown").prepend("<div id='selectionMin' title='collapse'><b>_</b></div>");
+    //$("#selectionDiv .dropdown").prepend("<div id='selectionMin' title='collapse'><b>_</b></div>");
 
     $("#selectionMin").click(function(){
         $("#selectionDiv").css("visibility", "hidden");
@@ -354,7 +354,7 @@ require([
         identifyParams.geometry = evt.mapPoint;
         identifyParams.mapExtent = map.extent;
 
-        if (map.getLevel() >= 8 && $("#huc-download-alert")[0].scrollHeight == 0) {
+        if (map.getLevel() >= 8) {
             //the deferred variable is set to the parameters defined above and will be used later to build the contents of the infoWindow.
             identifyTask = new IdentifyTask(allLayers[0].layers["CBRS Units"].url);
             var deferredResult = identifyTask.execute(identifyParams);
@@ -372,10 +372,13 @@ require([
 
                     for (var i = 0; i < response.length; i++) {
                         feature = response[i].feature;
+
+                        //getting feature attributes
                         attr = feature.attributes;
-                         // Code for adding wetland highlight
+                        
                         var symbol;
                         if (response[i].layerId == 0) {
+                            $("#mapLink").html('<a href=' + attr["Map_Link"] + '>Click Here</a>');  //+ 'target="_blank"'
                             $("#mapDate").text(attr["Map_Date"]);
                             $("#titleOne").text(attr["Title"]);
                             $("#titleTwo").text(attr["Title_2"]);
@@ -384,12 +387,44 @@ require([
                                 new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
                                     new dojo.Color([255,255,0]), 2), new dojo.Color([98,194,204,0])
                             );
-                        } else if (response[i].layerId == 4) {
+                        } if (response[i].layerId == 4) {
+                            $("#unitId").text(attr["Unit"]);
+                            $("#unitName").text(attr["Name"]);
+                            $("#unitType").text(attr["Unit_Type"]);
+                            $("#fastAcre").text(attr["Fast_Acres"]);
+                            $("#wetAcre").text(attr["Wet_Acres"]);
+                            $("#dataTier").text(["Tier"]);
                             symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
                                 new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
                                     new dojo.Color([255,0,255]), 2), new dojo.Color([98,194,204,0])
                             );
+                            
+                            /*if (attr.Tier == 2){
+                                attr.totalAcreage = "Approximately" + (Number(attr.Fast_Acres + attr.Wet_Acres)) + "acres.";
+                            }*/
+                           
                         }
+
+                        /* function calculate(){
+                            var totalAcre = document.getElementById('total');
+                            var wet = document.getElementById('wetAcre');
+                            var fast = document.getElementById('fastAcre');
+
+                            totalAcre.value = parseFloat("0" + wet.value) + parseFloat("0" + fast.value);
+                            console.log(totalAcre);
+                        }*/
+
+                        /*function addValues(){
+                            $("input[id='Fast_Acres']")
+                            console.log(totalAcre);
+                            if ('dataTier' == '2'){
+
+                            }
+                        }
+                        
+                        var totalAcre = ($('#fastAcre').val);    
+                        */
+
                         feature.geometry.spatialReference = map.spatialReference;
                         var graphic = feature;
                         graphic.setSymbol(symbol);
@@ -400,126 +435,24 @@ require([
 
                     $("#selectionDiv").css("visibility", "visible");
                         var instance = $('#selectionDiv').data('lobiPanel');
+                        /*instance.setSize(500,500);
+                        instance.setPosition(400, 360);*/
                         var docHeight = $(document).height();
                         var docWidth = $(document).width();
                         var percentageOfScreen = 0.9;
-                        var floodToolsHeight = docHeight*percentageOfScreen
-                        var floodToolsWidth = docWidth*percentageOfScreen;
-                        if (docHeight < 500) {
-                            $("#selectionDiv").height(floodToolsHeight);
-                        }
-                        if (docWidth < 500) {
-                            $("#selectionDiv").width(floodToolsWidth);
-                        }
 
                         var instanceX = docWidth*0.5-$("#selectionDiv").width()*0.5;
-                        var instanceY = docHeight*0.5-$("#selectionDiv").height()*0.5;
+                        var instanceY = docHeight*0.8-$("#selectionDiv").height()*1.0;
+
 
                         instance.setPosition(instanceX, instanceY);
                         if (instance.isPinned() == true) {
                             instance.unpin();
                         }
-                    // Code for adding wetland highlight
-                    /*feature.geometry.spatialReference = map.spatialReference;
-                    var graphic = feature;
-                    graphic.setSymbol(symbol);
 
-                    map.graphics.add(graphic);*/
-
-                    /*var projmeta = '';
-                    if (attrStatus.SUPPMAPINFO == 'None') {
-                        projmeta = " NONE";
-                    } else {
-                        projmeta = " <a target='_blank' href='" + attrStatus.SUPPMAPINFO + "'>click here</a>";
                     }
-
-                    if (attrStatus.IMAGE_DATE == "<Null>" || attrStatus.IMAGE_DATE == "0" || attrStatus.IMAGE_DATE == 0) {
-                        attrStatus.IMAGE_DATE = projmeta;
-                    }*/
-
-                    var template = new esri.InfoTemplate("CBRS Units",
-                        "<b>Map Link:</b> " + attr.Map_Link + "<br/>" +
-                        "<p><b>Title:</b> " + attr.Title + "<br/>" +
-                        "<b>Title 2:</b> " + attr.Title_2 + "<br/>" +
-                        "<b>Title 3:</b> " + attr.Title_3 +
-                    
-
-                    //ties the above defined InfoTemplate to the feature result returned from a click event
-
-                    feature.setInfoTemplate(template));
-
-                    map.infoWindow.setFeatures([feature]);
-                   // map.infoWindow.show(evt.mapPoint, map.getInfoWindowAnchor(evt.screenPoint));
-
-                    var infoWindowClose = dojo.connect(map.infoWindow, "onHide", function(evt) {
-                        map.graphics.clear();
-                        dojo.disconnect(map.infoWindow, infoWindowClose);
-                    });
-
-                    setCursorByID("mainDiv", "default");
-                    map.setCursor("default");
-
-                    $("#infoWindowLink").click(function(event) {
-                        var convertedGeom = webMercatorUtils.webMercatorToGeographic(feature.geometry);
-
-                        var featExtent = convertedGeom.getExtent();
-
-                        map.setExtent(featExtent, true);
-                    });
-
-                    ////map.infoWindow.show(evt.mapPoint);
-
-                }
             });
-    
-
-        } /*else if ($("#huc-download-alert")[0].scrollHeight > 0) {
-            //watershed identify task
-            //watershedGraphicsLayer.clear();
-            var identifyParameters = new IdentifyParameters();
-            identifyParameters.returnGeometry = true;
-            identifyParameters.tolerance = 0;
-            identifyParameters.width = map.width;
-            identifyParameters.height = map.height;
-            identifyParameters.geometry = evt.mapPoint;
-            identifyParameters.layerOption = IdentifyParameters.LAYER_OPTION_TOP;
-            identifyParameters.mapExtent = map.extent;
-            identifyParameters.spatialReference = map.spatialReference;
-
-            var identifyTask = new IdentifyTask(allLayers[0].layers["CBRS Units"].url);
-            var cbrsDeffered = identifyTask.execute(identifyParameters);
-
-            cbrsDeffered.addCallback(function(response) {
-                if (response.length >= 1) {
-
-                    var feature;
-                    feature = response[0].feature;
-
-                    // Code for adding HUC highlight
-                    var symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
-                        new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
-                            new dojo.Color([0,255,225]), 2), new dojo.Color([98,194,204,0])
-                    );
-                    feature.geometry.spatialReference = map.spatialReference;
-                    var graphic = feature;
-                    graphic.setSymbol(symbol);
-
-                    map.graphics.add(graphic);
-
-                    var convertedGeom = webMercatorUtils.webMercatorToGeographic(feature.geometry);
-
-                    var featExtent = convertedGeom.getExtent();
-
-                    map.setExtent(featExtent, true);
-
-                    var HUCNumber = response[0].feature.attributes.HUC8;
-                    var HUCName = response[0].feature.attributes.Name;
-                    dojo.byId('innerAlert').innerHTML = "<h4><b>Download Data</b></h4>" +
-                        "<p>Click the link below to download data for " + HUCName + " watershed" +
-                        "<br/><p onclick='hucLinkListener("+HUCNumber+")'><a target='_blank' href='http://www.fws.gov/wetlands/downloads/Watershed/HU8_" + HUCNumber + "_watershed.zip'>HUC " + HUCNumber + "</a></p>";
-                }
-            });
-        }*/
+        } 
     });
 
     var geocoder = new Geocoder({
@@ -1041,17 +974,17 @@ require([
 
                 //create layer toggle
                 //var button = $('<div align="left" style="cursor: pointer;padding:5px;"><span class="glyphspan glyphicon glyphicon-check"></span>&nbsp;&nbsp;' + layerName + '</div>');
-                if ((layer.visible && wimOptions.hasOpacitySlider !== undefined && wimOptions.hasOpacitySlider == true && wimOptions.moreinfo !== undefined && wimOptions.moreinfo)) {
-                    var button = $('<div class="btn-group-vertical lyrTog" style="cursor: pointer;" data-toggle="buttons"> <button type="button" class="btn btn-default" aria-pressed="true" style="font-weight: bold;text-align: left"><i class="glyphspan fa fa-check-square-o"></i>&nbsp;&nbsp;' + layerName + '<span id="info' + camelize(layerName) + '" title="more info" class="glyphspan glyphicon glyphicon-question-sign pull-right"></span><span id="opacity' + camelize(layerName) + '" style="padding-right: 5px" class="glyphspan glyphicon glyphicon-adjust pull-right"></span></button></div>');
-                } else if ((!layer.visible && wimOptions.hasOpacitySlider !== undefined && wimOptions.hasOpacitySlider == true && wimOptions.moreinfo !== undefined && wimOptions.moreinfo)) {
+                if ((layer.visible && wimOptions.hasOpacitySlider)) {
+                    var button = $('<div class="btn-group-vertical lyrTog" style="cursor: pointer;" data-toggle="buttons"> <button type="button" class="btn btn-default" aria-pressed="true" style="font-weight: bold;text-align: left"><i class="glyphspan fa fa-check-square-o"></i>&nbsp;&nbsp;' + layerName + '<span id="opacity' + camelize(layerName) + '" style="padding-right: 5px" class="glyphspan glyphicon glyphicon-adjust pull-right"></span></button></div>');
+                } else if ((!layer.visible && wimOptions.hasOpacitySlider)) {
                     var button = $('<div class="btn-group-vertical lyrTog" style="cursor: pointer;" data-toggle="buttons"> <button type="button" class="btn btn-default" aria-pressed="true" style="font-weight: bold;text-align: left"><i class="glyphspan fa fa-square-o"></i>&nbsp;&nbsp;' + layerName + '<span id="info' + camelize(layerName) + '" title="more info" class="glyphspan glyphicon glyphicon-question-sign pull-right"></span><span id="opacity' + camelize(layerName) + '" style="padding-right: 5px" class="glyphspan glyphicon glyphicon-adjust pull-right"></span></button></div>');
                 } else if (layer.visible && wimOptions.hasOpacitySlider !== undefined && wimOptions.hasOpacitySlider == true) {
                     var button = $('<div class="btn-group-vertical lyrTog" style="cursor: pointer;" data-toggle="buttons"> <button type="button" class="btn btn-default" aria-pressed="true" style="font-weight: bold;text-align: left"><i class="glyphspan fa fa-check-square-o"></i>&nbsp;&nbsp;' + layerName + '<span id="info' + camelize(layerName) + '" title="more info" class="glyphspan glyphicon glyphicon-question-sign pull-right"></button></span></div>');
                 } else if ((!layer.visible && wimOptions.hasOpacitySlider !== undefined && wimOptions.hasOpacitySlider == true)) {
                     var button = $('<div class="btn-group-vertical lyrTog" style="cursor: pointer;" data-toggle="buttons"> <button type="button" class="btn btn-default active" aria-pressed="true" style="font-weight: bold;text-align: left"><i class="glyphspan fa fa-square-o"></i>&nbsp;&nbsp;' + layerName + '<span id="opacity' + camelize(layerName) + '" class="glyphspan glyphicon glyphicon-adjust pull-right"></button></span></div>');
-                } else if ((layer.visible && wimOptions.moreinfo !== undefined && wimOptions.moreinfo)) {
+                } else if ((layer.visible)) {
                     var button = $('<div class="btn-group-vertical lyrTog" style="cursor: pointer;" data-toggle="buttons"> <button type="button" class="btn btn-default" aria-pressed="true" style="font-weight: bold;text-align: left"><i class="glyphspan fa fa-check-square-o"></i>&nbsp;&nbsp;' + layerName + '<span id="opacity' + camelize(layerName) + '" class="glyphspan glyphicon glyphicon-adjust pull-right"></button></span></div>');
-                } else if ((!layer.visible && wimOptions.moreinfo !== undefined && wimOptions.moreinfo)) {
+                } else if ((!layer.visible)) {
                     var button = $('<div class="btn-group-vertical lyrTog" style="cursor: pointer;" data-toggle="buttons"> <button type="button" class="btn btn-default" aria-pressed="true" style="font-weight: bold;text-align: left"><i class="glyphspan fa fa-square-o"></i>&nbsp;&nbsp;' + layerName + '<span id="info' + camelize(layerName) + '" title="more info" class="glyphspan glyphicon glyphicon-question-sign pull-right"></button></span></div>');
                 } else if (layer.visible) {
                     var button = $('<div class="btn-group-vertical lyrTog" style="cursor: pointer;" data-toggle="buttons"> <button type="button" class="btn btn-default active" aria-pressed="true" style="font-weight: bold;text-align: left"><i class="glyphspan fa fa-check-square-o"></i>&nbsp;&nbsp;' + layerName + '</button></span></div>');
@@ -1163,15 +1096,6 @@ require([
                     }
                 } else {
                     $('#' + groupDivID).append(button);
-                    if (wimOptions.moreinfo !== undefined && wimOptions.moreinfo) {
-                        var id = "#info" + camelize(layerName);
-                        var moreinfo = $(id);
-                        moreinfo.click(function(e) {
-                            window.open(wimOptions.moreinfo, "_blank");
-                            e.preventDefault();
-                            e.stopPropagation();
-                        });
-                    }
                     if ($("#opacity"+camelize(layerName)).length > 0) {
                         $("#opacity"+camelize(layerName)).click(function (e) {
                             e.preventDefault();

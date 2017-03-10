@@ -39,7 +39,7 @@ require([
                     'options': {
                         'id': 'cbrs',
                         'opacity': 0.75,
-                        'visible': false
+                        'visible': true
                     },
                     'wimOptions': {
                         'type': 'layer',
@@ -49,7 +49,7 @@ require([
                         'hasOpacitySlider': true,
                         'includeLegend' : true,
                     }
-                },
+/*                },
                 'CBRS Footprints' : {
                     'url': 'https://fws.wim.usgs.gov/arcgis/rest/services/CBRAMapper/GeoCBRA/MapServer',
                     'visibleLayers': [0],
@@ -65,9 +65,9 @@ require([
                         'zoomScale': 144448,
                         'hasOpacitySlider': true,
                         'includeLegend' : true
-                    }
+                    }*/
                 },
-                    'CBRS Buffer Zone' : {
+/*                    'CBRS Buffer Zone' : {
                     'url': 'https://fws.wim.usgs.gov/arcgis/rest/services/CBRAMapper/GeoCBRA/MapServer',
                     'visibleLayers': [2],
                     'options': {
@@ -82,8 +82,7 @@ require([
                         'zoomScale': 144448,
                         'hasOpacitySlider': true,
                         'includeLegend' : true
-                    },
-                }
+                    },*/
             }   
         }
     ];

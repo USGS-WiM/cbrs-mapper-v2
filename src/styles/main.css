@@ -471,8 +471,8 @@ input[type="checkbox"], input[type="radio"] {
 
 .siteInfoClass {
     position:absolute;
-    width:450px;
-    height:325px;
+    width:500px;
+    height:500px;
     z-index:2;
     color: black;
     background-color: rgb(255,255,255);
