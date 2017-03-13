@@ -378,7 +378,7 @@ require([
                         
                         var symbol;
                         if (response[i].layerId == 0) {
-                            $("#mapLink").html('<a href=' + attr["Map_Link"] + '>Click Here</a>');  //+ 'target="_blank"'
+                            $("#mapLink").html('<a href="' + attr["Map_Link"] + '" target="_blank">Click Here</a>');
                             $("#mapDate").text(attr["Map_Date"]);
                             $("#titleOne").text(attr["Title"]);
                             $("#titleTwo").text(attr["Title_2"]);
