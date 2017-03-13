@@ -393,7 +393,7 @@ require([
                             $("#unitType").text(attr["Unit_Type"]);
                             $("#fastAcre").text(attr["Fast_Acres"]);
                             $("#wetAcre").text(attr["Wet_Acres"]);
-                            $("#dataTier").text(["Tier"]);
+                            $("#dataTier").text(attr["Tier"]);
                             symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
                                 new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
                                     new dojo.Color([255,0,255]), 2), new dojo.Color([98,194,204,0])
