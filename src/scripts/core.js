@@ -391,9 +391,17 @@ require([
                             $("#unitId").text(attr["Unit"]);
                             $("#unitName").text(attr["Name"]);
                             $("#unitType").text(attr["Unit_Type"]);
-                            $("#fastAcre").text(attr["Fast_Acres"]);
-                            $("#wetAcre").text(attr["Wet_Acres"]);
                             $("#dataTier").text(attr["Tier"]);
+
+                           if (attr["Tier"] == '2') {
+                                var totalAcre;
+                                totalAcre = Number(attr["Fast_Acres"]) + Number(attr["Wet_Acres"]);
+                            } else {
+                                totalAcre = "Data not available at this time";
+                            };
+                            
+                            $('#totalAcre').text(totalAcre);
+            
                             symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
                                 new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
                                     new dojo.Color([255,0,255]), 2), new dojo.Color([98,194,204,0])
@@ -432,6 +440,9 @@ require([
                         map.graphics.add(graphic);
 
                     }
+
+                    setCursorByID("mainDiv", "default");
+                    map.setCursor("default");
 
                     $("#selectionDiv").css("visibility", "visible");
                         var instance = $('#selectionDiv').data('lobiPanel');

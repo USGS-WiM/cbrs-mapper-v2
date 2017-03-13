@@ -122,6 +122,10 @@ body {
     background-color: rgba(255,255,255,0.8);
 }
 
+.esriLegendLayerLabel { 
+    visibility: hidden;
+}
+
 #homeButton {
     position: absolute;
     top: 75px;
