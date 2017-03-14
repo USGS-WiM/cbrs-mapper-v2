@@ -797,30 +797,6 @@ require([
                     exclusiveGroupName = layerDetails.wimOptions.exclusiveGroupName;
                 }
 
-                if (layerDetails.wimOptions.layerType === 'agisFeature') {
-                    var layer = new FeatureLayer(layerDetails.url, layerDetails.options);
-                    if (layerDetails.wimOptions.renderer !== undefined) {
-                        layer.setRenderer(layerDetails.wimOptions.renderer);
-                    }
-                    //check if include in legend is true
-                    if (layerDetails.wimOptions && layerDetails.wimOptions.includeLegend == true){
-                        legendLayers.unshift({layer:layer, title: layerName});
-                    }
-                    addLayer(group.groupHeading, group.showGroupHeading, layer, layerName, exclusiveGroupName, layerDetails.options, layerDetails.wimOptions);
-                    //addMapServerLegend(layerName, layerDetails);
-                }
-
-                else if (layerDetails.wimOptions.layerType === 'agisWMS') {
-                    var layer = new WMSLayer(layerDetails.url, {resourceInfo: layerDetails.options.resourceInfo, visibleLayers: layerDetails.options.visibleLayers }, layerDetails.options);
-                    //check if include in legend is true
-                    if (layerDetails.wimOptions && layerDetails.wimOptions.includeLegend == true){
-                        legendLayers.unshift({layer:layer, title: layerName});
-                    }
-                    //map.addLayer(layer);
-                    addLayer(group.groupHeading, group.showGroupHeading, layer, layerName, exclusiveGroupName, layerDetails.options, layerDetails.wimOptions);
-                    //addMapServerLegend(layerName, layerDetails);
-                }
-
                 else if (layerDetails.wimOptions.layerType === 'agisDynamic') {
                     var layer = new ArcGISDynamicMapServiceLayer(layerDetails.url, layerDetails.options);
                     //check if include in legend is true
@@ -842,19 +818,6 @@ require([
                     //addMapServerLegend(layerName, layerDetails);
                 }
 
-                else if (layerDetails.wimOptions.layerType === 'agisImage') {
-                    var layer = new ArcGISImageServiceLayer(layerDetails.url, layerDetails.options);
-                    //check if include in legend is true
-                    if (layerDetails.wimOptions && layerDetails.wimOptions.includeLegend == true){
-                        legendLayers.unshift({layer:layer, title: layerName});
-                    }
-                    if (layerDetails.visibleLayers) {
-                        layer.setVisibleLayers(layerDetails.visibleLayers);
-                    }
-                    //map.addLayer(layer);
-                    addLayer(group.groupHeading, group.showGroupHeading, layer, layerName, exclusiveGroupName, layerDetails.options, layerDetails.wimOptions);
-                    //addMapServerLegend(layerName, layerDetails);
-                }
             });
         });
 
@@ -864,7 +827,7 @@ require([
             //layer.addTo(map);
             map.addLayer(layer);
 
-            if (layer.id == 'cbrs') {
+            if (layer.ids == 'cbrs') {
                 on(layer, 'load', function(evt) {
                     on(layer, 'click', function (evt) {
                         cbrsClicked = true;
@@ -986,15 +949,15 @@ require([
                 //create layer toggle
                 //var button = $('<div align="left" style="cursor: pointer;padding:5px;"><span class="glyphspan glyphicon glyphicon-check"></span>&nbsp;&nbsp;' + layerName + '</div>');
                 if ((layer.visible && wimOptions.hasOpacitySlider)) {
-                    var button = $('<div class="btn-group-vertical lyrTog" style="cursor: pointer;" data-toggle="buttons"> <button type="button" class="btn btn-default" aria-pressed="true" style="font-weight: bold;text-align: left"><i class="glyphspan fa fa-check-square-o"></i>&nbsp;&nbsp;' + layerName + '<span id="opacity' + camelize(layerName) + '" style="padding-right: 5px" class="glyphspan glyphicon glyphicon-adjust pull-right"></span></button></div>');
+                    var button = $('<div class="btn-group-vertical lyrTog" style="cursor: pointer;" data-toggle="buttons"> <button type="button" class="btn btn-default" aria-pressed="true" style="font-weight: bold;text-align: left"><i class="glyphspan fa fa-check-square-o"></i>&nbsp;&nbsp;' + layerName + '<span id="info' + camelize(layerName) + '" title="more info" class="glyphspan glyphicon glyphicon-question-sign pull-right"></span>' + '<span id="opacity' + camelize(layerName) + '" style="padding-right: 5px" class="glyphspan glyphicon glyphicon-adjust pull-right"></span></button></div>');
                 } else if ((!layer.visible && wimOptions.hasOpacitySlider)) {
                     var button = $('<div class="btn-group-vertical lyrTog" style="cursor: pointer;" data-toggle="buttons"> <button type="button" class="btn btn-default" aria-pressed="true" style="font-weight: bold;text-align: left"><i class="glyphspan fa fa-square-o"></i>&nbsp;&nbsp;' + layerName + '<span id="info' + camelize(layerName) + '" title="more info" class="glyphspan glyphicon glyphicon-question-sign pull-right"></span><span id="opacity' + camelize(layerName) + '" style="padding-right: 5px" class="glyphspan glyphicon glyphicon-adjust pull-right"></span></button></div>');
                 } else if (layer.visible && wimOptions.hasOpacitySlider !== undefined && wimOptions.hasOpacitySlider == true) {
                     var button = $('<div class="btn-group-vertical lyrTog" style="cursor: pointer;" data-toggle="buttons"> <button type="button" class="btn btn-default" aria-pressed="true" style="font-weight: bold;text-align: left"><i class="glyphspan fa fa-check-square-o"></i>&nbsp;&nbsp;' + layerName + '<span id="info' + camelize(layerName) + '" title="more info" class="glyphspan glyphicon glyphicon-question-sign pull-right"></button></span></div>');
                 } else if ((!layer.visible && wimOptions.hasOpacitySlider !== undefined && wimOptions.hasOpacitySlider == true)) {
-                    var button = $('<div class="btn-group-vertical lyrTog" style="cursor: pointer;" data-toggle="buttons"> <button type="button" class="btn btn-default active" aria-pressed="true" style="font-weight: bold;text-align: left"><i class="glyphspan fa fa-square-o"></i>&nbsp;&nbsp;' + layerName + '<span id="opacity' + camelize(layerName) + '" class="glyphspan glyphicon glyphicon-adjust pull-right"></button></span></div>');
+                    var button = $('<div class="btn-group-vertical lyrTog" style="cursor: pointer;" data-toggle="buttons"> <button type="button" class="btn btn-default active" aria-pressed="true" style="font-weight: bold;text-align: left"><i class="glyphspan fa fa-square-o"></i>&nbsp;&nbsp;' + layerName + '<span id="info' + camelize(layerName) + '" title="more info" class="glyphspan glyphicon glyphicon-question-sign pull-right"></span>' + '<span id="opacity' + camelize(layerName) + '" class="glyphspan glyphicon glyphicon-adjust pull-right"></button></span></div>');
                 } else if ((layer.visible)) {
-                    var button = $('<div class="btn-group-vertical lyrTog" style="cursor: pointer;" data-toggle="buttons"> <button type="button" class="btn btn-default" aria-pressed="true" style="font-weight: bold;text-align: left"><i class="glyphspan fa fa-check-square-o"></i>&nbsp;&nbsp;' + layerName + '<span id="opacity' + camelize(layerName) + '" class="glyphspan glyphicon glyphicon-adjust pull-right"></button></span></div>');
+                    var button = $('<div class="btn-group-vertical lyrTog" style="cursor: pointer;" data-toggle="buttons"> <button type="button" class="btn btn-default" aria-pressed="true" style="font-weight: bold;text-align: left"><i class="glyphspan fa fa-check-square-o"></i>&nbsp;&nbsp;' + layerName + '<span id="info' + camelize(layerName) + '" title="more info" class="glyphspan glyphicon glyphicon-question-sign pull-right"></span>' + '<span id="opacity' + camelize(layerName) + '" class="glyphspan glyphicon glyphicon-adjust pull-right"></button></span></div>');
                 } else if ((!layer.visible)) {
                     var button = $('<div class="btn-group-vertical lyrTog" style="cursor: pointer;" data-toggle="buttons"> <button type="button" class="btn btn-default" aria-pressed="true" style="font-weight: bold;text-align: left"><i class="glyphspan fa fa-square-o"></i>&nbsp;&nbsp;' + layerName + '<span id="info' + camelize(layerName) + '" title="more info" class="glyphspan glyphicon glyphicon-question-sign pull-right"></button></span></div>');
                 } else if (layer.visible) {

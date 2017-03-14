@@ -35,7 +35,7 @@ require([
             'layers': {
                 'CBRS Units' : {
                     'url': 'https://fws.wim.usgs.gov/arcgis/rest/services/CBRAMapper/GeoCBRA/MapServer',
-                    'visibleLayers': [0,2,4,5],
+                    'visibleLayers': [2,4],
                     'options': {
                         'id': 'cbrs',
                         'opacity': 0.75,
@@ -47,9 +47,10 @@ require([
                         'includeInLayerList': true,
                         'zoomScale': 144448,
                         'hasOpacitySlider': true,
-                        'includeLegend' : true,
+                        'moreinfo': 'http://www.fws.gov/wetlands/Data/Wetlands-V2-Product-Summary.html',
+                        'includeLegend' : true
                     }
-/*                },
+                },
                 'CBRS Footprints' : {
                     'url': 'https://fws.wim.usgs.gov/arcgis/rest/services/CBRAMapper/GeoCBRA/MapServer',
                     'visibleLayers': [0],
@@ -61,29 +62,30 @@ require([
                     'wimOptions': {
                         'type': 'layer',
                         'layerType': 'agisDynamic',
-                        'includeInLayerList': true,
+                        'includeInLayerList': false,
                         'zoomScale': 144448,
                         'hasOpacitySlider': true,
                         'includeLegend' : true
-                    }*/
+                    }
                 },
-/*                    'CBRS Buffer Zone' : {
+                'Dissolve Units' : {
                     'url': 'https://fws.wim.usgs.gov/arcgis/rest/services/CBRAMapper/GeoCBRA/MapServer',
-                    'visibleLayers': [2],
+                    'visibleLayers': [5],
                     'options': {
-                        'id': 'riparian',
+                        'id': 'dissolve',
                         'opacity': 0.75,
-                        'visible': false
+                        'visible': true
                     },
                     'wimOptions': {
                         'type': 'layer',
                         'layerType': 'agisDynamic',
-                        'includeInLayerList': true,
+                        'includeInLayerList': false,
                         'zoomScale': 144448,
                         'hasOpacitySlider': true,
                         'includeLegend' : true
-                    },*/
-            }   
+                    }   
+                }
+            }
         }
     ];
  
