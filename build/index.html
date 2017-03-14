@@ -49,6 +49,15 @@
                     <span class="glyphicon glyphicon-search"></span>
                     <span id="geosearchButtonText"> Find Location</span>
                 </button>
+
+                <button id="geosearchNav" type="button" class="btn btn-primary navbar-btn pull-right">
+                    <span class="glyphicon glyphicon-search"></span>
+                    <span id="geosearchButtonText"> Find CBRS</span>
+                </button>
+
+                <button id="aboutNav" type="button" class="btn btn-primary navbar-btn pull-right">		
+                   <i class="fa fa-question-circle"></i><span class="hidden-xs">&nbsp;&nbsp;About</span>		
+                </button>
             </div>
         </div>
 
@@ -73,6 +82,35 @@
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
         </div>
+
+        <div id="aboutModal" class="modal fade"  tabindex="-1" role="dialog" >		
+             <div class="modal-dialog  modal-lg">		
+                 <div class="modal-content">		
+                     <div class="modal-header">		
+                         <button class="close" type="button" data-dismiss="modal" aria-hidden="true" style="color:gray;">&times;</button>		
+                         <h4 class="modal-title"><b>CBRS Units Information</b></h4>		
+                    </div>		
+                    <div id="aboutModalBody" class="modal-body">				
+                        <div class="tab-content">		
+                            <div role="tabpanel" class="tab-pane active" id="aboutTabPane">
+                                 <p>The Coastal Barrier Resources System (CBRS) contains two types of mapped units, System units and Otherwise Protected Areas (OPAs). OPAs are denoted with a "P" at the end of the unit designation (e.g., FL-64P, P10P).
+
+                                 <p>System Units are generally comprised of private lands that were relatively undeveloped at the time of their designation within the CBRS. The boundaries of these units are generally intended to follow geomorphic, development, or cultural features. Most new Federal expenditures and financial assistance, including Federal flood insurance, are prohibited within System units.</p>
+
+                                 <p>OPAs are generally comprised of lands held by a qualified organization primarily for wildlife refuge, sanctuary, recreational, or natural resource conservation purposes. The boundaries of these units are generally intended to coincide with the boundaries of conservation or recreation areas such as state parks and national wildlife refuges. The only Federal spending prohibition within OPAs is the prohibition on Federal flood insurance.</p>
+
+                                 <p>For more information visit the CBRS <a href="https://www.fws.gov/ecological-services/habitat-conservation/cbra/Act/index.html" target="_blank"> webpage</a> and the CBRS Unit <a href="https://www.fws.gov/ecological-services/habitat-conservation/cbra/Maps/Metadata.html" target="_blank"> metadata</a> ."dataLimitationsTabPane"</p>
+                             </div>		
+ 		
+                         </div>		
+                     </div>		
+ 		
+                     <div class="modal-footer">		
+                         <button class=" btn btn-default close" type="button" data-dismiss="modal" aria-hidden="true" style="color:gray;" class="btn btn-default">Close</button>		
+                     </div>		
+                 </div><!-- /.modal-content -->		
+             </div> <!-- /.modal-dialog -->		
+         </div><!-- /.modal -->
 
         <div class="modal fade overflow-y-hidden" id="printModal" style="display: none;" aria-hidden="true">
             <div class="modal-dialog">
