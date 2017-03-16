@@ -73,19 +73,28 @@
                     </a>
                 </div>
 
-                <button id="geosearchNav" type="button" class="btn btn-primary navbar-btn pull-right">
+               <button id="geosearchNav" type="button" class="btn btn-primary navbar-btn pull-right">
                     <span class="glyphicon glyphicon-search"></span>
                     <span id="geosearchButtonText"> Find Location</span>
                 </button>
 
-                <button id="geosearchNav" type="button" class="btn btn-primary navbar-btn pull-right">
+                <button id="unitsearchNav" type="button" class="btn btn-primary navbar-btn pull-right">
                     <span class="glyphicon glyphicon-search"></span>
                     <span id="geosearchButtonText"> Find CBRS</span>
                 </button>
 
-                <button id="aboutNav" type="button" class="btn btn-primary navbar-btn pull-right">		
-                   <i class="fa fa-question-circle"></i><span class="hidden-xs">&nbsp;&nbsp;About</span>		
+                <button id="aboutNav" class  ="btn btn-default navbar-btn pull-right">
+                    <i class="fa fa-question-circle"></i><span class="hidden-xs">&nbsp;&nbsp;About</span>
                 </button>
+
+                <!-- legend buttton for navbar. to be removed if we like the in-map legend toggle -->
+                <!--<button id="legendButtonNavBar" type="button" class="btn btn-primary navbar-btn pull-right" style="margin-right: 1em;"><span class="glyphicon glyphicon-list"></span> Legend</button>-->
+                <!-- toggle for a right sidebar (currently not in use) -->
+                <!--<button type="button" class="navbar-toggle toggle-right" data-toggle="sidebar" data-target=".sidebar-right">-->
+                <!--<span class="icon-bar"></span>-->
+                <!--<span class="icon-bar"></span>-->
+                <!--<span class="icon-bar"></span>-->
+                <!--</button>-->
             </div>
         </div>
 
@@ -111,34 +120,28 @@
             </div><!-- /.modal-dialog -->
         </div>
 
-        <div id="aboutModal" class="modal fade"  tabindex="-1" role="dialog" >		
-             <div class="modal-dialog  modal-lg">		
-                 <div class="modal-content">		
-                     <div class="modal-header">		
-                         <button class="close" type="button" data-dismiss="modal" aria-hidden="true" style="color:gray;">&times;</button>		
-                         <h4 class="modal-title"><b>CBRS Units Information</b></h4>		
-                    </div>		
-                    <div id="aboutModalBody" class="modal-body">				
-                        <div class="tab-content">		
-                            <div role="tabpanel" class="tab-pane active" id="aboutTabPane">
-                                 <p>The Coastal Barrier Resources System (CBRS) contains two types of mapped units, System units and Otherwise Protected Areas (OPAs). OPAs are denoted with a "P" at the end of the unit designation (e.g., FL-64P, P10P).
+        <!--CBRS Unit Search -->
 
-                                 <p>System Units are generally comprised of private lands that were relatively undeveloped at the time of their designation within the CBRS. The boundaries of these units are generally intended to follow geomorphic, development, or cultural features. Most new Federal expenditures and financial assistance, including Federal flood insurance, are prohibited within System units.</p>
-
-                                 <p>OPAs are generally comprised of lands held by a qualified organization primarily for wildlife refuge, sanctuary, recreational, or natural resource conservation purposes. The boundaries of these units are generally intended to coincide with the boundaries of conservation or recreation areas such as state parks and national wildlife refuges. The only Federal spending prohibition within OPAs is the prohibition on Federal flood insurance.</p>
-
-                                 <p>For more information visit the CBRS <a href="https://www.fws.gov/ecological-services/habitat-conservation/cbra/Act/index.html" target="_blank"> webpage</a> and the CBRS Unit <a href="https://www.fws.gov/ecological-services/habitat-conservation/cbra/Maps/Metadata.html" target="_blank"> metadata</a> ."dataLimitationsTabPane"</p>
-                             </div>		
- 		
-                         </div>		
-                     </div>		
- 		
-                     <div class="modal-footer">		
-                         <button class=" btn btn-default close" type="button" data-dismiss="modal" aria-hidden="true" style="color:gray;" class="btn btn-default">Close</button>		
-                     </div>		
-                 </div><!-- /.modal-content -->		
-             </div> <!-- /.modal-dialog -->		
-         </div><!-- /.modal -->
+        <!--<div class="modal fade overflow-y-hidden" id="geosearchModal" style="display: none;" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                        <h4 class="modal-title">Find CBRS</h4>
+                    </div>
+                    <div class="modal-body">
+                        <label style="font-weight: normal">Enter a CBRS Unit ID</label>
+                        <div class="form-group">
+                            <div id="unitsearch"><div id="sapi_searchTextBoxDiv"></div></div>
+                        </div>
+                        <form id="geosearch-form" class="form-inline">
+                            <button id="btnGeosearch" type="button" class="btn btn-success btn-fixed" data-dismiss="modal"> Go </button>
+                            <button id="btnDismiss" type="submit" class="btn btn-default btn-fixed" data-dismiss="modal">Dismiss</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>-->
 
         <div class="modal fade overflow-y-hidden" id="printModal" style="display: none;" aria-hidden="true">
             <div class="modal-dialog">
@@ -164,6 +167,79 @@
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
         </div>
+        <style>
+            .close-alert:hover{
+                cursor: pointer;
+            }
+        </style>
+
+        <div id="aboutModal" class="modal fade"  tabindex="-1" role="dialog" >
+            <div class="modal-dialog  modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button class="close" type="button" data-dismiss="modal" aria-hidden="true" style="color:gray;">&times;</button>
+                        <h4 class="modal-title">About CBRS Units</h4>
+                    </div>
+                    <div id="aboutModalBody" class="modal-body">
+                        <ul class="nav nav-tabs" id="aboutModalTabs">
+                            <li role="presentation" class="active"><a id="aboutTab" href="#aboutTabPane" data-toggle="tab"><i class="fa fa-question-circle"></i>&nbsp;CBRS Unit Information</a></li>
+                            <li role="presentation"><a id="contactTab" href="#contactTabPane" data-toggle="tab"><i class="fa fa-exclamation-circle"></i>&nbsp;Contact Us</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane active" id="aboutTabPane"></br>
+                                 <p>The Coastal Barrier Resources System (CBRS) contains two types of mapped units, System units and Otherwise Protected Areas (OPAs). OPAs are denoted with a "P" at the end of the unit designation (e.g., FL-64P, P10P).
+
+                                 <p>System Units are generally comprised of private lands that were relatively undeveloped at the time of their designation within the CBRS. The boundaries of these units are generally intended to follow geomorphic, development, or cultural features. Most new Federal expenditures and financial assistance, including Federal flood insurance, are prohibited within System units.</p>
+
+                                 <p>OPAs are generally comprised of lands held by a qualified organization primarily for wildlife refuge, sanctuary, recreational, or natural resource conservation purposes. The boundaries of these units are generally intended to coincide with the boundaries of conservation or recreation areas such as state parks and national wildlife refuges. The only Federal spending prohibition within OPAs is the prohibition on Federal flood insurance.</p>
+
+                                 <p>For more information visit the CBRS <a href="https://www.fws.gov/ecological-services/habitat-conservation/cbra/Act/index.html" target="_blank"> webpage</a> and the CBRS Unit <a href="https://www.fws.gov/ecological-services/habitat-conservation/cbra/Maps/Metadata.html" target="_blank"> metadata</a></p>
+                            </div>
+                            <div role="tabpanel" class="tab-pane" id="contactTabPane"></br>
+                                <h3>Contact Us</h3>
+                                    <p>Bacon ipsum dolor amet kielbasa cupim flank, shoulder corned beef salami beef ribs filet mignon jerky chicken pancetta capicola spare ribs boudin bresaola.</p>
+                                        
+                                    
+                                    <p>Frankfurter pancetta shankle hamburger. Tenderloin pork belly pork filet mignon corned beef. Turkey brisket frankfurter venison bacon ground round drumstick short ribs sausage. Shankle pancetta pastrami short ribs, meatball sirloin ribeye cow kevin tri-tip. Venison beef ribs turducken swine. Meatloaf jerky strip steak sirloin beef turkey fatback tri-tip frankfurter.</p>
+
+                            </div>
+                            <div role="tabpanel" class="tab-pane" id="dataLimitationsTabPane"></br>
+                                
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class=" btn btn-default close" type="button" data-dismiss="modal" aria-hidden="true" style="color:gray;" class="btn btn-default">Close</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div> <!-- /.modal-dialog -->
+        </div><!-- /.modal -->		
+ 		
+         <div class="wim-alert-fixed" id="huc-download-alert"		
+              style="position: fixed; top: 50px; right: 325px; color: #000; background-color: #f9f9f9; border-color: rgba(0,0,0.75);">		
+             <i class="ion-close-round close-alert" style="float: right;"></i> <!-- Close Button - MUST INCLUDE -->		
+             <div id="innerAlert">		
+                 <h4><b>Download Data</b></h4>		
+                 <p>Please review the Data Download (<a target="_blank" href="https://www.fws.gov/wetlands/Data/Data-Download.html">www.fws.gov/wetlands/Data/Data-Download.html</a>) page for information on how to download data, what is included in the download and data use limitations and disclaimer.</p>		
+                 <br/><p><b>Click the map to select a watershed from which to extract wetland data.</b></p>		
+             </div>		
+         </div>		
+         <script> <!-- To close alert -->		
+         $(".close-alert").click(function(){		
+             $(this).parent().slideUp(250);		
+             map.getLayer("huc8").setVisibility(false);		
+             map.graphics.clear();		
+         });		
+         </script>		
+         <style>		
+             .close-alert:hover{		
+                 cursor: pointer;		
+             }		
+         </style>				
+ 		
+                 </div><!-- /.modal-content -->		
+             </div> <!-- /.modal-dialog -->		
+         </div><!-- /.modal -->
 
         <!-- Begin page content -->
         <div class="container-fluid keepit100">
@@ -208,13 +284,14 @@
                     <div class="panel panel-default wim-sidebar-panel">
                         <div class="panel-heading" id="layersPanelHeader">
                             <h4 class="panel-title">
-                                <a class="collapsed" data-toggle="collapse" href="#layersPanel" aria-expanded="true" aria-controls="layersPanel">
+                                <a class="collapsed" data-toggle="src" href="#layersPanel" aria-expanded="true" aria-controls="layersPanel">
                                     Map Layers
                                 </a>
                             </h4>
                         </div>
                         <div id="layersPanel" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="layersPanelHeader">
                             <div id="toggle" style="padding: 2px 2px;"></div>
+                            <div class="layerHelp">Click <a class="showAboutModal" style="cursor:pointer;">here</a> to learn more about CBRS Units.</div>
                         </div>
                     </div>
                     <!-- # closing div tag for accordion style panels -->
@@ -239,21 +316,27 @@
                             </div>
                                 <div class="panel-group">
                                     <br>
-                                    <ul style="list-style-type: none;">
-                                        <li>Unit Id: <label id="unitId"></label></li>
-                                        <li>Unit Name: <label id="unitName"></label></li>
-                                        <li>Unit Type: <label id="unitType"></label></li>
-                                        <li>Data Accutracy Tier: <label id="dataTier"></label></li>
-                                        <li>Total Acreage: <label id="totalAcre"></label></li>
-                                    </ul>
+                                        <div>
+                                            <ul style="list-style-type: none;">
+                                                <li>Unit Id: <label id="unitId"></label></li>
+                                                <li>Unit Name: <label id="unitName"></label></li>
+                                                <li>Unit Type: <label id="unitType"></label></li>
+                                                <li>Data Accutracy Tier: <label id="dataTier"></label></li>
+                                                <li>Total Acreage: <label id="totalAcre"></label></li>
+                                            </ul>
+                                            <div class="squareFour"></div>
+                                        </div>
                                     <br>
-                                    <ul style="list-style-type: none;">
-                                        <li>Map Link: <label id="mapLink"></label></li>
-                                        <li>Map Date: <label id="mapDate"></label></li>
-                                        <li>Title: <label id="titleOne"></label></li>
-                                        <li>Title 2: <label id="titleTwo"></label></li>
-                                        <li>Title 3: <label id="titleThree"></label></li>
-                                    </ul>
+                                        <div>
+                                            <ul style="list-style-type: none;">
+                                                <li>Map Link: <label id="mapLink"></label></li>
+                                                <li>Map Date: <label id="mapDate"></label></li>
+                                                <li>Title: <label id="titleOne"></label></li>
+                                                <li>Title 2: <label id="titleTwo"></label></li>
+                                                <li>Title 3: <label id="titleThree"></label></li>
+                                            </ul>
+                                            <div class="squareZero"></div>
+                                        </div>
                                     <P class="panel-body">CBRS units extend seaward out to either the 20 or 30 foot bathymetric contour (depending on the location of the unit). <strong>The true seaward extent of the units is not shown in the CBRS mapper</strong>. For additional information, please contact <a href="mailto:cbra@fws.gov" target="_blank">CBRA@fws.gov</p>
                                     <br>
                                     <br>
@@ -263,7 +346,7 @@
                     <!-- End PopUp -->
 
                         <div id="legendElement" class="panel panel-default legendClass">
-                            <div id="legendHeading" class=" legendHeading" role="tab">
+                            <div class="legendHeading" role="tab">
                                 <h4 class="panel-title">
                                     <a data-toggle="collapse" style="text-decoration: none"  href="#legendCollapse" aria-expanded="true" aria-controls="collapseOne">
                                         <span class="glyphicon glyphicon-list"></span>

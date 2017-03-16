@@ -160,7 +160,7 @@ require([
             maxLegendHeight =  ($('#mapDiv').height()) * 0.90;
             $('#legendElement').css('height', maxLegendHeight);
             $('#legendElement').css('max-height', maxLegendHeight);
-            maxLegendDivHeight = ($('#legendElement').height()) - parseInt($('#legendHeading').css("height").replace('px',''));
+            maxLegendDivHeight = ($('#legendElement').height());
             $('#legendDiv').css('max-height', maxLegendDivHeight);
         }
         else {
@@ -385,7 +385,7 @@ require([
                             $("#titleThree").text(attr["Title_3"]);
                             symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
                                 new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
-                                    new dojo.Color([255,255,0]), 2), new dojo.Color([98,194,204,0])
+                                    new dojo.Color([255,0,225]), 2), new dojo.Color([98,194,204,0])
                             );
                         } if (response[i].layerId == 4) {
                             $("#unitId").text(attr["Unit"]);
@@ -404,7 +404,7 @@ require([
             
                             symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
                                 new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
-                                    new dojo.Color([255,0,255]), 2), new dojo.Color([98,194,204,0])
+                                    new dojo.Color([255,225,0]), 2), new dojo.Color([98,194,204,0])
                             );
                             
                             /*if (attr.Tier == 2){
@@ -483,6 +483,24 @@ require([
             setSearchExtent();
         }
     });
+
+    /*var geocoder = new Geocoder({
+        value: '',
+        maxLocations: 25,
+        autoComplete: true,
+        arcgisGeocoder: true,
+        autoNavigate: false,
+        map: map
+    }, 'geosearch');
+        geocoder.startup();
+        geocoder.on('select', geocodeSelect);
+        geocoder.on('findResults', geocodeResults);
+        geocoder.on('clear', clearFindGraphics);
+        on(geocoder.inputNode, 'keydown', function (e) {
+            if (e.keyCode == 13) {
+                setSearchExtent();
+            }
+        });*/
 
     // Symbols
     var sym = createPictureSymbol('../images/purple-pin.png', 0, 12, 13, 24);
@@ -669,9 +687,16 @@ require([
         $('#geosearchNav').click(function(){
             showModal();
         });
+        
+        $('.showAboutModal').click(function(){
+            $('#aboutModal').modal('show');
+            $('#contactTab').modal('hide');
+        });
+
 
         function showAboutModal () {
             $('#aboutModal').modal('show');
+            $('')
         }
         $('#aboutNav').click(function(){
             showAboutModal();
@@ -685,7 +710,6 @@ require([
 
         maxLegendHeight =  ($('#mapDiv').height()) * 0.90;
         $('#legendElement').css('max-height', maxLegendHeight);
-        maxLegendDivHeight = (maxLegendHeight) - parseInt($('#legendHeading').css("height").replace('px',''));
         $('#legendDiv').css('max-height', maxLegendDivHeight);
 
         $('#legendCollapse').on('shown.bs.collapse', function () {
@@ -949,7 +973,7 @@ require([
                 //create layer toggle
                 //var button = $('<div align="left" style="cursor: pointer;padding:5px;"><span class="glyphspan glyphicon glyphicon-check"></span>&nbsp;&nbsp;' + layerName + '</div>');
                 if ((layer.visible && wimOptions.hasOpacitySlider)) {
-                    var button = $('<div class="btn-group-vertical lyrTog" style="cursor: pointer;" data-toggle="buttons"> <button type="button" class="btn btn-default" aria-pressed="true" style="font-weight: bold;text-align: left"><i class="glyphspan fa fa-check-square-o"></i>&nbsp;&nbsp;' + layerName + '<span id="info' + camelize(layerName) + '" title="Click the About button in the top navigation bar for more information on CBRS Units" class="glyphspan glyphicon glyphicon-question-sign pull-right"></span>' + '<span id="opacity' + camelize(layerName) + '" style="padding-right: 5px" class="glyphspan glyphicon glyphicon-adjust pull-right"></span></button></div>');
+                    var button = $('<div class="btn-group-vertical lyrTog" style="cursor: pointer;" data-toggle="buttons"> <button type="button" class="btn btn-default" aria-pressed="true" style="font-weight: bold;text-align: left"><i class="glyphspan fa fa-check-square-o"></i>&nbsp;&nbsp;' + layerName + '<span id="opacity' + camelize(layerName) + '" style="padding-right: 5px" class="glyphspan glyphicon glyphicon-adjust pull-right"></span></button></div>');
                 } else if ((!layer.visible && wimOptions.hasOpacitySlider)) {
                     var button = $('<div class="btn-group-vertical lyrTog" style="cursor: pointer;" data-toggle="buttons"> <button type="button" class="btn btn-default" aria-pressed="true" style="font-weight: bold;text-align: left"><i class="glyphspan fa fa-square-o"></i>&nbsp;&nbsp;' + layerName + '<span id="info' + camelize(layerName) + '" title="more info" class="glyphspan glyphicon glyphicon-question-sign pull-right"></span><span id="opacity' + camelize(layerName) + '" style="padding-right: 5px" class="glyphspan glyphicon glyphicon-adjust pull-right"></span></button></div>');
                 } else if (layer.visible && wimOptions.hasOpacitySlider !== undefined && wimOptions.hasOpacitySlider == true) {

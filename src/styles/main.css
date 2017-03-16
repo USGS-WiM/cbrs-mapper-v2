@@ -122,9 +122,9 @@ body {
     background-color: rgba(255,255,255,0.8);
 }
 
-/*.esriLegendLayerLabel { 
-    visibility: hidden;
-}*/
+.esriLegendLayerLabel { 
+    font-weight: bold;
+}
 
 /*hidding layer name; still shows layer with zoom*/
 
@@ -192,7 +192,7 @@ body {
 }
 
 #legendCollapse {
-    /*max-height: inherit;*/
+    max-height: inherit;
 }
 
 /*#legendElement {*/
@@ -225,12 +225,16 @@ body {
 }
 
 .legendHeading {
-    color: black;
+    color: #6F758E;
+    text-decoration: none!important;
+    font-size: 10pt;
+    text-align: center;
+    text-transform: uppercase;
     background-color: rgb(255,255,255);
     background-color: rgba(255,255,255,0.8);
     text-decoration: none !important;
-    padding-top: 8px;
-    padding-bottom: 8px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     padding-right: 10px;
     padding-left: 10px;
 }
@@ -508,4 +512,42 @@ input[type="checkbox"], input[type="radio"] {
     padding-right: 6px;
     font-size: 14px;
     font-weight: bold;
+}
+
+.squareFour {
+  width: 18%;
+  float: right;
+  outline-style: solid;
+  outline-width: 4px;
+  outline-color:#FFFF00;
+  position: relative;
+  right: 25px;
+  bottom: 120px;
+}
+
+.squareFour:after {
+  content: "";
+  display: block;
+  padding-bottom: 100%;
+}
+
+.squareZero {
+  width: 18%;
+  outline-style: solid;
+  outline-width: 4px;
+  outline-color:#ff00e1;
+  float: right;
+  position: relative;
+  bottom: 120px;
+  right: 25px;
+}
+
+.squareZero:after {
+  content: "";
+  display: block;
+  padding-bottom: 100%;
+}
+
+.layerHelp {
+    font-size: 8.5pt;
 }

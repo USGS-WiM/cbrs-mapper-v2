@@ -35,7 +35,7 @@ require([
             'layers': {
                 'CBRS Units' : {
                     'url': 'https://fws.wim.usgs.gov/arcgis/rest/services/CBRAMapper/GeoCBRA/MapServer',
-                    'visibleLayers': [2,4],
+                    'visibleLayers': [2,4,5],
                     'options': {
                         'id': 'cbrs',
                         'opacity': 0.75,
@@ -65,10 +65,10 @@ require([
                         'includeInLayerList': false,
                         'zoomScale': 144448,
                         'hasOpacitySlider': true,
-                        'includeLegend' : true
+                        'includeLegend' : false
                     }
                 },
-                'Dissolve Units' : {
+                /*'Dissolve Units' : {
                     'url': 'https://fws.wim.usgs.gov/arcgis/rest/services/CBRAMapper/GeoCBRA/MapServer',
                     'visibleLayers': [5],
                     'options': {
@@ -84,7 +84,7 @@ require([
                         'hasOpacitySlider': true,
                         'includeLegend' : true
                     }   
-                }
+                }*/
             }
         }
     ];
