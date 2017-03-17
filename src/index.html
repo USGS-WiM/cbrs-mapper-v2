@@ -19,6 +19,8 @@
         <link rel="stylesheet" href="https://js.arcgis.com/3.14/dijit/themes/claro/claro.css">
         <link rel="stylesheet" href="https://js.arcgis.com/3.14/esri/css/esri.css">
 
+        <link rel="stylesheet" href="https://txpub.usgs.gov/DSS/search_api/2.0/api/search_api.css"/>
+
         <!-- build:css styles/main.css -->
         <link rel="stylesheet" href="styles/main.css">
         <!-- endbuild -->
@@ -41,7 +43,7 @@
         <!-- endbuild -->
 
         <script src="https://js.arcgis.com/3.14/"></script>
-
+        <script type="text/javascript" src="https://txpub.usgs.gov/DSS/search_api/2.0/api/search_api.min.js"></script>
 
         <!-- build:js scripts/combined.js -->
         <script src="scripts/utilities.js"></script>
@@ -107,9 +109,8 @@
                         <h4 class="modal-title">Find Location</h4>
                     </div>
                     <div class="modal-body">
-                        <label style="font-weight: normal">Enter a street address, city or place name<br/>For coordinates, enter decimal degrees in Longitude, Latitude format</label>
                         <div class="form-group">
-                            <div id="geosearch"><div id="sapi_searchTextBoxDiv"></div></div>
+                            <div id="geosearch"></div>
                         </div>
                         <form id="geosearch-form" class="form-inline">
                             <button id="btnGeosearch" type="button" class="btn btn-success btn-fixed" data-dismiss="modal"> Go </button>

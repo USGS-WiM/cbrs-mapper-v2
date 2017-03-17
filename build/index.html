@@ -10,6 +10,8 @@
         <link rel="stylesheet" href="https://js.arcgis.com/3.14/dijit/themes/claro/claro.css">
         <link rel="stylesheet" href="https://js.arcgis.com/3.14/esri/css/esri.css">
 
+        <link rel="stylesheet" href="https://txpub.usgs.gov/DSS/search_api/2.0/api/search_api.css"/>
+
         <link rel="stylesheet" href="styles/main.css">
         <link rel="stylesheet" href="styles/base.css">
         <link rel="shortcut icon" href="/favicon.ico">
@@ -17,7 +19,7 @@
         <script src="scripts/vendor.js"></script>
 
         <script src="https://js.arcgis.com/3.14/"></script>
-
+        <script type="text/javascript" src="https://txpub.usgs.gov/DSS/search_api/2.0/api/search_api.min.js"></script>
 
         <script src="scripts/combined.js"></script>
 
@@ -79,9 +81,8 @@
                         <h4 class="modal-title">Find Location</h4>
                     </div>
                     <div class="modal-body">
-                        <label style="font-weight: normal">Enter a street address, city or place name<br/>For coordinates, enter decimal degrees in Longitude, Latitude format</label>
                         <div class="form-group">
-                            <div id="geosearch"><div id="sapi_searchTextBoxDiv"></div></div>
+                            <div id="geosearch"></div>
                         </div>
                         <form id="geosearch-form" class="form-inline">
                             <button id="btnGeosearch" type="button" class="btn btn-success btn-fixed" data-dismiss="modal"> Go </button>
@@ -256,14 +257,14 @@
                     <div class="panel panel-default wim-sidebar-panel">
                         <div class="panel-heading" id="layersPanelHeader">
                             <h4 class="panel-title">
-                                <a class="collapsed" data-toggle="collapse" href="#layersPanel" aria-expanded="true" aria-controls="layersPanel">
+                                <a class="collapsed" data-toggle="src" href="#layersPanel" aria-expanded="true" aria-controls="layersPanel">
                                     Map Layers
                                 </a>
                             </h4>
                         </div>
                         <div id="layersPanel" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="layersPanelHeader">
                             <div id="toggle" style="padding: 2px 2px;"></div>
-                            <div class="layerHelp">Click <a href="">here</a> to learn more about CBRS Units.</div>
+                            <div class="layerHelp">Click <a class="showAboutModal" style="cursor:pointer;">here</a> to learn more about CBRS Units.</div>
                         </div>
                     </div>
                     <!-- # closing div tag for accordion style panels -->

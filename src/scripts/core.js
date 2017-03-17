@@ -466,63 +466,75 @@ require([
         } 
     });
 
-    var geocoder = new Geocoder({
-        value: '',
-        maxLocations: 25,
-        autoComplete: true,
-        arcgisGeocoder: true,
-        autoNavigate: false,
-        map: map
-    }, 'geosearch');
-    geocoder.startup();
-    geocoder.on('select', geocodeSelect);
-    geocoder.on('findResults', geocodeResults);
-    geocoder.on('clear', clearFindGraphics);
-    on(geocoder.inputNode, 'keydown', function (e) {
-        if (e.keyCode == 13) {
-            setSearchExtent();
-        }
-    });
-
-    /*var geocoder = new Geocoder({
-        value: '',
-        maxLocations: 25,
-        autoComplete: true,
-        arcgisGeocoder: true,
-        autoNavigate: false,
-        map: map
-    }, 'geosearch');
-        geocoder.startup();
-        geocoder.on('select', geocodeSelect);
-        geocoder.on('findResults', geocodeResults);
-        geocoder.on('clear', clearFindGraphics);
-        on(geocoder.inputNode, 'keydown', function (e) {
-            if (e.keyCode == 13) {
-                setSearchExtent();
-            }
-        });*/
-
     // Symbols
-    var sym = createPictureSymbol('../images/purple-pin.png', 0, 12, 13, 24);
+    /*var sym = createPictureSymbol('../images/purple-pin.png', 0, 12, 13, 24);*/
 
     map.on('load', function (){
         map.infoWindow.set('highlight', false);
         map.infoWindow.set('titleInBody', false);
     });
 
+    // create search_api widget in element "geosearch"
+    search_api.create( "geosearch", {
+        on_result: function(o) {
+            // what to do when a location is found
+            // o.result is geojson point feature of location with properties
+
+            // zoom to location
+            require(["esri/geometry/Extent"], function(Extent) {
+                var noExtents = ["GNIS_MAJOR", "GNIS_MINOR", "ZIPCODE", "AREACODE"];
+                var noExtentCheck = noExtents.indexOf(o.result.properties["Source"])
+                if (noExtentCheck == -1) {
+                    map.setExtent(
+                        new esri.geometry.Extent({
+                            xmin: o.result.properties.LonMin,
+                            ymin: o.result.properties.LatMin,
+                            xmax: o.result.properties.LonMax,
+                            ymax: o.result.properties.LatMax,
+                            spatialReference: {"wkid":4326}
+                        }),
+                        true
+                    );
+                } else {
+                    //map.setCenter();
+                    require( ["esri/geometry/Point"], function(Point) {
+                        map.centerAndZoom(
+                            new Point( o.result.properties.Lon, o.result.properties.Lat ),
+                            12
+                        );
+                    });
+                }
+
+            });
+
+        },
+        "include_usgs_sw": true,
+        "include_usgs_gw": true,
+        "include_usgs_sp": true,
+        "include_usgs_at": true,
+        "include_usgs_ot": true,
+        "include_huc2": true,
+        "include_huc4": true,
+        "include_huc6": true,
+        "include_huc8": true,
+        "include_huc10": true,
+        "include_huc12": true
+
+    });
+
     // Geosearch functions
-    on(dom.byId('btnGeosearch'),'click', geosearch);
+    /*on(dom.byId('btnGeosearch'),'click', geosearch);*/
 
     // Optionally confine search to map extent
-    function setSearchExtent (){
-        geocoder.activeGeocoder.searchExtent = null;
+    /*function setSearchExtent (){
+        geocoder.activeGeocoder.searchExtent = null;*/
         /*if (dom.byId('chkExtent').checked === 1) {
             geocoder.activeGeocoder.searchExtent = map.extent;
         } else {
             geocoder.activeGeocoder.searchExtent = null;
         }*/
-    }
-    function geosearch() {
+    /*}*/
+    /*function geosearch() {
         setSearchExtent();
         var def = geocoder.find();
         def.then(function (res){
@@ -530,16 +542,16 @@ require([
         });
         // Close modal
         $('#geosearchModal').modal('hide');
-    }
-    function geocodeSelect(item) {
+    }*/
+    /*function geocodeSelect(item) {
         clearFindGraphics();
         var g = (item.graphic ? item.graphic : item.result.feature);
         g.setSymbol(sym);
         //addPlaceGraphic(item.result,g.symbol);
         // Close modal
         //$('#geosearchModal').modal('hide');
-    }
-    function geocodeResults(places) {
+    }*/
+    /*function geocodeResults(places) {
         places = places.results;
         if (places.length > 0) {
             clearFindGraphics();
@@ -558,8 +570,8 @@ require([
         } else {
             //alert('Sorry, address or place not found.');  // TODO
         }
-    }
-    function stripTitle(title) {
+    }*/
+    /*function stripTitle(title) {
         var i = title.indexOf(',');
         if (i > 0) {
             title = title.substring(0,i);
@@ -578,22 +590,22 @@ require([
         graphic = new Graphic(pt,symbol,attributes,infoTemplate);
         // Add to map
         map.graphics.add(graphic);
-    }
+    }*/
 
-    function zoomToPlaces(places) {
+    /*function zoomToPlaces(places) {
         var multiPoint = new Multipoint(map.spatialReference);
         for (var i = 0; i < places.length; i++) {
             multiPoint.addPoint(places[i].feature.geometry);
         }
         map.setExtent(multiPoint.getExtent().expand(2.0));
-    }
+    }*/
 
-    function clearFindGraphics() {
+    /*function clearFindGraphics() {
         map.infoWindow.hide();
         map.graphics.clear();
-    }
+    }*/
 
-    function createPictureSymbol(url, xOffset, yOffset, xWidth, yHeight) {
+    /*function createPictureSymbol(url, xOffset, yOffset, xWidth, yHeight) {
         return new PictureMarkerSymbol(
             {
                 'angle': 0,
@@ -602,73 +614,7 @@ require([
                 'contentType': 'image/png',
                 'width':xWidth, 'height': yHeight
             });
-    }
-
-    function printMap() {
-
-        var printParams = new PrintParameters();
-        printParams.map = map;
-
-        var template = new PrintTemplate();
-        template.exportOptions = {
-            width: 500,
-            height: 400,
-            dpi: 300
-        };
-        template.format = "PDF";
-        template.layout = "Letter ANSI A Landscape test";
-        template.preserveScale = false;
-        var wetlandsLegendLayer = new LegendLayer();
-        wetlandsLegendLayer.layerId = "wetlands";
-        var wetlandsRasterLegendLayer = new LegendLayer();
-        wetlandsRasterLegendLayer.layerId = "wetlandsRaster"
-        //legendLayer.subLayerIds = [*];
-
-        var userTitle = $("#printTitle").val();
-        //if user does not provide title, use default. otherwise apply user title
-        if (userTitle == "") {
-            template.layoutOptions = {
-                "titleText": "Wetlands",
-                "authorText" : "National Wetlands Inventory (NWI)",
-                "copyrightText": "This page was produced by the NWI mapper",
-                "legendLayers": [wetlandsLegendLayer,wetlandsRasterLegendLayer]
-            };
-        } else {
-            template.layoutOptions = {
-                "titleText": userTitle,
-                "authorText" : "National Wetlands Inventory (NWI)",
-                "copyrightText": "This page was produced by the NWI mapper",
-                "legendLayers": [wetlandsLegendLayer,wetlandsRasterLegendLayer]
-            };
-        }
-
-        //"legendLayers": [legendLayer]
-        var docTitle = template.layoutOptions.titleText;
-        printParams.template = template;
-        var printMap = new PrintTask("https://fwsmapper.wim.usgs.gov/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task");
-        printMap.execute(printParams, printDone, printError);
-
-        $.get("https://fwsmapper.wim.usgs.gov/pdfLoggingService/pdfLog.asmx/Log?printInfo=" + map.getScale() + "," + map.extent.xmin + "," + map.extent.ymax + "," + map.extent.xmax + "," + map.extent.ymin + ",NWIV2", function(data) {
-           //console.log(data);
-        });
-
-        function printDone(event) {
-            //alert(event.url);
-            //window.open(event.url, "_blank");
-            printCount++;
-            //var printJob = $('<a href="'+ event.url +'" target="_blank">Printout ' + printCount + ' </a>');
-            var printJob = $('<p><label>' + printCount + ': </label>&nbsp;&nbsp;<a href="'+ event.url +'" target="_blank">' + docTitle +' </a></p>');
-            //$("#print-form").append(printJob);
-            $("#printJobsDiv").find("p.toRemove").remove();
-            $("#printModalBody").append(printJob);
-            $("#printTitle").val("");
-            $("#printExecuteButton").button('reset');
-        }
-
-        function printError(event) {
-            alert("Sorry, an unclear print error occurred. Please try refreshing the application to fix the problem");
-        }
-    }
+    }*/
 
     function setCursorByID(id,cursorStyle) {
         var elem;
@@ -689,8 +635,9 @@ require([
         });
         
         $('.showAboutModal').click(function(){
+            $('#contactTob').modal('hide');
             $('#aboutModal').modal('show');
-            $('#contactTab').modal('hide');
+            $('#aboutTab').trigger('click');
         });
 
 
