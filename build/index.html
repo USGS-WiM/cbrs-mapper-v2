@@ -52,7 +52,7 @@
                     <span id="geosearchButtonText"> Find Location</span>
                 </button>
 
-                <button id="unitsearchNav" type="button" class="btn btn-primary navbar-btn pull-right">
+                <button id="cbrsNav" type="button" class="btn btn-primary navbar-btn pull-right">
                     <span class="glyphicon glyphicon-search"></span>
                     <span id="geosearchButtonText"> Find CBRS</span>
                 </button>
@@ -82,12 +82,44 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <div id="geosearch"></div>
+                            <div id="geosearch" align="center"></div>
+                            <br>
+                            <div align="center">
+                                <p>Search provided by <a href="https://txpub.usgs.gov/dss/search_api/2.0/" target="_blank">USGS Search Javascript API</a></p>
+                            </div>
                         </div>
                         <form id="geosearch-form" class="form-inline">
                             <button id="btnGeosearch" type="button" class="btn btn-success btn-fixed" data-dismiss="modal"> Go </button>
                             <button id="btnDismiss" type="submit" class="btn btn-default btn-fixed" data-dismiss="modal">Dismiss</button>
                         </form>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div>
+
+<!--CBRS Unit Search -->
+        <div class="modal fade overflow-y-hidden" id="cbrsModal" style="display: none;" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                        <h4 class="modal-title">Find CBRS Unit</h4>
+                    </div>
+                    <div class="modal-body">
+                            <div class="form-group" style="outline:none;">
+                                <div align="center">
+                                    <div class="cbrsSearch" id="cbrsContainer">
+                                        <span class="searchBtn">
+                                        <span><i class="fa fa-search fa-lg"></i></span>
+                                        </span>
+                                        <input type="text" id="searchText" placeholder="Enter CBRS unit number (e.g Q01P)" style="border:0px solid;padding-top:8px;">
+                                    </div>
+                                </div>
+                            </div>
+                                <form id="cbrs-form" class="form-inline">
+                                    <button id="btnUnitSearch" type="button" class="btn btn-success btn-fixed" data-dismiss="modal" on> Go </button>
+                                    <button id="btnunitDismiss" type="submit" class="btn btn-default btn-fixed" data-dismiss="modal">Dismiss</button>
+                                </form>
                     </div>
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
@@ -151,7 +183,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button class="close" type="button" data-dismiss="modal" aria-hidden="true" style="color:gray;">&times;</button>
-                        <h4 class="modal-title">About CBRS Units</h4>
+                        <h3 class="modal-title"><img src="images/fwsLogo.png"/>&nbsp;&nbsp;About CBRS Units</h3>
                     </div>
                     <div id="aboutModalBody" class="modal-body">
                         <ul class="nav nav-tabs" id="aboutModalTabs">
@@ -323,7 +355,7 @@
                                 <h4 class="panel-title">
                                     <a data-toggle="collapse" style="text-decoration: none"  href="#legendCollapse" aria-expanded="true" aria-controls="collapseOne">
                                         <span class="glyphicon glyphicon-list"></span>
-                                        Legend
+                                        Explanation
                                     </a>
                                 </h4>
                             </div>

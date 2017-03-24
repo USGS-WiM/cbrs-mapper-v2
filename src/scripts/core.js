@@ -29,6 +29,7 @@ require([
     'esri/dijit/Measurement',
     'esri/dijit/PopupTemplate',
     'esri/graphic',
+    'esri/graphicsUtils',
     'esri/geometry/Extent',
     'esri/geometry/Multipoint',
     'esri/geometry/Point',
@@ -37,6 +38,9 @@ require([
     'esri/SpatialReference',
     'esri/symbols/PictureMarkerSymbol',
     'esri/tasks/GeometryService',
+    'esri/tasks/FindTask',
+    'esri/tasks/FindParameters',
+    'esri/tasks/FindResult',
     'esri/tasks/IdentifyParameters',
     'esri/tasks/IdentifyTask',
     'esri/tasks/LegendLayer',
@@ -62,6 +66,7 @@ require([
     Measurement,
     PopupTemplate,
     Graphic,
+    graphicsUtils,
     Extent,
     Multipoint,
     Point,
@@ -70,6 +75,9 @@ require([
     SpatialReference,
     PictureMarkerSymbol,
     GeometryService,
+    FindTask,
+    FindParameters,
+    FindResult,
     IdentifyParameters,
     IdentifyTask,
     LegendLayer,
@@ -474,6 +482,36 @@ require([
         map.infoWindow.set('titleInBody', false);
     });
 
+    //create CBRS Unit Search
+    var findCBRS = new FindTask('https://fwspublic.wim.usgs.gov/arcgis/rest/services/CBRAMapper/GeoCBRA/MapServer');
+    var params = new FindParameters();
+    params.layerIds = [4];
+    params.searchFields = ["Unit"];
+    params.outSpatialReference = map.spatialReference;
+    params.returnGeometry = true;
+    console.log("find unit:", params.outSpatialReference);
+
+    function doFind() {
+        params.searchText = dom.byId("searchText").value;
+        findCBRS.execute(params, showResults);
+    }
+
+    function showResults(results){
+        if (results.length > 0){
+            var graphics = [];
+            var graphic = results[0].feature;
+            graphics.push(graphic);
+            var graphicsExtent = graphicsUtils.graphicsExtent(graphics);            
+            map.setExtent(graphicsExtent);
+        }
+        else {
+                alert("No Results. Please Try again");
+        }
+    }
+
+
+    $("#btnUnitSearch").click(doFind);
+
     // create search_api widget in element "geosearch"
     search_api.create( "geosearch", {
         on_result: function(o) {
@@ -693,6 +731,16 @@ require([
             }
         });
 
+    });
+
+    $(document).ready(function(){
+        function showModal() {
+        $('#cbrsModal').modal('show');
+        }
+
+        $('#cbrsNav').click(function(){
+            showModal();
+        });
     });
 
     require([
