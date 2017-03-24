@@ -593,3 +593,11 @@ input[type="checkbox"], input[type="radio"] {
     background-color: #eee;
     text-align: center;
 }
+
+.inputCbrs{
+    border: 1px solid;
+    padding-top: 8px;
+    border-radius: 4px;
+    width: 200px;
+    height: 20px;
+}
