@@ -367,8 +367,7 @@ require([
             identifyTask = new IdentifyTask(allLayers[0].layers["CBRS Units"].url);
             var deferredResult = identifyTask.execute(identifyParams);
 
-            setCursorByID("mainDiv", "wait");
-            map.setCursor("wait");
+            setCursorByID("mainDiv");
 
             deferredResult.addCallback(function(response) {
 
@@ -414,6 +413,8 @@ require([
                                 new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
                                     new dojo.Color([255,225,0]), 2), new dojo.Color([98,194,204,0])
                             );
+
+                            
                             
                             /*if (attr.Tier == 2){
                                 attr.totalAcreage = "Approximately" + (Number(attr.Fast_Acres + attr.Wet_Acres)) + "acres.";
@@ -505,7 +506,7 @@ require([
             map.setExtent(graphicsExtent);
         }
         else {
-                alert("No Results. Please Try again");
+                $("#invalidSearchModal").modal('show');
         }
     }
 
@@ -678,7 +679,6 @@ require([
             $('#aboutTab').trigger('click');
         });
 
-
         function showAboutModal () {
             $('#aboutModal').modal('show');
             $('')
@@ -742,7 +742,15 @@ require([
             showModal();
         });
     });
+    
+     // invalid CBRS search modal
+    $(document).ready(function(){
+        function showModal() {
+            $('#invalidSearchModal').modal('show');
+        }
+    });
 
+        
     require([
         'esri/InfoTemplate',
         'esri/tasks/locator',

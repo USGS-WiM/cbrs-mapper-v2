@@ -107,13 +107,12 @@
                     </div>
                     <div class="modal-body">
                             <div class="form-group" style="outline:none;">
-                                <div align="center">
-                                    <div>
-                                        <span>
-                                        <span><i class="fa fa-search fa-lg"></i></span>
-                                        </span>
-                                        <input type="text" id="inputCBRS" placeholder="Enter CBRS unit number (e.g Q01P)">
-                                    </div>
+                                <div class="search-api-container search-api-md">
+                                    <span class="search-api-button"><svg focusable="false" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg></span>
+                                    <span>
+                                        <input type="text" id="searchText" placeholder="Enter CBRS unit number (e.g Q01P)">
+                                    </span>
+                                    <span class="search-api-spinner search-api-spinner-hidden"></span>
                                 </div>
                             </div>
                                 <form id="cbrs-form" class="form-inline">
@@ -125,6 +124,20 @@
             </div><!-- /.modal-dialog -->
         </div>
 
+        <!-- Notifying User of Invalid Search -->
+        <div id="invalidSearchModal" aria-hidden="true" class="modal fade overflow-y-hidden">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header"><h4>Sorry, no results. Please try again.</h4>
+                    </div>
+                    <div class="modal-body"><p>The CBRS contains two types of units, System units and Otherwise Protected Areas (OPAs).  OPAs are denoted with a “P” at the end of the unit number (e.g., FL-64P, P10P). For more information <a href="https://www.fws.gov/ecological-services/habitat-conservation/cbra/Act/index.html" target="_blank">visit our site</a>.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Dismiss</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!--CBRS Unit Search -->
 
         <!--<div class="modal fade overflow-y-hidden" id="geosearchModal" style="display: none;" aria-hidden="true">
@@ -214,28 +227,11 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button class=" btn btn-default close" type="button" data-dismiss="modal" aria-hidden="true" style="color:gray;" class="btn btn-default">Close</button>
+                        <button class=" btn btn-default close" type="button" data-dismiss="modal" aria-hidden="true" style="color:gray;" class="btn btn-default">Dismiss</button>
                     </div>
                 </div><!-- /.modal-content -->
             </div> <!-- /.modal-dialog -->
-        </div><!-- /.modal -->		
- 		
-         <div class="wim-alert-fixed" id="huc-download-alert"		
-              style="position: fixed; top: 50px; right: 325px; color: #000; background-color: #f9f9f9; border-color: rgba(0,0,0.75);">		
-             <i class="ion-close-round close-alert" style="float: right;"></i> <!-- Close Button - MUST INCLUDE -->		
-             <div id="innerAlert">		
-                 <h4><b>Download Data</b></h4>		
-                 <p>Please review the Data Download (<a target="_blank" href="https://www.fws.gov/wetlands/Data/Data-Download.html">www.fws.gov/wetlands/Data/Data-Download.html</a>) page for information on how to download data, what is included in the download and data use limitations and disclaimer.</p>		
-                 <br/><p><b>Click the map to select a watershed from which to extract wetland data.</b></p>		
-             </div>		
-         </div>		
-         <script> <!-- To close alert -->		
-         $(".close-alert").click(function(){		
-             $(this).parent().slideUp(250);		
-             map.getLayer("huc8").setVisibility(false);		
-             map.graphics.clear();		
-         });		
-         </script>		
+        </div><!-- /.modal -->			
          <style>		
              .close-alert:hover{		
                  cursor: pointer;		
