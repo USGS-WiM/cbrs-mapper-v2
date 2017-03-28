@@ -48,7 +48,7 @@ require([
                         'zoomScale': 144448,
                         'hasOpacitySlider': true,
                         'moreinfo': 'http://www.fws.gov/wetlands/Data/Wetlands-V2-Product-Summary.html',
-                        'includeLegend' : true
+                        'includeLegend' : false
                     }
                 },
                 'CBRS Footprints' : {
@@ -65,14 +65,14 @@ require([
                         'includeInLayerList': false,
                         'zoomScale': 144448,
                         'hasOpacitySlider': true,
-                        'includeLegend' : false
+                        'includeLegend' : true
                     }
                 },
-                /*'Dissolve Units' : {
+                'two' : {
                     'url': 'https://fws.wim.usgs.gov/arcgis/rest/services/CBRAMapper/GeoCBRA/MapServer',
-                    'visibleLayers': [5],
+                    'visibleLayers': [2],
                     'options': {
-                        'id': 'dissolve',
+                        'id': 'footprints',
                         'opacity': 0.75,
                         'visible': true
                     },
@@ -83,8 +83,42 @@ require([
                         'zoomScale': 144448,
                         'hasOpacitySlider': true,
                         'includeLegend' : true
-                    }   
-                }*/
+                    }
+                },
+                'four' : {
+                    'url': 'https://fws.wim.usgs.gov/arcgis/rest/services/CBRAMapper/GeoCBRA/MapServer',
+                    'visibleLayers': [4],
+                    'options': {
+                        'id': 'footprints',
+                        'opacity': 0.75,
+                        'visible': true
+                    },
+                    'wimOptions': {
+                        'type': 'layer',
+                        'layerType': 'agisDynamic',
+                        'includeInLayerList': false,
+                        'zoomScale': 144448,
+                        'hasOpacitySlider': true,
+                        'includeLegend' : true
+                    }
+                },
+                'five' : {
+                    'url': 'https://fws.wim.usgs.gov/arcgis/rest/services/CBRAMapper/GeoCBRA/MapServer',
+                    'visibleLayers': [5],
+                    'options': {
+                        'id': 'footprints',
+                        'opacity': 0.75,
+                        'visible': true
+                    },
+                    'wimOptions': {
+                        'type': 'layer',
+                        'layerType': 'agisDynamic',
+                        'includeInLayerList': false,
+                        'zoomScale': 144448,
+                        'hasOpacitySlider': true,
+                        'includeLegend' : true
+                    }
+                }
             }
         }
     ];
