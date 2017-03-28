@@ -291,7 +291,18 @@ require([
         map.removeLayer(nationalMapBasemap);
     })
 
-        //start LobiPanel
+    identifyParams = new IdentifyParameters();
+    identifyParams.tolerance = 0;
+    identifyParams.returnGeometry = true;
+    identifyParams.layerOption = IdentifyParameters.LAYER_OPTION_ALL;
+    identifyParams.layerIds = [0,2,4];
+    identifyParams.spatialReference = map.spatialReference;
+    identifyParams.width  = map.width;
+    identifyParams.height = map.height;
+    //identifyTask = new esri.tasks.IdentifyTask("http://50.17.205.92/arcgis/rest/services/NAWQA/DecadalMap/MapServer");
+    identifyTask = new IdentifyTask(allLayers[0].layers["CBRS Units"].url);
+
+    //start LobiPanel
     $("#selectionDiv").lobiPanel({
         unpin: false,
         reload: false,
@@ -302,12 +313,6 @@ require([
         maxWidth: 800,
         maxHeight: 500,
     });
-
-    /*$('#selectionDiv').lobiPanel({
-        reload: false,
-        close: false,
-        editTitle: false
-    });*/
 
     $("#selectionDiv .dropdown").prepend("<div id='selectionClose' tite='close'><b>X</b></div>");
     //$("#selectionDiv .dropdown").prepend("<div id='selectionMin' title='collapse'><b>_</b></div>");
@@ -320,26 +325,7 @@ require([
     $("#selectionClose").click(function(){
         $("#selectionDiv").css("visibility", "hidden");
     });
-
-/*    $("#selectionToolsOpen").click(function(){
-        $("#selectionDiv").css("visibility", "visible");
-    });*/
-
-    
     //End LobiPanel
-
-
-    identifyParams = new IdentifyParameters();
-    identifyParams.tolerance = 0;
-    identifyParams.returnGeometry = true;
-    identifyParams.layerOption = IdentifyParameters.LAYER_OPTION_ALL;
-    identifyParams.layerIds = [0,2,4];
-    identifyParams.spatialReference = map.spatialReference;
-    identifyParams.width  = map.width;
-    identifyParams.height = map.height;
-    //identifyTask = new esri.tasks.IdentifyTask("http://50.17.205.92/arcgis/rest/services/NAWQA/DecadalMap/MapServer");
-    identifyTask = new IdentifyTask(allLayers[0].layers["CBRS Units"].url);
-
     
 
     //map click handler
