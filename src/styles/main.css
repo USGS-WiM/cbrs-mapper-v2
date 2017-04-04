@@ -126,7 +126,7 @@ body {
     font-weight: bold;
 }
 
-/*hidding layer name; still shows layer with zoom*/
+/*hiding layer name; still shows layer with zoom*/
 
 .esriLegendServiceLabel {
     visibility: hidden;
@@ -600,4 +600,23 @@ input[type="checkbox"], input[type="radio"] {
     border-radius: 4px;
     width: 200px;
     height: 20px;
+}
+
+.esriLegendLayerLabel{
+    display: none;
+}
+
+.esriLegendServiceLabel{
+    display: none;
+}
+
+.cbrsLegendTitle {
+    position: inherit;
+    padding-top: 10px;
+    padding-left: 10px;
+    font-weight: bold;
+}
+
+#legendElement #legendDiv {
+  background-color: transparent;
 }
