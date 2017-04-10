@@ -68,9 +68,9 @@ require([
                         'includeLegend' : false
                     }
                 },
-                'four' : {
+                'two' : {
                     'url': 'https://fws.wim.usgs.gov/arcgis/rest/services/CBRAMapper/GeoCBRA/MapServer',
-                    'visibleLayers': [4],
+                    'visibleLayers': [2],
                     'options': {
                         'id': 'footprints',
                         'opacity': 0.75,
@@ -85,9 +85,9 @@ require([
                         'includeLegend' : true
                     }
                 },
-                'two' : {
+                'four' : {
                     'url': 'https://fws.wim.usgs.gov/arcgis/rest/services/CBRAMapper/GeoCBRA/MapServer',
-                    'visibleLayers': [2],
+                    'visibleLayers': [4],
                     'options': {
                         'id': 'footprints',
                         'opacity': 0.75,

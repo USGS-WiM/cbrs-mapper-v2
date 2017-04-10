@@ -497,6 +497,25 @@ input[type="checkbox"], input[type="radio"] {
     visibility: hidden;
 }
 
+.bufferInfoClass {
+    position:absolute;
+    width:500px;
+    height:400px;
+    z-index:2;
+    color: black;
+    background-color: rgb(255,255,255);
+    background-color: rgba(255,255,255,0.8);
+    box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+    /*min-width: 150px;*/
+    border-radius: 4px;
+    visibility: hidden;
+}
+
+.fwslogo {
+    float: left;
+    margin-right: 10px;
+}
+
 #selectionMin {
     cursor: pointer;
     display: inline;
@@ -506,6 +525,15 @@ input[type="checkbox"], input[type="radio"] {
 }
 
 #selectionClose {
+    cursor: pointer;
+    display: inline;
+    padding-top: 3px;
+    padding-right: 6px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#bufferClose {
     cursor: pointer;
     display: inline;
     padding-top: 3px;

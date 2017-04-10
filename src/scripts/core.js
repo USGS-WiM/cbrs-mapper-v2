@@ -17,6 +17,7 @@ var measurement;
 var identifyTask, identifyParams;
 
 var cbrsClicked = false;
+var bufferClicked = false;
 
 require([
     'esri/map',
@@ -326,6 +327,31 @@ require([
         $("#selectionDiv").css("visibility", "hidden");
     });
     //End LobiPanel
+
+    //start LobiPanel for Buffer
+    $("#bufferDiv").lobiPanel({
+        unpin: false,
+        reload: false,
+        minimize: false,
+        close: false,
+        expand: false,
+        editTitle: false,
+        maxWidth: 800,
+        maxHeight: 500,
+    });
+
+    $("#bufferDiv .dropdown").prepend("<div id='bufferClose' tite='close'><b>X</b></div>");
+    //$("#selectionDiv .dropdown").prepend("<div id='selectionMin' title='collapse'><b>_</b></div>");
+
+    /*$("#selectionMin").click(function(){
+        $("#bufferDiv").css("visibility", "hidden");
+        $("#selection-tools-alert").slideDown(250);
+    });*/
+
+    $("#bufferClose").click(function(){
+        $("#bufferDiv").css("visibility", "hidden");
+    });
+    //End LobiPanel
     
 
     //map click handler
@@ -333,6 +359,11 @@ require([
 
         if (cbrsClicked == true) {
             cbrsClicked = false;
+            return;
+        }
+
+        if (bufferClicked == true) {
+            bufferClicked = false;
             return;
         }
 
@@ -399,34 +430,40 @@ require([
                                 new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
                                     new dojo.Color([255,225,0]), 2), new dojo.Color([98,194,204,0])
                             );
+                                $("#selectionDiv").css("visibility", "visible");
+                                    var instance = $('#selectionDiv').data('lobiPanel');
+                                    var docHeight = $(document).height();
+                                    var docWidth = $(document).width();
+                                    var percentageOfScreen = 0.9;
 
-                            
-                            
-                            /*if (attr.Tier == 2){
-                                attr.totalAcreage = "Approximately" + (Number(attr.Fast_Acres + attr.Wet_Acres)) + "acres.";
-                            }*/
-                           
-                        }
+                                    var instanceX = docWidth*0.5-$("#selectionDiv").width()*0.5;
+                                    var instanceY = docHeight*0.8-$("#selectionDiv").height()*1.0;
 
-                        /* function calculate(){
-                            var totalAcre = document.getElementById('total');
-                            var wet = document.getElementById('wetAcre');
-                            var fast = document.getElementById('fastAcre');
 
-                            totalAcre.value = parseFloat("0" + wet.value) + parseFloat("0" + fast.value);
-                            console.log(totalAcre);
-                        }*/
+                                    instance.setPosition(instanceX, instanceY);
+                                    if (instance.isPinned() == true) {
+                                        instance.unpin();
+                                    }
+                        } if (response[i].layerId == 2) {
+                                symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
+                                new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
+                                    new dojo.Color([0,0,0]), 2), new dojo.Color([0,0,0,0])
+                            );
+                                $("#bufferDiv").css("visibility", "visible");
+                                    var instance = $('#bufferDiv').data('lobiPanel');
+                                    var docHeight = $(document).height();
+                                    var docWidth = $(document).width();
+                                    var percentageOfScreen = 0.9;
 
-                        /*function addValues(){
-                            $("input[id='Fast_Acres']")
-                            console.log(totalAcre);
-                            if ('dataTier' == '2'){
+                                    var instanceX = docWidth*0.5-$("#bufferDiv").width()*0.5;
+                                    var instanceY = docHeight*0.8-$("#bufferDiv").height()*1.0;
 
-                            }
-                        }
-                        
-                        var totalAcre = ($('#fastAcre').val);    
-                        */
+
+                                    instance.setPosition(instanceX, instanceY);
+                                    if (instance.isPinned() == true) {
+                                        instance.unpin();
+                         }
+                       }
 
                         feature.geometry.spatialReference = map.spatialReference;
                         var graphic = feature;
@@ -438,23 +475,6 @@ require([
 
                     setCursorByID("mainDiv", "default");
                     map.setCursor("default");
-
-                    $("#selectionDiv").css("visibility", "visible");
-                        var instance = $('#selectionDiv').data('lobiPanel');
-                        /*instance.setSize(500,500);
-                        instance.setPosition(400, 360);*/
-                        var docHeight = $(document).height();
-                        var docWidth = $(document).width();
-                        var percentageOfScreen = 0.9;
-
-                        var instanceX = docWidth*0.5-$("#selectionDiv").width()*0.5;
-                        var instanceY = docHeight*0.8-$("#selectionDiv").height()*1.0;
-
-
-                        instance.setPosition(instanceX, instanceY);
-                        if (instance.isPinned() == true) {
-                            instance.unpin();
-                        }
 
                     }
             });
@@ -840,7 +860,7 @@ require([
             //layer.addTo(map);
             map.addLayer(layer);
 
-            if (layer.ids == 'cbrs') {
+            /*if (layer.ids == 'cbrs') {
                 on(layer, 'load', function(evt) {
                     on(layer, 'click', function (evt) {
                         cbrsClicked = true;
@@ -865,7 +885,7 @@ require([
                         }
                     });
                 });
-            }
+            }*/
 
             //add layer to layer list
             mapLayers.push([exclusiveGroupName,camelize(layerName),layer]);
