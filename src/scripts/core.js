@@ -371,7 +371,7 @@ require([
                         
                         var symbol;
                         if (response[i].layerId == 0) {
-                            $("#mapLink").html('<a href="' + attr["Map_Link"] + '" target="_blank">Click Here</a>');
+                            $("#mapLink").html('<a href="' + attr["Map_Link"] + '" target="_blank">Click here for official CBRS map</a>');
                             $("#mapDate").text(attr["Map_Date"]);
                             $("#titleOne").text(attr["Title"]);
                             $("#titleTwo").text(attr["Title_2"]);
