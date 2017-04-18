@@ -415,7 +415,6 @@ require([
                             $("#unitId").text(attr["Unit"]);
                             $("#unitName").text(attr["Name"]);
                             $("#unitType").text(attr["Unit_Type"]);
-                            $("#dataTier").text(attr["Tier"]);
 
                             if (attr["Fast_Acres"] || attr["Wet_Acres"] !== ""){
                                 var totalAcre;
