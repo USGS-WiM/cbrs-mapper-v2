@@ -1335,3 +1335,13 @@ $(document).ready(function () {
     //});
 
 });
+
+
+// tool tip for Unit Type on Popup
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip({
+      'selector': '',
+      'placement': 'top',
+      'container': 'body'
+  });
+});

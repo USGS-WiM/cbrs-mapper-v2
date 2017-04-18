@@ -648,3 +648,16 @@ input[type="checkbox"], input[type="radio"] {
 #legendElement #legendDiv {
   background-color: transparent;
 }
+
+div.tooltip-inner {
+    max-width: 350px;
+    max-height: 350px;
+}
+
+.tooltip > .tooltip-inner {
+    background-color: #ffffff;
+    color: #000;
+}
+.tooltip > .tooltip-arrow { 
+    border-bottom-color:#ffffff;
+}
