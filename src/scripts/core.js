@@ -240,56 +240,74 @@ require([
     });
     var usgsTopo = new ArcGISTiledMapServiceLayer('https://server.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps/MapServer');
     var nationalMapBasemap = new ArcGISTiledMapServiceLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer');
+    var usgsImageryTopo = new ArcGISTiledMapServiceLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer');
     //on clicks to swap basemap. map.removeLayer is required for nat'l map b/c it is not technically a basemap, but a tiled layer.
     on(dom.byId('btnStreets'), 'click', function () {
         map.setBasemap('streets');
         map.removeLayer(nationalMapBasemap);
         map.removeLayer(usgsTopo);
+        map.removeLayer(usgsImageryTopo);
     });
     on(dom.byId('btnSatellite'), 'click', function () {
         map.setBasemap('satellite');
         map.removeLayer(nationalMapBasemap);
         map.removeLayer(usgsTopo);
+        map.removeLayer(usgsImageryTopo);
     });
     on(dom.byId('btnHybrid'), 'click', function () {
         map.setBasemap('hybrid');
         map.removeLayer(nationalMapBasemap);
         map.removeLayer(usgsTopo);
+        map.removeLayer(usgsImageryTopo);
     });
     on(dom.byId('btnTerrain'), 'click', function () {
         map.setBasemap('terrain');
         map.removeLayer(nationalMapBasemap);
         map.removeLayer(usgsTopo);
+        map.removeLayer(usgsImageryTopo);
     });
     on(dom.byId('btnGray'), 'click', function () {
         map.setBasemap('gray');
         map.removeLayer(nationalMapBasemap);
         map.removeLayer(usgsTopo);
+        map.removeLayer(usgsImageryTopo);
     });
     on(dom.byId('btnNatGeo'), 'click', function () {
         map.setBasemap('national-geographic');
         map.removeLayer(nationalMapBasemap);
         map.removeLayer(usgsTopo);
+        map.removeLayer(usgsImageryTopo);
     });
     on(dom.byId('btnOSM'), 'click', function () {
         map.setBasemap('osm');
         map.removeLayer(nationalMapBasemap);
         map.removeLayer(usgsTopo);
+        map.removeLayer(usgsImageryTopo);
     });
     on(dom.byId('btnTopo'), 'click', function () {
         map.setBasemap('topo');
         map.removeLayer(nationalMapBasemap);
         map.removeLayer(usgsTopo);
+        map.removeLayer(usgsImageryTopo);
     });
 
     on(dom.byId('btnNatlMap'), 'click', function () {
         map.addLayer(nationalMapBasemap, 1);
+        map.removeLayer(usgsTopo);
+        map.removeLayer(usgsImageryTopo);
+        map.removeLayer(usgsImageryTopo);
+    });
+
+    on(dom.byId('btnUsgsImgTopo'), 'click', function () {
+        map.addLayer(usgsImageryTopo, 1);
+        map.removeLayer(nationalMapBasemap);
         map.removeLayer(usgsTopo);
     });
 
     on(dom.byId('btnUsgsTopo'), 'click', function () {
         map.addLayer(usgsTopo, 1);
         map.removeLayer(nationalMapBasemap);
+        map.removeLayer(usgsImageryTopo);
     })
 
     identifyParams = new IdentifyParameters();
