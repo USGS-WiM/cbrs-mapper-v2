@@ -417,13 +417,11 @@ require([
                             $("#unitType").text(attr["Unit_Type"]);
                             $("#dataTier").text(attr["Tier"]);
 
-                           if (attr["Tier"] == '2') {
+                            if (attr["Fast_Acres"] || attr["Wet_Acres"] !== ""){
                                 var totalAcre;
-                                totalAcre = Number(attr["Fast_Acres"]) + Number(attr["Wet_Acres"]);
-                            } else {
-                                totalAcre = "Data not available at this time";
+                                totalAcre = Number(attr["Fast_Acres"]) + Number(attr["Wet_Acres"]) || "Data not available at this time";
                             };
-                            
+
                             $('#totalAcre').text(totalAcre);
             
                             symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
