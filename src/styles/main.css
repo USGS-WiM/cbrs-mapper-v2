@@ -132,6 +132,10 @@ body {
     visibility: hidden;
 }
 
+.esriLegendLayer{
+    margin-bottom: 20px;
+}
+
 #homeButton {
     position: absolute;
     top: 75px;

@@ -97,6 +97,7 @@ require([
     //bring this line back after experiment////////////////////////////
     //allLayers = mapLayers;
 
+
     esriConfig.defaults.io.corsEnabledServers.push("fwsmapper.wim.usgs.gov");
     esri.config.defaults.io.proxyUrl = "https://fwsmapper.wim.usgs.gov/serviceProxy/proxy.ashx";
 
@@ -141,7 +142,7 @@ require([
         basemap: 'hybrid',
         extent: new Extent(-14638882.654811008, 2641706.3772205533, -6821514.898031538, 6403631.161302788, new SpatialReference({ wkid:3857 })),
     });
-
+    
     var home = new HomeButton({
         map: map,
         extent: new Extent(-14638882.654811008, 2641706.3772205533, -6821514.898031538, 6403631.161302788, new SpatialReference({ wkid:3857 }))
@@ -206,15 +207,7 @@ require([
     });*/
 
     //displays map scale on map load
-    on(map, "load", function() {
-        var scale =  map.getScale().toFixed(0);
-        $('#scale')[0].innerHTML = addCommas(scale);
-        var initMapCenter = webMercatorUtils.webMercatorToGeographic(map.extent.getCenter());
-        $('#latitude').html(initMapCenter.y.toFixed(3));
-        $('#longitude').html(initMapCenter.x.toFixed(3));
-        //map.setBasemap("topo");
-        //map.setBasemap("hybrid");
-    });
+    
     //displays map scale on scale change (i.e. zoom level)
     on(map, "zoom-end", function () {
         var scale =  map.getScale().toFixed(0);

@@ -48,7 +48,7 @@ require([
                         'zoomScale': 144448,
                         'hasOpacitySlider': true,
                         'moreinfo': 'http://www.fws.gov/wetlands/Data/Wetlands-V2-Product-Summary.html',
-                        'includeLegend' : false
+                        'includeLegend' : true
                     }
                 },
                 'CBRS Footprints' : {
@@ -82,7 +82,7 @@ require([
                         'includeInLayerList': false,
                         'zoomScale': 144448,
                         'hasOpacitySlider': true,
-                        'includeLegend' : true
+                        'includeLegend' : false
                     }
                 },
                 'four' : {
@@ -99,7 +99,7 @@ require([
                         'includeInLayerList': false,
                         'zoomScale': 144448,
                         'hasOpacitySlider': true,
-                        'includeLegend' : true
+                        'includeLegend' : false
                     }
                 },
                 'five' : {
@@ -116,7 +116,7 @@ require([
                         'includeInLayerList': false,
                         'zoomScale': 144448,
                         'hasOpacitySlider': true,
-                        'includeLegend' : true
+                        'includeLegend' : false
                     }
                 }
             }
