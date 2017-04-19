@@ -535,15 +535,18 @@ require([
     $("#btnUnitSearch").click(doFind);
 
     // create search_api widget in element "geosearch"
+
+    
+
     search_api.create( "geosearch", {
         on_result: function(o) {
             // what to do when a location is found
             // o.result is geojson point feature of location with properties
-
             // zoom to location
             require(["esri/geometry/Extent"], function(Extent) {
                 var noExtents = ["GNIS_MAJOR", "GNIS_MINOR", "ZIPCODE", "AREACODE"];
                 var noExtentCheck = noExtents.indexOf(o.result.properties["Source"])
+                $("#geosearchModal").modal('hide');
                 if (noExtentCheck == -1) {
                     map.setExtent(
                         new esri.geometry.Extent({
@@ -564,9 +567,8 @@ require([
                         );
                     });
                 }
-
             });
-
+             
         },
         "include_usgs_sw": true,
         "include_usgs_gw": true,
@@ -578,9 +580,14 @@ require([
         "include_huc6": true,
         "include_huc8": true,
         "include_huc10": true,
-        "include_huc12": true
-
+        "include_huc12": true,
+        
+        on_failure: function(o){
+        $("#test").html("Sorry, a location could not be found in search for '"+o.val()+"'");
+           $("#invalidSearchLocationModal").modal('show');
+        }
     });
+
 
     // Geosearch functions
     /*on(dom.byId('btnGeosearch'),'click', geosearch);*/
@@ -768,6 +775,12 @@ require([
     $(document).ready(function(){
         function showModal() {
             $('#invalidSearchModal').modal('show');
+        }
+    });
+
+    $(document).ready(function(){
+        function showModal() {
+            $('#invalidSearchLocationModal').modal('show');
         }
     });
 
