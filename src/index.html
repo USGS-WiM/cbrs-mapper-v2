@@ -438,16 +438,16 @@
                         </div>
 
                         <div id="measurementElement" class="panel panel-default measurementClass">
-                            <div id="measurementHeading" class="measurementHeading" role="tab">
+                            <div  id="measurementHeading" class="measurementHeading" role="tab"  data-toggle="collapse"   href="#measurementCollapse" aria-expanded="true" aria-controls="collapseOne">
                                 <h4 class="panel-title">
-                                    <a data-toggle="collapse" style="text-decoration: none"  href="#measurementCollapse" aria-expanded="true" aria-controls="collapseOne">
+                                    <a style="text-decoration: none">
                                         <i class="fa fa-ellipsis-h"></i>
                                         <span id="measureLabel">Measure</span>
                                     </a>
                                 </h4>
                             </div>
-                            <div id="measurementCollapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
-                                <div id="measurementDiv" class="panel-body"></div>
+                            <div  onclick="message()" id="measurementCollapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                                <div id="measurementDiv" class="panel-body"></div><p id="helpfulHint"></p>
                                 <!--<span id="snappingLabel" style="font-size:smaller;padding:5px 5px;">Press <b>CTRL</b> to enable snapping.</span>-->
                             </div>
                         </div>

@@ -457,6 +457,11 @@ require([
                                 new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
                                     new dojo.Color([0,0,0]), 2), new dojo.Color([0,0,0,0])
                             );
+
+                                    /*$('#contactTob').modal('hide');
+                                    $('#aboutModal').modal('show');
+                                    $('#aboutTab').trigger('click');*/
+
                                 $("#bufferDiv").css("visibility", "visible");
                                     var instance = $('#bufferDiv').data('lobiPanel');
                                     var docHeight = $(document).height();
@@ -472,6 +477,7 @@ require([
                                         instance.unpin();
                          }
                        }
+
 
                         feature.geometry.spatialReference = map.spatialReference;
                         var graphic = feature;
@@ -1369,3 +1375,8 @@ $(function () {
       'container': 'body'
   });
 });
+
+// adding helpful message to Measure button
+function message() {
+    document.getElementById("helpfulHint").innerHTML = "<hr>Click the tool again to deselect it and return to normal map controls";
+}
