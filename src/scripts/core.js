@@ -480,7 +480,6 @@ require([
                                 new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
                                     new dojo.Color([0,0,0]), 2), new dojo.Color([0,0,0,0])
                             );
-
                                     /*$('#contactTob').modal('hide');
                                     $('#aboutModal').modal('show');
                                     $('#aboutTab').trigger('click');*/
@@ -498,8 +497,11 @@ require([
                                     instance.setPosition(instanceX, instanceY);
                                     if (instance.isPinned() == true) {
                                         instance.unpin();
+                         } if ($("#bufferDiv").css("visibility", "visible")) {
+                                ($("#selectionDiv").modal(hide));
                          }
                        }
+
 
 
                         feature.geometry.spatialReference = map.spatialReference;
