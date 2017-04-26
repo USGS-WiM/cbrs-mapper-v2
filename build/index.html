@@ -357,8 +357,8 @@
                                                 <li>Map Link: <label id="mapLink"></label></li>
                                                 <li>Map Date: <label id="mapDate"></label></li>
                                                 <li>Title: <label id="titleOne"></label></li>
-                                                <li>Title 2: <label id="titleTwo"></label></li>
-                                                <li>Title 3: <label id="titleThree"></label></li>
+                                                <li class="hideNullTwo">Title 2: <label id="titleTwo"></label></li>
+                                                <li class="hideNullThree">Title 3: <label id="titleThree"></label></li>
                                             </ul>
                                             <div class="squareZero"></div>
                                         </div>
@@ -394,15 +394,15 @@
                     <!-- End PopUp -->
 
                         <div id="legendElement" class="panel panel-default legendClass">
-                            <div class="legendHeading">
+                            <div class="legendHeading" role="tab">
                                 <h4 class="panel-title">
-                                    <a style="text-decoration: none" aria-expanded="true">
+                                    <a data-toggle="collapse" style="text-decoration: none"  href="#legendCollapse" aria-expanded="true" aria-controls="collapseOne">
                                         <span class="glyphicon glyphicon-list"></span>
                                         Legend
                                     </a>
                                 </h4>
                             </div>
-                            <div id="legendCollapse" role="tabpanel" aria-labelledby="headingOne">
+                            <div id="legendCollapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
                                 <h4 class="cbrsLegendTitle"> CBRS Units</h4>
                                 <div id="legendDiv" style="background-color:transparent;" class="panel-body"></div>
                             </div>

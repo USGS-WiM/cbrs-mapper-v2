@@ -139,7 +139,7 @@ require([
                         });*/
 // unablet to add infoWindow: popup
     map = new Map('mapDiv', {
-        basemap: 'hybrid',
+        basemap: 'gray',
         extent: new Extent(-14638882.654811008, 2641706.3772205533, -6821514.898031538, 6403631.161302788, new SpatialReference({ wkid:3857 })),
     });
     
@@ -416,8 +416,31 @@ require([
                             $("#mapLink").html('<a href="' + attr["Map_Link"] + '" target="_blank">Click here for official CBRS map</a>');
                             $("#mapDate").text(attr["Map_Date"]);
                             $("#titleOne").text(attr["Title"]);
-                            $("#titleTwo").text(attr["Title_2"]);
+                            $("#titleTwo").html(attr["Title_2"])
+                                if (attr["Title_2"] == "Null") {
+                                    $("#titleTwo").hide(attr["Title_2"]);
+                                    $(".hideNullTwo").hide();
+                                } else  {
+                                    $("#titleTwo").show(attr["Title_2"]);
+                                    $(".hideNullTwo").show();
+                                }                   
                             $("#titleThree").text(attr["Title_3"]);
+                                if (attr["Title_3"] == "Null") {
+                                    $("#titleThree").hide(attr["Title_3"]);
+                                    $(".hideNullThree").hide();
+                                } else  {
+                                    $("#titleThree").show(attr["Title_3"]);
+                                    $(".hideNullThree").show();
+                                }
+                            /*$("#titleFour").text(attr["Title_4"]);
+                                if (attr["Title_4"] == "Null") {
+                                    $("#titleFour").hide(attr["Title_4"]);
+                                    $(".hideNullFour").hide();
+                                } else  {
+                                    $("#titleThree").show(attr["Title_3"]);
+                                    $(".hideNullFour").show();
+                                }*/
+
                             symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
                                 new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
                                     new dojo.Color([255,0,225]), 2), new dojo.Color([98,194,204,0])
@@ -501,6 +524,7 @@ require([
     map.on('load', function (){
         map.infoWindow.set('highlight', false);
         map.infoWindow.set('titleInBody', false);
+        /*map.addLayer(usgsImageryTopo, 1);*/ //TURN THIS BACK ON!
     });
 
     //create CBRS Unit Search
