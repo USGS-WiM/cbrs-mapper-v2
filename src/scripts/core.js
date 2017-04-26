@@ -139,7 +139,7 @@ require([
                         });*/
 // unablet to add infoWindow: popup
     map = new Map('mapDiv', {
-        basemap: 'gray',
+        basemap: 'satellite',
         extent: new Extent(-14638882.654811008, 2641706.3772205533, -6821514.898031538, 6403631.161302788, new SpatialReference({ wkid:3857 })),
     });
     
@@ -234,6 +234,7 @@ require([
     var usgsTopo = new ArcGISTiledMapServiceLayer('https://server.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps/MapServer');
     var nationalMapBasemap = new ArcGISTiledMapServiceLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer');
     var usgsImageryTopo = new ArcGISTiledMapServiceLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer');
+    
     //on clicks to swap basemap. map.removeLayer is required for nat'l map b/c it is not technically a basemap, but a tiled layer.
     on(dom.byId('btnStreets'), 'click', function () {
         map.setBasemap('streets');
@@ -292,6 +293,7 @@ require([
     });
 
     on(dom.byId('btnUsgsImgTopo'), 'click', function () {
+        map.setBasemap('satellite');
         map.addLayer(usgsImageryTopo, 1);
         map.removeLayer(nationalMapBasemap);
         map.removeLayer(usgsTopo);
@@ -526,7 +528,7 @@ require([
     map.on('load', function (){
         map.infoWindow.set('highlight', false);
         map.infoWindow.set('titleInBody', false);
-        /*map.addLayer(usgsImageryTopo, 1);*/ //TURN THIS BACK ON!
+        map.addLayer(usgsImageryTopo, 1); //Makes the Naip (USGSImageryTopo) the basemap
     });
 
     //create CBRS Unit Search
@@ -750,28 +752,9 @@ require([
         $('#legendElement').css('max-height', maxLegendHeight);
         $('#legendDiv').css('max-height', maxLegendDivHeight);
 
-        $('#legendCollapse').on('shown.bs.collapse', function () {
-            if (legendDiv.innerHTML.length == 0 ) {
-                var legend = new Legend({
-                    map: map,
-                    layerInfos: legendLayers
-                }, "legendDiv");
-                legend.startup();
-
-                $("#legendDiv").niceScroll();
-
-                /*legend.addCallback(function(response) { 
-                    maxLegendHeight =  ($('#mapDiv').height()) * 0.90;
-                    $('#legendElement').css('max-height', maxLegendHeight);
-                    maxLegendDivHeight = ($('#legendElement').height()) - parseInt($('#legendHeading').css("height").replace('px',''));
-                    $('#legendDiv').css('max-height', maxLegendDivHeight);
-                });*/
-            }
-        });
-
-        $('#legendCollapse').on('hide.bs.collapse', function () {
+        /*$('#legendCollapse').on('hide.bs.collapse', function () {
             $('#legendElement').css('height', 'initial');
-        });
+        });*/
 
         $('#measurementCollapse').on('shown.bs.collapse', function () {
             //show label when the collapse panel is expanded(for mobile, where label is hidden while collapsed)
@@ -942,6 +925,25 @@ require([
 
             //add layer to layer list
             mapLayers.push([exclusiveGroupName,camelize(layerName),layer]);
+
+            $(function () {
+            if (legendDiv.innerHTML.length == 0 ) {
+                var legend = new Legend({
+                    map: map,
+                    layerInfos: legendLayers
+                }, "legendDiv");
+                legend.startup();
+
+                $("#legendDiv").niceScroll();
+
+                /*legend.addCallback(function(response) { 
+                    maxLegendHeight =  ($('#mapDiv').height()) * 0.90;
+                    $('#legendElement').css('max-height', maxLegendHeight);
+                    maxLegendDivHeight = ($('#legendElement').height()) - parseInt($('#legendHeading').css("height").replace('px',''));
+                    $('#legendDiv').css('max-height', maxLegendDivHeight);
+                });*/
+            }
+        });
 
             //check if its an exclusiveGroup item
             if (exclusiveGroupName) {
