@@ -489,8 +489,8 @@ input[type="checkbox"], input[type="radio"] {
 
 .siteInfoClass {
     position:absolute;
-    width:550px;
-    height:550px;
+    width:570px;
+    height:420px;
     z-index:2;
     color: black;
     background-color: rgb(255,255,255);
@@ -552,9 +552,9 @@ input[type="checkbox"], input[type="radio"] {
   outline-style: solid;
   outline-width: 4px;
   outline-color:#FFFF00;
-  position: relative;
-  right: 25px;
-  bottom: 120px;
+  position: inherit;
+  margin-right: 20px;
+  margin-left: 5px;
 }
 
 .squareFour:after {
@@ -569,10 +569,12 @@ input[type="checkbox"], input[type="radio"] {
   outline-width: 4px;
   outline-color:#ff00e1;
   float: right;
-  position: relative;
-  bottom: 120px;
-  right: 25px;
-  margin-top: 10px;
+  position: inherit;
+  margin-right: 20px;
+  margin-top: 40px;
+  margin-left: 5px;
+  margin-bottom: 5px;
+  clear: right;
 }
 
 .squareZero:after {

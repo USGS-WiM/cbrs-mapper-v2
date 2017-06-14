@@ -392,7 +392,7 @@ require([
         identifyParams.geometry = evt.mapPoint;
         identifyParams.mapExtent = map.extent;
 
-        if (map.getLevel() >= 8) {
+        if (map.getLevel()) {
             //the deferred variable is set to the parameters defined above and will be used later to build the contents of the infoWindow.
             identifyTask = new IdentifyTask(allLayers[0].layers["CBRS Units"].url);
             var deferredResult = identifyTask.execute(identifyParams);
@@ -529,10 +529,11 @@ require([
         map.infoWindow.set('highlight', false);
         map.infoWindow.set('titleInBody', false);
         map.addLayer(usgsImageryTopo, 1); //Makes the Naip (USGSImageryTopo) the basemap
+        $('#disclaimerModal').modal('show');
     });
 
     //create CBRS Unit Search
-    var findCBRS = new FindTask('https://fwspublic.wim.usgs.gov/arcgis/rest/services/CBRAMapper/GeoCBRA/MapServer');
+    var findCBRS = new FindTask('https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/GeoCBRA/MapServer');
     var params = new FindParameters();
     params.layerIds = [4];
     params.searchFields = ["Unit"];
@@ -553,9 +554,9 @@ require([
             var graphicsExtent = graphicsUtils.graphicsExtent(graphics);            
             map.setExtent(graphicsExtent);
         }
-        else {
+        /*else {
                 $("#invalidSearchModal").modal('show');
-        }
+        }*/
     }
 
 
@@ -609,10 +610,10 @@ require([
         "include_huc10": true,
         "include_huc12": true,
         
-        on_failure: function(o){
+        /*on_failure: function(o){
         $("#test").html("Sorry, a location could not be found in search for '"+o.val()+"'");
            $("#invalidSearchLocationModal").modal('show');
-        }
+        }*/
     });
 
 
@@ -742,6 +743,10 @@ require([
             showAboutModal();
         });
 
+        function showDisclaimerModal() {
+            $('#disclaimerModal').modal('show');
+        }
+
         $("#html").niceScroll();
         $("#sidebar").niceScroll();
         $("#sidebar").scroll(function () {
@@ -780,7 +785,7 @@ require([
     });
     
      // invalid CBRS search modal
-    $(document).ready(function(){
+    /*$(document).ready(function(){
         function showModal() {
             $('#invalidSearchModal').modal('show');
         }
@@ -790,7 +795,7 @@ require([
         function showModal() {
             $('#invalidSearchLocationModal').modal('show');
         }
-    });
+    });*/
 
         
     require([
