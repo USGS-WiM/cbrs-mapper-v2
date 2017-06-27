@@ -554,9 +554,9 @@ require([
             var graphicsExtent = graphicsUtils.graphicsExtent(graphics);            
             map.setExtent(graphicsExtent);
         }
-        /*else {
+        else {
                 $("#invalidSearchModal").modal('show');
-        }*/
+        }
     }
 
 
@@ -785,7 +785,7 @@ require([
     });
     
      // invalid CBRS search modal
-    /*$(document).ready(function(){
+    $(document).ready(function(){
         function showModal() {
             $('#invalidSearchModal').modal('show');
         }
@@ -795,7 +795,7 @@ require([
         function showModal() {
             $('#invalidSearchLocationModal').modal('show');
         }
-    });*/
+    });
 
         
     require([
