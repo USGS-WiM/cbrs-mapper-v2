@@ -1,6 +1,6 @@
 # cbrs-mapper-v2 
 
-##Developer Instructions
+## Developer Instructions
 
 run `npm install` AND `bower install` to get dependencies after first cloning
 
@@ -10,7 +10,7 @@ run `npm install` AND `bower install` to get dependencies after first cloning
 
 **NOTE**: You **MUST** run the `gulp build` before committing and pushing to repo
 
-####Semver versioning/release tags
+#### Semver versioning/release tags
 
 Advance the version when adding features, fixing bugs or making minor enhancement. Follow semver principles. To add tag in git,  type `git tag v{major}.{minor}.{patch}`. Example: `git tag v2.0.5`
 
