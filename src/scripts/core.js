@@ -347,6 +347,7 @@ require([
 
     $("#selectionClose").click(function(){
         $("#selectionDiv").css("visibility", "hidden");
+        map.graphics.clear();
     });
     //End LobiPanel
 
@@ -508,9 +509,11 @@ require([
                                     instance.setPosition(instanceX, instanceY);
                                     if (instance.isPinned() == true) {
                                         instance.unpin();
-                         } if ($("#bufferDiv").css("visibility", "visible")) {
-                                ($("#selectionDiv").modal(hide));
-                         }
+                                    } 
+                                    
+                                    if ($("#bufferDiv").css("visibility", "visible")) {
+                                        ($("#selectionDiv").modal(hide));
+                                    }
                        }
 
 
