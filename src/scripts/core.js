@@ -457,6 +457,7 @@ require([
                                 new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
                                     new dojo.Color([255,0,225]), 2), new dojo.Color([98,194,204,0])
                             );
+                            
                         } if (response[i].layerId == 4) {
                             $("#unitId").text(attr["Unit"]);
                             $("#unitName").text(attr["Name"]);
