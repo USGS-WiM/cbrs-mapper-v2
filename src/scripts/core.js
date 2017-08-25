@@ -411,11 +411,22 @@ require([
 
             deferredResult.addCallback(function(response) {
 
-                if (response.length > 1) {
+                if (response.length !== 0) {
 
                     var feature;
                     var attr;
                     var attrStatus;
+                    var unit;
+                    var aGraphic;
+                    var bGraphic;
+
+                    for (i=0;i<response.length;i++) {
+						
+						if (response[i].layerName == "CBRS Units") {
+							containsUnit = true;
+							unit = response[i].feature.attributes.Unit;
+						}
+					}
 
                     for (var i = 0; i < response.length; i++) {
                         feature = response[i].feature;
@@ -424,41 +435,7 @@ require([
                         attr = feature.attributes;
                         
                         var symbol;
-                        if (response[i].layerId == 0) {
-                            $("#mapLink").html('<a href="' + attr["Map_Link"] + '" target="_blank">Click here for official CBRS map</a>');
-                            $("#mapDate").text(attr["Map_Date"]);
-                            $("#titleOne").text(attr["Title"]);
-                            $("#titleTwo").html(attr["Title_2"])
-                                if (attr["Title_2"] == "Null") {
-                                    $("#titleTwo").hide(attr["Title_2"]);
-                                    $(".hideNullTwo").hide();
-                                } else  {
-                                    $("#titleTwo").show(attr["Title_2"]);
-                                    $(".hideNullTwo").show();
-                                }                   
-                            $("#titleThree").text(attr["Title_3"]);
-                                if (attr["Title_3"] == "Null") {
-                                    $("#titleThree").hide(attr["Title_3"]);
-                                    $(".hideNullThree").hide();
-                                } else  {
-                                    $("#titleThree").show(attr["Title_3"]);
-                                    $(".hideNullThree").show();
-                                }
-                            /*$("#titleFour").text(attr["Title_4"]);
-                                if (attr["Title_4"] == "Null") {
-                                    $("#titleFour").hide(attr["Title_4"]);
-                                    $(".hideNullFour").hide();
-                                } else  {
-                                    $("#titleThree").show(attr["Title_3"]);
-                                    $(".hideNullFour").show();
-                                }*/
-
-                            symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
-                                new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
-                                    new dojo.Color([255,0,225]), 2), new dojo.Color([98,194,204,0])
-                            );
-                            
-                        } if (response[i].layerId == 4) {
+                        if (response[i].layerName == "CBRS Units") {
                             $("#unitId").text(attr["Unit"]);
                             $("#unitName").text(attr["Name"]);
                             $("#unitType").text(attr["Unit_Type"]);
@@ -474,20 +451,113 @@ require([
                                 new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
                                     new dojo.Color([255,225,0]), 2), new dojo.Color([98,194,204,0])
                             );
-                                $("#selectionDiv").css("visibility", "visible");
-                                    var instance = $('#selectionDiv').data('lobiPanel');
-                                    var docHeight = $(document).height();
-                                    var docWidth = $(document).width();
-                                    var percentageOfScreen = 0.9;
 
-                                    var instanceX = docWidth*0.5-$("#selectionDiv").width()*0.5;
-                                    var instanceY = docHeight*0.8-$("#selectionDiv").height()*1.0;
+                            feature.geometry.spatialReference = map.spatialReference;
+                            var graphic = feature;
+                            graphic.setSymbol(symbol);
+    
+                            map.graphics.add(graphic);
 
 
-                                    instance.setPosition(instanceX, instanceY);
-                                    if (instance.isPinned() == true) {
-                                        instance.unpin();
-                                    }
+                            $("#selectionDiv").css("visibility", "visible");
+                            var instance = $('#selectionDiv').data('lobiPanel');
+                            var docHeight = $(document).height();
+                            var docWidth = $(document).width();
+                            var percentageOfScreen = 0.9;
+
+                            var instanceX = docWidth*0.5-$("#selectionDiv").width()*0.5;
+                            var instanceY = docHeight*0.8-$("#selectionDiv").height()*1.0;
+
+
+                            instance.setPosition(instanceX, instanceY);
+                            if (instance.isPinned() == true) {
+                                instance.unpin();
+                            }
+
+                                
+                        } else if (response[i].layerName == "CBRS Map Footprints" && response[i].feature.attributes.Title.search(unit) != -1) {
+                            $("#mapLink").html('<a href="' + attr["Map_Link"] + '" target="_blank">Click here for official CBRS map</a>');
+                            $("#mapDate").text(attr["Map_Date"]);
+                            $("#titleOne").text(attr["Title"]);
+                            $("#titleTwo").html(attr["Title_2"])
+                            $("#titleThree").text(attr["Title_3"]);
+
+                            symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
+                                new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
+                                    new dojo.Color([255,0,225]), 2), new dojo.Color([98,194,204,0])
+                            );
+
+                            if (attr["Title_2"] == "Null") {
+                                $("#titleTwo").hide(attr["Title_2"]);
+                                $(".hideNullTwo").hide();
+                            } else  {
+                                $("#titleTwo").show(attr["Title_2"]);
+                                $(".hideNullTwo").show();
+                            } if (attr["Title_3"] == "Null") {
+                                $("#titleThree").hide(attr["Title_3"]);
+                                $(".hideNullThree").hide();
+                            } else  {
+                                $("#titleThree").show(attr["Title_3"]);
+                                $(".hideNullThree").show();
+                            }
+
+                            feature.geometry.spatialReference = map.spatialReference;
+                            var graphic = feature;
+                            graphic.setSymbol(symbol);
+    
+                            map.graphics.add(graphic);
+                            
+                        } else if (response[i].layerName == "CBRS Map Footprints" && response[i].feature.attributes.Title_2.search(unit) != -1) {
+                            $("#mapLink").html('<a href="' + attr["Map_Link"] + '" target="_blank">Click here for official CBRS map</a>');
+                            $("#mapDate").text(attr["Map_Date"]);
+                            $("#titleOne").text(attr["Title"]);
+                            $("#titleTwo").html(attr["Title_2"])
+                            $("#titleThree").text(attr["Title_3"]);
+
+                            symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
+                                new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
+                                    new dojo.Color([255,0,225]), 2), new dojo.Color([98,194,204,0])
+                            );
+
+                            if (attr["Title_2"] == "Null") {
+                                $("#titleTwo").hide(attr["Title_2"]);
+                                $(".hideNullTwo").hide();
+                            } else  {
+                                $("#titleTwo").show(attr["Title_2"]);
+                                $(".hideNullTwo").show();
+                            } 
+
+                            feature.geometry.spatialReference = map.spatialReference;
+                            var graphic = feature;
+                            graphic.setSymbol(symbol);
+    
+                            map.graphics.add(graphic);
+
+                        } else if (response[i].layerName == "CBRS Map Footprints" && response[i].feature.attributes.Title_3.search(unit) != -1) {
+                            $("#mapLink").html('<a href="' + attr["Map_Link"] + '" target="_blank">Click here for official CBRS map</a>');
+                            $("#mapDate").text(attr["Map_Date"]);
+                            $("#titleOne").text(attr["Title"]);
+                            $("#titleTwo").html(attr["Title_2"])
+                            $("#titleThree").text(attr["Title_3"]);
+
+                            symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
+                                new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
+                                    new dojo.Color([255,0,225]), 2), new dojo.Color([98,194,204,0])
+                            );
+                            if (attr["Title_3"] == "Null") {
+                                $("#titleThree").hide(attr["Title_3"]);
+                                $(".hideNullThree").hide();
+                            } else  {
+                                $("#titleThree").show(attr["Title_3"]);
+                                $(".hideNullThree").show();
+                            } 
+
+                            feature.geometry.spatialReference = map.spatialReference;
+                            var graphic = feature;
+                            graphic.setSymbol(symbol);
+    
+                            map.graphics.add(graphic);
+
                         } if (response[i].layerId == 2) {
                                 symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
                                 new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
@@ -515,22 +585,16 @@ require([
                                     if ($("#bufferDiv").css("visibility", "visible")) {
                                         ($("#selectionDiv").modal(hide));
                                     }
-                       }
-
-
-
-                        feature.geometry.spatialReference = map.spatialReference;
-                        var graphic = feature;
-                        graphic.setSymbol(symbol);
-
-                        map.graphics.add(graphic);
+                            }
+                        
 
                     }
-
+                    
                     setCursorByID("mainDiv", "default");
                     map.setCursor("default");
+                    
 
-                    }
+                }
             });
         } 
     });
