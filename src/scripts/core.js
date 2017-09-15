@@ -641,7 +641,7 @@ require([
                 //"legendLayers": [legendLayer]
                 var docTitle = template.layoutOptions.titleText;
                 printParams.template = template;
-                var printMap = new PrintTask("http://fwsprimary.wim.usgs.gov/server/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task");
+                var printMap = new PrintTask("https://fwsprimary.wim.usgs.gov/server/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task");
                 printMap.execute(printParams, printDone, printError);
         
                 /* $.get("https://fwsprimary.wim.usgs.gov/pdfLoggingService/pdfLog.asmx/Log?printInfo=" + map.getScale() + "," + map.extent.xmin + "," + map.extent.ymax + "," + map.extent.xmax + "," + map.extent.ymin + ",NWIV2", function(data) {
@@ -1505,17 +1505,6 @@ require([
     });//end of require statement containing legend building code
 
 });
-
-function stateSelected() {
-    var select = $('#stateSelect')[0];
-    if (select.selectedIndex > 0) {
-        var selectedVal = select.options[select.selectedIndex].value;
-        var selectedState = select.options[select.selectedIndex].label;
-        $('#downloadState').html("Download <a target='_blank' href='http://www.fws.gov/wetlands/Downloads/State/" + selectedVal + "_wetlands.zip'>Geodatabase</a> and <a target='_blank' href='http://www.fws.gov/wetlands/Downloads/State/" + selectedVal + "_shapefile_wetlands.zip'>Shapefile</a> data for <b>" + selectedState + "</b>");
-    } else {
-        $('#downloadState').html("");
-    }
-}
 
 $(".close-alert").click(function(){
     $(this).parent().slideUp(250);
