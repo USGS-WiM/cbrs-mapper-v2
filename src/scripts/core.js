@@ -98,8 +98,8 @@ require([
     //allLayers = mapLayers;
 
 
-    esriConfig.defaults.io.corsEnabledServers.push("fwsmapper.wim.usgs.gov");
-    esri.config.defaults.io.proxyUrl = "https://fwsmapper.wim.usgs.gov/serviceProxy/proxy.ashx";
+    esriConfig.defaults.io.corsEnabledServers.push("fwsprimary.wim.usgs.gov");
+    esri.config.defaults.io.proxyUrl = "https://fwsprimary.wim.usgs.gov/serviceProxy/proxy.ashx";
 
     esriConfig.defaults.geometryService = new GeometryService("https://fwsmapper.wim.usgs.gov/arcgis/rest/services/Utilities/Geometry/GeometryServer");
 
@@ -601,6 +601,70 @@ require([
 
     // Symbols
     /*var sym = createPictureSymbol('../images/purple-pin.png', 0, 12, 13, 24);*/
+
+    function printMap() {
+        
+                var printParams = new PrintParameters();
+                printParams.map = map;
+        
+                var template = new PrintTemplate();
+                template.exportOptions = {
+                    width: 500,
+                    height: 400,
+                    dpi: 300
+                };
+                template.format = "PDF";
+                template.layout = "Letter ANSI A Landscape CBRS Mapper V2";
+                template.preserveScale = false;
+                var cbrsLegendLayer = new LegendLayer();
+                cbrsLegendLayer.layerId = "cbrs";
+                //legendLayer.subLayerIds = [*];
+        
+               var userTitle = $("#printTitle").val();
+                //if user does not provide title, use default. otherwise apply user title
+                if (userTitle == "") {
+                    template.layoutOptions = {
+                        "titleText": "CBRS",
+                        "authorText" : "Coastal Barrier Resources System (CBRS)",
+                        "copyrightText": "This page was produced by the CBRS mapper",
+                        "legendLayers": [cbrsLegendLayer]
+                    };
+                } else {
+                    template.layoutOptions = {
+                        "titleText": userTitle,
+                        "authorText" : "Coastal Barrier Resources System (CBRS)",
+                        "copyrightText": "This page was produced by the CBRS mapper",
+                        "legendLayers": [cbrsLegendLayer]
+                    };
+                }
+        
+                //"legendLayers": [legendLayer]
+                var docTitle = template.layoutOptions.titleText;
+                printParams.template = template;
+                var printMap = new PrintTask("http://fwsprimary.wim.usgs.gov/server/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task");
+                printMap.execute(printParams, printDone, printError);
+        
+                /* $.get("https://fwsprimary.wim.usgs.gov/pdfLoggingService/pdfLog.asmx/Log?printInfo=" + map.getScale() + "," + map.extent.xmin + "," + map.extent.ymax + "," + map.extent.xmax + "," + map.extent.ymin + ",NWIV2", function(data) {
+                   //console.log(data);
+                }); */
+        
+                function printDone(event) {
+                    //alert(event.url);
+                    //window.open(event.url, "_blank");
+                    printCount++;
+                    //var printJob = $('<a href="'+ event.url +'" target="_blank">Printout ' + printCount + ' </a>');
+                    var printJob = $('<p><label>' + printCount + ': </label>&nbsp;&nbsp;<a href="'+ event.url +'" target="_blank">' + docTitle +' </a></p>');
+                    //$("#print-form").append(printJob);
+                    $("#printJobsDiv").find("p.toRemove").remove();
+                    $("#printModalBody").append(printJob);
+                    $("#printTitle").val("");
+                    $("#printExecuteButton").button('reset');
+                }
+        
+                function printError(event) {
+                    alert("Sorry, an unclear print error occurred. Please try refreshing the application to fix the problem");
+                }
+            }
 
     map.on('load', function (){
         map.infoWindow.set('highlight', false);
