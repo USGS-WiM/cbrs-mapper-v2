@@ -18,7 +18,7 @@
 
     "homepageURL": "https://fwsprimary.wim.usgs.gov/cbrs-mapper-v2/",
     "downloadURL": "https://github.com/USGS-WiM/cbrs-mapper-v2/archive/master.zip",
-    "disclaimerURL": "https://github.com/USGS-WiM/cbrs-mapper-v2/blob/master/LICENSE.md",
+    "disclaimerURL": "https://github.com/USGS-WiM/cbrs-mapper-v2/blob/master/DISCLAIMER.md",
     "repositoryUrl": "https://github.com/USGS-WiM/cbrs-mapper-v2",
     "vcs": "git",
 
