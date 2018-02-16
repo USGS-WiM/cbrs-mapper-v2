@@ -199,21 +199,21 @@ body {
     max-height: inherit;
 }
 
-/*#legendElement {*/
-/*position:absolute;*/
-/*padding:4px;*/
-/*top:1em;*/
-/*right:10px;*/
-/*z-index:1;*/
-/*color: black;*/
-/*background-color: rgb(255,255,255);*/
-/*background-color: rgba(255,255,255,0.8);*/
-/*box-shadow: 0 1px 5px rgba(0,0,0,0.65);*/
-/*min-width: 200px;*/
-/*border-radius: 4px;*/
-/*overflow: auto;*/
+#legendElement {
+position:absolute;
+padding:4px;
+top:1em;
+right:10px;
+z-index:1;
+color: black;
+background-color: rgb(255,255,255);
+background-color: rgba(255,255,255,0.8);
+box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+min-width: 150px;
+border-radius: 4px;
+overflow: auto;
 
-/*}*/
+}
 
 .legendClass {
     position:absolute;
@@ -672,3 +672,21 @@ div.tooltip-inner {
 .map .logo-med{
     display: none;
 }
+
+.squareDiv {
+    float: left;
+    width: 20px;
+    height: 20px;
+    margin: 5px;
+    border: 1px solid rgba(0, 0, 0, .2);
+  }
+  
+  .legendSymbol {
+    background: #bee8ff;
+    border-color: #000000;
+    border-width: 1.5px;
+  }
+
+  .legendSpacing {
+    margin-bottom: 15px;
+  }

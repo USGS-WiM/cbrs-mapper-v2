@@ -1,16 +1,19 @@
-/**
+/* *
  * Created by bdraper on 4/27/2015.
  */
-var allLayers;
+/* var allLayers;
 var renderer;
+var featureLayers;
 
 require([
     'esri/InfoTemplate',
+    'esri/layers/FeatureLayer',
     'esri/renderers/UniqueValueRenderer',
     'esri/symbols/PictureMarkerSymbol',
     'dojo/domReady!'
 ], function(
     InfoTemplate,
+    FeatureLayer,
     UniqueValueRenderer,
     PictureMarkerSymbol
 ) {
@@ -34,25 +37,25 @@ require([
             'includeInLayerList': true,
             'layers': {
                 'CBRS Units' : {
-                    'url': 'https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/GeoCBRA/MapServer',
+                    'url': 'https://services1.arcgis.com/Hp6G80Pky0om7QvQ/arcgis/rest/services/featuretest/FeatureServer/4',
                     'visibleLayers': [2,4,5],
                     'options': {
                         'id': 'cbrs',
                         'opacity': 0.75,
+                        'mode': esri.layers.FeatureLayer.MODE_ONDEMAND,
+                        'outfields': ['*'],
                         'visible': true
                     },
-                    'wimOptions': {
-                        'type': 'layer',
-                        'layerType': 'agisDynamic',
-                        'includeInLayerList': true,
-                        /*'zoomScale': 144448,*/
-                        'hasOpacitySlider': true,
-                        'moreinfo': 'http://www.fws.gov/wetlands/Data/Wetlands-V2-Product-Summary.html',
-                        'includeLegend' : true
+                    "wimOptions": {
+                        "type": "layer",
+                        "layerType": "agisFeature",
+                        "includeInLayerList": true,
+                        "hasOpacitySlider": true,
+                        "includeLegend": true
                     }
                 },
                 'CBRS Footprints' : {
-                    'url': 'https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/GeoCBRA/MapServer',
+                    'url': 'https://services1.arcgis.com/Hp6G80Pky0om7QvQ/arcgis/rest/services/featuretest/FeatureServer/0',
                     'visibleLayers': [0],
                     'options': {
                         'id': 'footprints',
@@ -61,7 +64,7 @@ require([
                     },
                     'wimOptions': {
                         'type': 'layer',
-                        'layerType': 'agisDynamic',
+                        'layerType': 'agisFeature',
                         'includeInLayerList': false,
                         'zoomScale': 144448,
                         'hasOpacitySlider': true,
@@ -123,4 +126,4 @@ require([
         }
     ];
  
-});
+}); */

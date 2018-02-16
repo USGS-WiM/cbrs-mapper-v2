@@ -6,3 +6,5 @@ bower_components
 
 vscode
 .vscode/*
+
+test.js

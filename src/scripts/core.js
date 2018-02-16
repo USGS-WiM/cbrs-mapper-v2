@@ -8,6 +8,7 @@
 
 var map;
 var allLayers;
+var featureLayers;
 var maxLegendHeight;
 var maxLegendDivHeight;
 var printCount = 0;
@@ -15,6 +16,8 @@ var legendLayers = [];
 var measurement;
 
 var identifyTask, identifyParams;
+
+var queryTask, query;
 
 var cbrsClicked = false;
 var bufferClicked = false;
@@ -29,6 +32,7 @@ require([
     'esri/dijit/LocateButton',
     'esri/dijit/Measurement',
     'esri/dijit/PopupTemplate',
+    'esri/layers/FeatureLayer',
     'esri/graphic',
     'esri/graphicsUtils',
     'esri/geometry/Extent',
@@ -40,6 +44,8 @@ require([
     'esri/symbols/PictureMarkerSymbol',
     'esri/tasks/GeometryService',
     'esri/tasks/FindTask',
+    'esri/tasks/query',
+    'esri/tasks/QueryTask',
     'esri/tasks/FindParameters',
     'esri/tasks/FindResult',
     'esri/tasks/IdentifyParameters',
@@ -66,6 +72,7 @@ require([
     LocateButton,
     Measurement,
     PopupTemplate,
+    FeatureLayer,
     Graphic,
     graphicsUtils,
     Extent,
@@ -77,6 +84,8 @@ require([
     PictureMarkerSymbol,
     GeometryService,
     FindTask,
+    Query,
+    QueryTask,
     FindParameters,
     FindResult,
     IdentifyParameters,
@@ -139,7 +148,7 @@ require([
                         });*/
 // unablet to add infoWindow: popup
     map = new Map('mapDiv', {
-        basemap: 'satellite',
+        basemap: 'gray',
         extent: new Extent(-14638882.654811008, 2641706.3772205533, -6821514.898031538, 6403631.161302788, new SpatialReference({ wkid:3857 })),
     });
     
@@ -208,6 +217,19 @@ require([
 
     //displays map scale on map load
         on(map, "load", function() {
+
+        var cbrsUnits = new FeatureLayer("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/arcgis/rest/services/featuretest/FeatureServer/4");
+        var mapFootprints = new FeatureLayer("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/arcgis/rest/services/featuretest/FeatureServer/0");
+        var unitsDissolve = new FeatureLayer("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/arcgis/rest/services/featuretest/FeatureServer/5");
+        var determineZone = new FeatureLayer("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/arcgis/rest/services/featuretest/FeatureServer/2");
+        
+        featureLayers = [cbrsUnits, mapFootprints, unitsDissolve, determineZone];
+
+        map.addLayer(mapFootprints);
+        map.addLayer(unitsDissolve);
+        map.addLayer(cbrsUnits);
+        map.addLayer(determineZone);
+            
         var scale =  map.getScale().toFixed(0);
         $('#scale')[0].innerHTML = addCommas(scale);
         var initMapCenter = webMercatorUtils.webMercatorToGeographic(map.extent.getCenter());
@@ -221,6 +243,11 @@ require([
     on(map, "zoom-end", function () {
         var scale =  map.getScale().toFixed(0);
         $('#scale')[0].innerHTML = addCommas(scale);
+
+        var extent = map.extent.ymin;
+        if (extent > 3789483) {
+            $('#legendItem').html('test');
+        }
     });
 
     //updates lat/lng indicator on mouse move. does not apply on devices w/out mouse. removes "map center" label
@@ -314,7 +341,7 @@ require([
         map.removeLayer(usgsImageryTopo);
     })
 
-    identifyParams = new IdentifyParameters();
+    /* identifyParams = new IdentifyParameters();
     identifyParams.tolerance = 0;
     identifyParams.returnGeometry = true;
     identifyParams.layerOption = IdentifyParameters.LAYER_OPTION_ALL;
@@ -323,7 +350,7 @@ require([
     identifyParams.width  = map.width;
     identifyParams.height = map.height;
     //identifyTask = new esri.tasks.IdentifyTask("http://50.17.205.92/arcgis/rest/services/NAWQA/DecadalMap/MapServer");
-    identifyTask = new IdentifyTask(allLayers[0].layers["CBRS Units"].url);
+    identifyTask = new IdentifyTask(allLayers[0].layers["CBRS Units"].url); */
 
     //start LobiPanel
     $("#selectionDiv").lobiPanel({
@@ -399,10 +426,134 @@ require([
 
         //alert("scale: " + map.getScale() + ", level: " + map.getLevel());
 
-        identifyParams.geometry = evt.mapPoint;
-        identifyParams.mapExtent = map.extent;
+        /* identifyParams.geometry = evt.mapPoint;
+        identifyParams.mapExtent = map.extent; */
+        if (evt.graphic != undefined && evt.graphic._graphicsLayer.layerId == 4) {
+            
+            queryUnits = new Query();
+            queryUnits.returnGeometry = true;
+            queryUnits.geometry = evt.mapPoint;
+            queryUnits.outFields = ["*"];
+            queryTask = new QueryTask("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/arcgis/rest/services/featuretest/FeatureServer/4");
+            queryTask.execute(queryUnits);
+            setCursorByID("mainDiv");
+            /*var deferredResult = queryTask.execute(query);*/
 
-        if (map.getLevel()) {
+                var latitude = evt.mapPoint.getLatitude();
+                var longitude = evt.mapPoint.getLongitude();
+
+                queryTask.execute(queryUnits, showResults);
+
+                function showResults(featureSet) {
+
+                    if (featureSet.features.length > 0) {
+
+                        var feature = featureSet.features[0];
+
+                        $("#unitId").text(feature.attributes["Unit"]);
+                        $("#unitName").text(feature.attributes["Name"]);
+                        $("#unitType").text(feature.attributes["Unit_Type"]);
+
+                        if (feature.attributes["Fast_Acres"] || feature.attributes["Wet_Acres"] !== "") {
+                            var totalAcre;
+                            totalAcre = Number(feature.attributes["Fast_Acres"]) + Number(feature.attributes["Wet_Acres"]) || "Data not available at this time";
+                        };
+
+                        $('#totalAcre').text(totalAcre);
+
+                        var symbol;
+                        symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
+                            new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
+                                new dojo.Color([255,225,0]), 2), new dojo.Color([98, 194, 204, 0])
+                        );
+
+                       /*  feature.geometry.spatialReference = map.spatialReference; */
+                        var graphic = feature;
+                        graphic.setSymbol(symbol);
+
+                        map.graphics.add(graphic);
+
+                        $("#selectionDiv").css("visibility", "visible");
+                            var instance = $('#selectionDiv').data('lobiPanel');
+                            var docHeight = $(document).height();
+                            var docWidth = $(document).width();
+                            var percentageOfScreen = 0.9;
+
+                            var instanceX = docWidth*0.5-$("#selectionDiv").width()*0.5;
+                            var instanceY = docHeight*0.8-$("#selectionDiv").height()*1.0;
+
+
+                            instance.setPosition(instanceX, instanceY);
+                            if (instance.isPinned() == true) {
+                                instance.unpin();
+                            }
+                    }
+                }
+
+                queryFootprint = new Query();
+                queryFootprint.returnGeometry = true;
+                queryFootprint.geometry = evt.mapPoint;
+                queryFootprint.outFields = ["*"];
+                queryTask = new QueryTask("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/arcgis/rest/services/featuretest/FeatureServer/0");
+                queryTask.execute(queryFootprint);
+                setCursorByID("mainDiv");
+
+                queryTask.execute(queryFootprint, showFootResults);
+
+                function showFootResults(featureSet) {
+
+                    if (featureSet.features.length > 0) {
+
+                        var feature = featureSet.features[0];
+
+                        $("#mapLink").html('<a href="' + feature.attributes["Map_Link"] + '" target="_blank">Click here for official CBRS map</a>');
+                            $("#mapDate").text(feature.attributes["Map_Date"]);
+                            $("#titleOne").text(feature.attributes["Title"]);
+                            $("#titleTwo").html(feature.attributes["Title_2"])
+                            $("#titleThree").text(feature.attributes["Title_3"]);
+
+                            if (feature.attributes["Title_2"] == null) {
+                                $(".hideNullTwo").hide();
+                            } else  {
+                                $("#titleTwo").show(feature.attributes["Title_2"]);
+                                $(".hideNullTwo").show();
+                            } if (feature.attributes["Title_3"] == null) {
+            
+                                $(".hideNullThree").hide();
+                            } else  {
+                                $("#titleThree").show(feature.attributes["Title_3"]);
+                                $(".hideNullThree").show();
+                            }
+
+                        var symbol;
+                        symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
+                            new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
+                                new dojo.Color([255,0,225]), 2), new dojo.Color([98, 194, 204, 0])
+                        );
+
+                        /* feature.geometry.spatialReference = map.spatialReference; */
+                        var graphic = feature;
+                        graphic.setSymbol(symbol);
+
+                        map.graphics.add(graphic);
+                    }
+                }
+                
+
+                symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
+                    new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
+                        new dojo.Color([255,0,225]), 2), new dojo.Color([98,194,204,0])
+                );
+           
+
+                /* feature.geometry.spatialReference = map.spatialReference; */
+                /* var graphic = feature; */
+                /* graphic.setSymbol(symbol);
+
+                map.graphics.add(graphic); */
+        }
+
+        /* if (map.getLevel()) {
             //the deferred variable is set to the parameters defined above and will be used later to build the contents of the infoWindow.
             identifyTask = new IdentifyTask(allLayers[0].layers["CBRS Units"].url);
             var deferredResult = identifyTask.execute(identifyParams);
@@ -563,9 +714,6 @@ require([
                                 new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
                                     new dojo.Color([0,0,0]), 2), new dojo.Color([0,0,0,0])
                             );
-                                    /*$('#contactTob').modal('hide');
-                                    $('#aboutModal').modal('show');
-                                    $('#aboutTab').trigger('click');*/
 
                                 $("#bufferDiv").css("visibility", "visible");
                                     var instance = $('#bufferDiv').data('lobiPanel');
@@ -596,7 +744,7 @@ require([
 
                 }
             });
-        } 
+        } */ 
     });
 
     // Symbols
@@ -669,7 +817,7 @@ require([
     map.on('load', function (){
         map.infoWindow.set('highlight', false);
         map.infoWindow.set('titleInBody', false);
-        map.addLayer(usgsImageryTopo, 1); //Makes the Naip (USGSImageryTopo) the basemap
+        /* map.addLayer(usgsImageryTopo, 1); */ //Makes the Naip (USGSImageryTopo) the basemap
         $('#disclaimerModal').modal('show');
     });
 
@@ -862,6 +1010,13 @@ require([
 
     // Show modal dialog; handle legend sizing (both on doc ready)
     $(document).ready(function(){
+        $('#legendItem').html('CBRS Units');
+        
+        var extent = map.extent.ymin;
+        if (extent > 3789483) {
+            $('#legendItem').html('test');
+        }
+
         function showModal() {
             $('#geosearchModal').modal('show');
         }
