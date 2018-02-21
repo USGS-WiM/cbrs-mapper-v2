@@ -679,14 +679,101 @@ div.tooltip-inner {
     height: 20px;
     margin: 5px;
     border: 1px solid rgba(0, 0, 0, .2);
-  }
-  
-  .legendSymbol {
-    background: #bee8ff;
+}
+
+.legendDissolve {
+    background: #FFAA00;
     border-color: #000000;
     border-width: 1.5px;
-  }
+    opacity: 1;
+}
 
-  .legendSpacing {
+.legendOPA {
+    background: #4CE600;
+    border-color: #000000;
+    border-width: 2px;
+    border-style: solid;
+    opacity: 0.45;
+}
+
+.legendSU {
+    background: #E60000;
+    border-color: #000000;
+    border-width: 2px;
+    border-style: solid;
+    opacity: 0.45;
+}
+
+.legendBuff {
+    background-image: url("../images/buffer.PNG");
+    background-size: 18px;
+    border-color: #ce0000;
+    border-width: 1px;
+}
+
+.legendSpacing {
     margin-bottom: 15px;
+}
+
+#legendItem {
+    /* text-align: center; */
+}
+
+/* Customizing Find CBRS Unit Search */
+.arcgisSearch .searchGroup .searchInput {
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    float: left;
+    display: block;
+    height: 20px;
+    width: 230px;
+    padding: 6px 24px 6px 12px;
+    font-size: 14px;
+    line-height: 20px;
+    color: #4C4C4C;
+    background-color: #fff;
+    border: 1px solid #57585A;
+    border-right: 0;
+    border-radius: 4px 0 0 4px;
+    transition: width .175s ease-in;
+    box-sizing: content-box;
+}
+
+#featureLayerToggleStyle {
+    font-weight: bold;
+    text-align: left;
+    background-color: transparent;
+    border: 0px solid transparent;
+    box-shadow: none;
+    color: #333333;
+    font-weight: 500 !important;
+    font-size: 9pt;
+    font-family: 'Open Sans', sans-serif;
+    padding: 6px 10px;
+    width: 85%;
+    border-radius: 0;
+    margin: 0 auto;
+    letter-spacing: -0.45px;
+    transition: 0.15s;
+    border-left: 4px solid transparent;
+}
+
+.search-help{
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding-top: 15px;
+    font-size: 12px;
+  }
+  .search-help b{
+    display: block;
+    margin: 0 auto;
+    font-size: 14px;
+    margin-bottom: 8px;
+    margin-top: 25px;
+  }
+  .search-help code{
+    display: inline-block;
+    margin: 2px;
   }

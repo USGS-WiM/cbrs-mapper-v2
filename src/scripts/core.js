@@ -14,6 +14,10 @@ var maxLegendDivHeight;
 var printCount = 0;
 var legendLayers = [];
 var measurement;
+var mapZoom;
+var visible = true;
+var previousOpacity;
+var currentOpacity
 
 var identifyTask, identifyParams;
 
@@ -48,6 +52,7 @@ require([
     'esri/tasks/QueryTask',
     'esri/tasks/FindParameters',
     'esri/tasks/FindResult',
+    'esri/dijit/Search',
     'esri/tasks/IdentifyParameters',
     'esri/tasks/IdentifyTask',
     'esri/tasks/LegendLayer',
@@ -88,6 +93,7 @@ require([
     QueryTask,
     FindParameters,
     FindResult,
+    Search,
     IdentifyParameters,
     IdentifyTask,
     LegendLayer,
@@ -148,8 +154,9 @@ require([
                         });*/
 // unablet to add infoWindow: popup
     map = new Map('mapDiv', {
-        basemap: 'gray',
+        basemap: 'satellite',
         extent: new Extent(-14638882.654811008, 2641706.3772205533, -6821514.898031538, 6403631.161302788, new SpatialReference({ wkid:3857 })),
+        showLabels: true
     });
     
     var home = new HomeButton({
@@ -218,12 +225,16 @@ require([
     //displays map scale on map load
         on(map, "load", function() {
 
-        var cbrsUnits = new FeatureLayer("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/arcgis/rest/services/featuretest/FeatureServer/4");
+        var cbrsUnits = new FeatureLayer("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/arcgis/rest/services/featuretest/FeatureServer/4", {
+            showLabels: true,
+            outFields: ["Unit"],
+            displayField: "Unit"
+        });
         var mapFootprints = new FeatureLayer("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/arcgis/rest/services/featuretest/FeatureServer/0");
         var unitsDissolve = new FeatureLayer("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/arcgis/rest/services/featuretest/FeatureServer/5");
         var determineZone = new FeatureLayer("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/arcgis/rest/services/featuretest/FeatureServer/2");
         
-        featureLayers = [cbrsUnits, mapFootprints, unitsDissolve, determineZone];
+        featureLayers = [mapFootprints, unitsDissolve, cbrsUnits,  determineZone];
 
         map.addLayer(mapFootprints);
         map.addLayer(unitsDissolve);
@@ -244,10 +255,46 @@ require([
         var scale =  map.getScale().toFixed(0);
         $('#scale')[0].innerHTML = addCommas(scale);
 
-        var extent = map.extent.ymin;
-        if (extent > 3789483) {
-            $('#legendItem').html('test');
+        //Zoom level used to change items on legend
+        mapZoom = map.getZoom();
+		var mapScale = scaleLookup(mapZoom);
+        
+        // Changing the legend for layers depending on extent
+        if (mapZoom <= 7) {
+            $('#legendSymbols').html('<div class="squareDiv legendDissolve"></div>' + "<p>" + "CBRS Units" +"</p>");
+            {/* <div class="squareDiv legendOPA"></div><p>Otherwise Protected Area</p> */}
+        } else if ((mapZoom => 8) && (mapZoom <= 12)) {
+            $('#legendSymbols').html('<div class="squareDiv legendOPA"></div>' + "<p>" + "Otherwise Protected Area" +"</p>" + '<div class="squareDiv legendSU"></div>' + "<p>" + "System Units" +"</p>");
+        } else if (mapZoom => 13) {
+            $('#legendSymbols').html('<div class="squareDiv legendBuff"></div>' + "<p>" + "CBRS Buffer Zone" +"</p>" + '<div class="squareDiv legendOPA"></div>' + "<p>" + "Otherwise Protected Area" +"</p>" + '<div class="squareDiv legendSU"></div>' + "<p>" + "System Units" +"</p>");
         }
+
+        function scaleLookup(mapZoom) {
+            switch (mapZoom) {
+                case 19: return '1,128';
+                case 18: return '2,256';
+                case 17: return '4,513';
+                case 16: return '9,027';
+                case 15: return '18,055';
+                case 14: return '36,111';
+                case 13: return '72,223';
+                case 12: return '144,447';
+                case 11: return '288,895';
+                case 10: return '577,790';
+                case 9: return '1,155,581';
+                case 8: return '2,311,162';
+                case 7: return '4,622,324';
+                case 6: return '9,244,649';
+                case 5: return '18,489,298';
+                case 4: return '36,978,596';
+                case 3: return '73,957,193';
+                case 2: return '147,914,387';
+                case 1: return '295,828,775';
+                case 0: return '591,657,550';
+            }
+        }
+        
+        
     });
 
     //updates lat/lng indicator on mouse move. does not apply on devices w/out mouse. removes "map center" label
@@ -507,7 +554,11 @@ require([
                         var feature = featureSet.features[0];
 
                         $("#mapLink").html('<a href="' + feature.attributes["Map_Link"] + '" target="_blank">Click here for official CBRS map</a>');
-                            $("#mapDate").text(feature.attributes["Map_Date"]);
+
+                            var mapDate = feature.attributes["Map_Date"];
+                            mapDateFormatted = moment(mapDate).calendar();
+
+                            $("#mapDate").text(mapDateFormatted);
                             $("#titleOne").text(feature.attributes["Title"]);
                             $("#titleTwo").html(feature.attributes["Title_2"])
                             $("#titleThree").text(feature.attributes["Title_3"]);
@@ -551,7 +602,31 @@ require([
                 /* graphic.setSymbol(symbol);
 
                 map.graphics.add(graphic); */
-        }
+        } if (evt.graphic != undefined && evt.graphic._graphicsLayer.layerId == 2) {
+            symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
+                new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
+                    new dojo.Color([0,0,0]), 2), new dojo.Color([0,0,0,0])
+            );
+
+                $("#bufferDiv").css("visibility", "visible");
+                    var instance = $('#bufferDiv').data('lobiPanel');
+                    var docHeight = $(document).height();
+                    var docWidth = $(document).width();
+                    var percentageOfScreen = 0.9;
+
+                    var instanceX = docWidth*0.5-$("#bufferDiv").width()*0.5;
+                    var instanceY = docHeight*0.8-$("#bufferDiv").height()*1.0;
+
+
+                    instance.setPosition(instanceX, instanceY);
+                    if (instance.isPinned() == true) {
+                        instance.unpin();
+                    } 
+                    
+                    if ($("#bufferDiv").css("visibility", "visible")) {
+                        ($("#selectionDiv").modal(hide));
+                    }
+            }
 
         /* if (map.getLevel()) {
             //the deferred variable is set to the parameters defined above and will be used later to build the contents of the infoWindow.
@@ -762,10 +837,10 @@ require([
                     dpi: 300
                 };
                 template.format = "PDF";
-                template.layout = "Letter ANSI A Landscape CBRS Mapper V2";
+                template.layout = "Letter ANSI A Landscape CBRS Mapper V2 - AGOL";
                 template.preserveScale = false;
-                var cbrsLegendLayer = new LegendLayer();
-                cbrsLegendLayer.layerId = "cbrs";
+                /* var cbrsLegendLayer = new LegendLayer(); */
+                /* cbrsLegendLayer.layerId = "cbrs"; */
                 //legendLayer.subLayerIds = [*];
         
                var userTitle = $("#printTitle").val();
@@ -775,14 +850,14 @@ require([
                         "titleText": "CBRS",
                         "authorText" : "Coastal Barrier Resources System (CBRS)",
                         "copyrightText": "This page was produced by the CBRS mapper",
-                        "legendLayers": [cbrsLegendLayer]
+                        /* "legendLayers": [cbrsLegendLayer] */
                     };
                 } else {
                     template.layoutOptions = {
                         "titleText": userTitle,
                         "authorText" : "Coastal Barrier Resources System (CBRS)",
                         "copyrightText": "This page was produced by the CBRS mapper",
-                        "legendLayers": [cbrsLegendLayer]
+                        /* "legendLayers": [cbrsLegendLayer] */
                     };
                 }
         
@@ -821,8 +896,42 @@ require([
         $('#disclaimerModal').modal('show');
     });
 
+    var search = new Search({
+        enableButtonMode: false, //this enables the search widget to display as a single button
+        enableLabel: false,
+        enableSearchingAll: false,
+        enableInfoWindow: false,
+        showInfoWindowOnSelect: false,
+        map: map,
+        allPlaceholder: 'Enter CBRS unit number (e.g Q01P)',
+        sources: []
+    }, "search");
+
+    var sources = search.get("sources");
+
+    sources.push({
+        featureLayer: new FeatureLayer("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/ArcGIS/rest/services/featuretest/FeatureServer/4"),
+        searchFields: ["Unit"],
+        displayField: "Unit",
+        exactMatch: false,
+        outFields: ["Unit"],
+        name: "Revised Units",
+        placeholder: "Enter CBRS unit number (e.g Q01P)",
+        highlightSymbol: new PictureMarkerSymbol("https://js.arcgis.com/3.21/esri/dijit/Search/images/search-pointer.png", 40, 40).setOffset(9, 18),
+        maxResults: 6,
+        maxSuggestions: 6,
+    });
+
+    search.set("sources", sources);
+
+    on(search, 'select-result', function (e) {
+        var unitSearched = $("#search_input").val();
+
+        $("#btnunitDismiss").trigger("click");
+    });
+
     //create CBRS Unit Search
-    var findCBRS = new FindTask('https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/GeoCBRA/MapServer');
+    /* var findCBRS = new FindTask('https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/GeoCBRA/MapServer');
     var params = new FindParameters();
     params.layerIds = [4];
     params.searchFields = ["Unit"];
@@ -846,10 +955,10 @@ require([
         else {
                 $("#invalidSearchModal").modal('show');
         }
-    }
+    } */
 
 
-    $("#btnUnitSearch").click(doFind);
+    /* $("#btnUnitSearch").click(doFind); */
 
     // create search_api widget in element "geosearch"
 
@@ -1010,12 +1119,81 @@ require([
 
     // Show modal dialog; handle legend sizing (both on doc ready)
     $(document).ready(function(){
-        $('#legendItem').html('CBRS Units');
+
+        $('#featureLayerToggle').click(function () {
+
+            if (visible == true) {
+
+                var i;
+                for (i = 0; i < featureLayers.length; i++) {
+
+                    map.removeLayer(featureLayers[i]);
+
+                }
+
+                visible = false;
+                
+            } else if (visible == false) {
+
+                var i;
+                for (i = 0; i < featureLayers.length; i++) {
+
+                    map.addLayer(featureLayers[i]);
+                }
+
+                visible = true;
+            }
+        }); 
+
+            $('#opacityAll').click(function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $(".opacitySlider").remove();
+
+                if (currentOpacity == undefined) {
+                    currentOpacity = 100;
+                } else {
+                    
+                }
+                var slider = $('<div class="opacitySlider"><label id="opacityValue">Opacity: ' + currentOpacity + '</label><label class="opacityClose pull-right">X</label><input id="slider" type="range"></div>');
+                $("body").append(slider);
+                $("#slider")[0].value = currentOpacity*100;
+                $(".opacitySlider").css('left', event.clientX - 180);
+                $(".opacitySlider").css('top', event.clientY - 50);
+
+                $(".opacitySlider").mouseleave(function () {
+                    $(".opacitySlider").remove();
+                });
+
+                $(".opacityClose").click(function () {
+                    $(".opacitySlider").remove();
+                });
+
+                $('#slider').change(function (event) {
+                    //get the value of the slider with this call
+                    var o = ($('#slider')[0].value) / 100;
+                    console.log("o: " + o);
+                    $("#opacityValue").html("Opacity: " + o)
+
+                    currentOpacity = o;
+
+                    var i;
+                        for (i = 0; i < featureLayers.length; i++) {
+
+                            (featureLayers[i].setOpacity(o));
+                            
+                            
+                        }
+
+                        
+
+                    //here I am just specifying the element to change with a "made up" attribute (but don't worry, this is in the HTML specs and supported by all browsers).
+                    //var e = '#' + $(this).attr('data-wjs-element');
+                    //$(e).css('opacity', o)
+                });
+
+            });
         
-        var extent = map.extent.ymin;
-        if (extent > 3789483) {
-            $('#legendItem').html('test');
-        }
 
         function showModal() {
             $('#geosearchModal').modal('show');
