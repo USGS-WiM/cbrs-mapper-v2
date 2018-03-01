@@ -892,7 +892,7 @@ require([
     map.on('load', function (){
         map.infoWindow.set('highlight', false);
         map.infoWindow.set('titleInBody', false);
-        /* map.addLayer(usgsImageryTopo, 1); */ //Makes the Naip (USGSImageryTopo) the basemap
+        map.addLayer(usgsImageryTopo, 1); //Makes the Naip (USGSImageryTopo) the basemap
         $('#disclaimerModal').modal('show');
     });
 
