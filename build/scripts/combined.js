@@ -375,14 +375,14 @@ require([
     //displays map scale on map load
         on(map, "load", function() {
 
-        var cbrsUnits = new FeatureLayer("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/arcgis/rest/services/featuretest/FeatureServer/4", {
+        var cbrsUnits = new FeatureLayer("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/ArcGIS/rest/services/GeoCBRA_test/FeatureServer/4", {
             showLabels: true,
             outFields: ["Unit"],
             displayField: "Unit"
         });
-        var mapFootprints = new FeatureLayer("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/arcgis/rest/services/featuretest/FeatureServer/0");
-        var unitsDissolve = new FeatureLayer("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/arcgis/rest/services/featuretest/FeatureServer/5");
-        var determineZone = new FeatureLayer("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/arcgis/rest/services/featuretest/FeatureServer/2");
+        var mapFootprints = new FeatureLayer("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/ArcGIS/rest/services/GeoCBRA_test/FeatureServer/0");
+        var unitsDissolve = new FeatureLayer("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/ArcGIS/rest/services/GeoCBRA_test/FeatureServer/5");
+        var determineZone = new FeatureLayer("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/ArcGIS/rest/services/GeoCBRA_test/FeatureServer/2");
         
         featureLayers = [mapFootprints, unitsDissolve, cbrsUnits,  determineZone];
 
@@ -631,7 +631,7 @@ require([
             queryUnits.returnGeometry = true;
             queryUnits.geometry = evt.mapPoint;
             queryUnits.outFields = ["*"];
-            queryTask = new QueryTask("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/arcgis/rest/services/featuretest/FeatureServer/4");
+            queryTask = new QueryTask("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/ArcGIS/rest/services/GeoCBRA_test/FeatureServer/4");
             queryTask.execute(queryUnits);
             setCursorByID("mainDiv");
             /*var deferredResult = queryTask.execute(query);*/
@@ -691,7 +691,7 @@ require([
                 queryFootprint.returnGeometry = true;
                 queryFootprint.geometry = evt.mapPoint;
                 queryFootprint.outFields = ["*"];
-                queryTask = new QueryTask("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/arcgis/rest/services/featuretest/FeatureServer/0");
+                queryTask = new QueryTask("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/ArcGIS/rest/services/GeoCBRA_test/FeatureServer/0");
                 queryTask.execute(queryFootprint);
                 setCursorByID("mainDiv");
 
@@ -1060,7 +1060,7 @@ require([
     var sources = search.get("sources");
 
     sources.push({
-        featureLayer: new FeatureLayer("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/ArcGIS/rest/services/featuretest/FeatureServer/4"),
+        featureLayer: new FeatureLayer("https://services1.arcgis.com/Hp6G80Pky0om7QvQ/ArcGIS/rest/services/GeoCBRA_test/FeatureServer/4"),
         searchFields: ["Unit"],
         displayField: "Unit",
         exactMatch: false,
