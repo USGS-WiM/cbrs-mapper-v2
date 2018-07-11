@@ -672,3 +672,73 @@ div.tooltip-inner {
 .map .logo-med{
     display: none;
 }
+
+.esriLegendLeft {
+    padding-left: 0px !important;
+}
+
+.esriLegendService {
+    padding-bottom: 0px !important;
+}
+
+.determination button {
+    margin: 5px;
+    position: relative;
+    text-align: center;
+    display: inline-block;
+}
+
+.determination .inputLatLongs {
+    text-align: left;
+    padding-left: 20px;
+    display: inline-block;
+    width: 100%;
+}
+
+.determinationButtons {
+    text-align: center;
+    margin-top: 20px;
+}
+.inputLatLongs input {
+    margin-top: 10px;
+    border-width: 0px 0px 1px 0px;
+    border-style: solid;
+}
+
+.determinationColumns {
+    column-width:  200px;
+    -moz-column-width:  200px;
+    -webkit-column-width:  200px;
+}
+
+
+.legendPtVisible img {
+    margin: 10px 15px 10px 25px;
+}
+
+.legendPt {
+    display: none;
+}
+
+.legendPtVisible {
+    display: inline-block !important;
+    margin-right: 20px;
+}
+
+.aboutDetVisible {
+    display: inline-block !important;
+}
+
+#aboutDet {
+    background-color: #f2f2f2;
+    padding: 5px 15px 0px 10px;
+}
+
+.detWarning {
+    display: none;
+}
+
+.detWarningVisible {
+    display: inline-block;
+    padding-top: 20px;
+}

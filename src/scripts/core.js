@@ -19,6 +19,10 @@ var identifyTask, identifyParams;
 var cbrsClicked = false;
 var bufferClicked = false;
 
+var selectPointonMap = false;
+var pointSelection;
+var detCount = 0;
+
 require([
     'esri/map',
     'esri/arcgis/utils',
@@ -99,7 +103,7 @@ require([
 
 
     esriConfig.defaults.io.corsEnabledServers.push("fwsprimary.wim.usgs.gov");
-    esri.config.defaults.io.proxyUrl = "https://fwsprimary.wim.usgs.gov/serviceProxy/proxy.ashx";
+    //esri.config.defaults.io.proxyUrl = "https://fwsprimary.wim.usgs.gov/serviceProxy/proxy.ashx";
 
     esriConfig.defaults.geometryService = new GeometryService("https://fwsmapper.wim.usgs.gov/arcgis/rest/services/Utilities/Geometry/GeometryServer");
 
@@ -411,8 +415,8 @@ require([
 
             deferredResult.addCallback(function(response) {
 
-                if (response.length !== 0) {
-
+                if (response.length !== 0 && !selectPointonMap) {
+                    document.getElementById("legendPoint").setAttribute("class", "legendPt")
                     var feature;
                     var attr;
                     var attrStatus;
@@ -421,12 +425,12 @@ require([
                     var bGraphic;
 
                     for (i=0;i<response.length;i++) {
-						
-						if (response[i].layerName == "CBRS Units") {
-							containsUnit = true;
-							unit = response[i].feature.attributes.Unit;
-						}
-					}
+
+                        if (response[i].layerName == "CBRS Units") {
+                            containsUnit = true;
+                            unit = response[i].feature.attributes.Unit;
+                        }
+                    }
 
                     for (var i = 0; i < response.length; i++) {
                         feature = response[i].feature;
@@ -594,9 +598,17 @@ require([
                     map.setCursor("default");
                     
 
+                } else if (selectPointonMap) {
+                    var long = evt.mapPoint.x.toString()
+                    var lat = evt.mapPoint.y.toString()
+                    if (response.length !==0) {
+                        getNearestUnit(lat, long, true)
+                    } else {
+                        getNearestUnit(lat, long, false)
+                    }
                 }
             });
-        } 
+        }
     });
 
     // Symbols
@@ -705,7 +717,7 @@ require([
 
     // create search_api widget in element "geosearch"
 
-    
+
 
     search_api.create( "geosearch", {
         on_result: function(o) {
@@ -917,7 +929,7 @@ require([
 
     $(document).ready(function(){
         function showModal() {
-        $('#cbrsModal').modal('show');
+            $('#cbrsModal').modal('show');
         }
 
         $('#cbrsNav').click(function(){
@@ -938,6 +950,24 @@ require([
         }
     });
 
+    $(document).ready(function(){
+        function showDetModal() {
+            $('#determinateModal').modal('show');
+        }
+
+        $('#determinateNav').click(function(){
+            showDetModal();
+        });
+
+        $('#showAboutDet').click(function(){
+            detCount = Number(detCount) + 1;
+            if (detCount % 2 == 1) {
+                document.getElementById("aboutDet").setAttribute("class", "aboutDetVisible")
+            } else if (detCount % 2 == 0) {
+                document.getElementById("aboutDet").setAttribute("class", "aboutDet")
+            }
+        });
+    });
         
     require([
         'esri/InfoTemplate',
@@ -1360,150 +1390,34 @@ require([
                 }
             }
         }
-
-
-        //get visible and non visible layer lists
-        /*function addMapServerLegend(layerName, layerDetails) {
-
-
-            if (layerDetails.wimOptions.layerType === 'agisFeature') {
-
-                //for feature layer since default icon is used, put that in legend
-                var legendItem = $('<div align="left" id="' + camelize(layerName) + '"><img alt="Legend Swatch" src="https://raw.githubusercontent.com/Leaflet/Leaflet/master/dist/images/marker-icon.png" /><strong>&nbsp;&nbsp;' + layerName + '</strong></br></div>');
-                $('#legendDiv').append(legendItem);
-
-            }
-
-            else if (layerDetails.wimOptions.layerType === 'agisWMS') {
-
-                //for WMS layers, for now just add layer title
-                var legendItem = $('<div align="left" id="' + camelize(layerName) + '"><img alt="Legend Swatch" src="http://placehold.it/25x41" /><strong>&nbsp;&nbsp;' + layerName + '</strong></br></div>');
-                $('#legendDiv').append(legendItem);
-
-            }
-
-            else if (layerDetails.wimOptions.layerType === 'agisDynamic') {
-
-                //create new legend div
-                var legendItemDiv = $('<div align="left" id="' + camelize(layerName) + '"><strong>&nbsp;&nbsp;' + layerName + '</strong></br></div>');
-                $('#legendDiv').append(legendItemDiv);
-
-                //get legend REST endpoint for swatch
-                $.getJSON(layerDetails.url + '/legend?f=json', function (legendResponse) {
-
-                    console.log(layerName,'legendResponse',legendResponse);
-
-
-
-                    //make list of layers for legend
-                    if (layerDetails.options.layers) {
-                        //console.log(layerName, 'has visisble layers property')
-                        //if there is a layers option included, use that
-                        var visibleLayers = layerDetails.options.layers;
-                    }
-                    else {
-                        //console.log(layerName, 'no visible layers property',  legendResponse)
-
-                        //create visibleLayers array with everything
-                        var visibleLayers = [];
-                        $.grep(legendResponse.layers, function(i,v) {
-                            visibleLayers.push(v);
-                        });
-                    }
-
-                    //loop over all map service layers
-                    $.each(legendResponse.layers, function (i, legendLayer) {
-
-                        //var legendHeader = $('<strong>&nbsp;&nbsp;' + legendLayer.layerName + '</strong>');
-                        //$('#' + camelize(layerName)).append(legendHeader);
-
-                        //sub-loop over visible layers property
-                        $.each(visibleLayers, function (i, visibleLayer) {
-
-                            //console.log(layerName, 'visibleLayer',  visibleLayer);
-
-                            if (visibleLayer == legendLayer.layerId) {
-
-                                console.log(layerName, visibleLayer,legendLayer.layerId, legendLayer)
-
-                                //console.log($('#' + camelize(layerName)).find('<strong>&nbsp;&nbsp;' + legendLayer.layerName + '</strong></br>'))
-
-                                var legendHeader = $('<strong>&nbsp;&nbsp;' + legendLayer.layerName + '</strong></br>');
-                                $('#' + camelize(layerName)).append(legendHeader);
-
-                                //get legend object
-                                var feature = legendLayer.legend;
-                                /*
-                                 //build legend html for categorized feautres
-                                 if (feature.length > 1) {
-                                 */
-
-                                //placeholder icon
-                                //<img alt="Legend Swatch" src="http://placehold.it/25x41" />
-
-                                /*$.each(feature, function () {
-
-                                    //make sure there is a legend swatch
-                                    if (this.imageData) {
-                                        var legendFeature = $('<img alt="Legend Swatch" src="data:image/png;base64,' + this.imageData + '" /><small>' + this.label.replace('<', '').replace('>', '') + '</small></br>');
-
-                                        $('#' + camelize(layerName)).append(legendFeature);
-                                    }
-                                });
-                                /*
-                                 }
-                                 //single features
-                                 else {
-                                 var legendFeature = $('<img alt="Legend Swatch" src="data:image/png;base64,' + feature[0].imageData + '" /><small>&nbsp;&nbsp;' + legendLayer.layerName + '</small></br>');
-
-                                 //$('#legendDiv').append(legendItem);
-                                 $('#' + camelize(layerName)).append(legendFeature);
-
-                                 }
-                                 */
-                            /*}
-                        }); //each visible layer
-                    }); //each legend item
-                }); //get legend json
-            }
-        }*/
-        /* parse layers.js */
-
-        //var outSR = new SpatialReference(26917);
-        /*measurement.on("measure-end", function(evt){
-            //$("#utmCoords").remove();//
-            //var resultGeom = evt.geometry;
-            //var utmResult;
-            //var absoluteX = (evt.geometry.x)*-1;
-            /*if ( absoluteX < 84 && absoluteX > 78 ){
-                geomService.project ( [ resultGeom ], outSR, function (projectedGeoms){
-                    utmResult = projectedGeoms[0];
-                    console.log(utmResult);
-                    var utmX = utmResult.x.toFixed(0);
-                    var utmY = utmResult.y.toFixed(0);
-                    $("#utmX").html(utmX);
-                    $("#utmY").html(utmY);
-                    //var utmCoords = $('<tr id="utmCoords"><td dojoattachpoint="pinCell"><span>UTM17</span></td> <td class="esriMeasurementTableCell"> <span id="utmX" dir="ltr">' + utmX + '</span></td> <td class="esriMeasurementTableCell"> <span id="utmY" dir="ltr">' + utmY + '</span></td></tr>');
-                    //$('.esriMeasurementResultTable').append(utmCoords);
-                });
-
-            } else {
-                //$("#utmX").html("out of zone");
-                $("#utmX").html('<span class="label label-danger">outside zone</span>');
-                //$("#utmY").html("out of zone");
-                $("#utmY").html('<span class="label label-danger">outside zone</span>');
-            }*/
-
-
-            //geomService.project ( [ resultGeom ], outSR, function (projectedGeoms){
-                //utmResult = projectedGeoms[0];
-                //console.log(utmResult);
-            //});
-
-        //});//
-        
     });//end of require statement containing legend building code
 
+    function getNearestUnit(lat, long, intersects) {
+        var point = new Point(long, lat, {wkid: 3857})
+        var symbol = new PictureMarkerSymbol(
+            '/images/glyphicons-pin.png', 10, 25);
+        map.graphics.add(new Graphic(point, symbol));
+
+        document.getElementById("legendPoint").setAttribute("class", "legendPtVisible")
+
+        $('#determinateModal').modal('show');
+        if (intersects) {
+            determinationQuery(point);
+        } else {
+            console.log('No intersecting polygon, need to buffer')
+        }
+        
+        //buffer for distance
+        /*var params = new BufferParameters();
+        params.bufferSpatialReference = map.spatialReference;
+        params.distances = [50];
+        params.unit = esri.tasks.GeometryService.UNIT_KILOMETER;
+        params.outSpatialReference = map.spatialReference;
+        params.unionResults = false;
+        params.geodesic = false;
+        params.geometries = [point]*/
+
+    };//need to put this somewhere else, with a require
 });
 
 function stateSelected() {
@@ -1553,4 +1467,58 @@ $(function () {
 // adding helpful message to Measure button
 function message() {
     document.getElementById("helpfulHint").innerHTML = "<hr>Click the tool again to deselect it and return to normal map controls";
+}
+
+function choosePoint(choice) {
+    pointSelection = choice;
+}
+function changePointOption() {
+    map.graphics.clear();
+    if (pointSelection == 'selectPoint') {
+        selectPointonMap = true;
+    } else if (pointSelection == 'inputCoords') {
+        selectPointonMap = false;
+        var deterLat = document.getElementById("deterLatitude").value;
+        var deterLong = document.getElementById("deterLongitude").value;
+
+        getNearestUnit(deterLat, deterLong);
+    }
+}
+
+function determinationQuery(point) {
+    require([
+        'esri/tasks/query',
+        'esri/tasks/QueryTask',
+        'esri/geometry',
+        'esri/geometry/webMercatorUtils'
+    ], function(
+        Query,
+        QueryTask,
+        geometry,
+        webMercatorUtils
+    ) {
+        var queryTask = new QueryTask(map.getLayer("prohibitions").url + '/3');
+        var query = new Query();
+
+        query.geometry = webMercatorUtils.webMercatorToGeographic(map.graphics.graphics[0].geometry);
+        query.units = "kilometers";
+        query.distance = [50];
+        query.returnGeometry = true;
+        query.outSpatialReference = map.spatialReference;
+        //query.spatialRelationship = Query.SPATIAL_REL_INTERSECTS;
+
+        queryTask.execute(query).then(function(results) {
+            nearestUnit(results);
+        }); //cannot read property 'query' of undefined
+    });
+}
+
+function nearestUnit(results) {
+    resultFeature = results.features
+    if (resultFeature.length == 1 && resultFeature !== undefined) {
+        console.log("Intersects Unit: " + resultFeature[0].attributes.Unit)
+    } else {
+        console.log("None found")
+    }
+    selectPointonMap = false;
 }

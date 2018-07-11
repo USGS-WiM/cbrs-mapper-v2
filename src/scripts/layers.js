@@ -118,6 +118,23 @@ require([
                         'hasOpacitySlider': true,
                         'includeLegend' : false
                     }
+                },
+                'CBRS Prohibitions': {
+                    'url': 'https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/CBRS_Prohibitions_Test/MapServer',
+                    'visibleLayers': [3],
+                    'options': {
+                        'id': 'prohibitions',
+                        'opacity': 0.75,
+                        'visible': true
+                    },
+                    'wimOptions': {
+                        'type': 'layer',
+                        'layerType': 'agisDynamic',
+                        'includeInLayerList': true,
+                        /*'zoomScale': 144448,*/
+                        'hasOpacitySlider': true,
+                        'includeLegend' : true
+                    }
                 }
             }
         }
