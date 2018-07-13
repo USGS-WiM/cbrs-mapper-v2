@@ -253,10 +253,48 @@
                             <input type="radio" name="pointOption" value="2" id="selectPoint" onClick='choosePoint("selectPoint")'> Select Point on Map
                         </div>
                         <span class="detWarning" id="detWarning"><i class="fa fa-exclamation-circle"></i><b> There are no CBRS units nearby!</b></span>
+                        <div id="nearestUnit"></div>
                         <div class="determinationButtons">
                             <button id="findNearestUnit" type="button" class="btn btn-success btn-fixed" onClick="changePointOption()" data-dismiss="modal"> Find Nearest CBRS Unit </button><!--add in a google analytics gtag for this-->
-                            <button id="printDetermination" type="submit" class="btn btn-default btn-fixed" data-dismiss="modal">Print Report</button>
+                            <button id="printDetButton" type="button" class="btn btn-default btn-fixed" onclick="printDetermination()" onclick="ga('send','event','navbar','click','Print Determination Modal Opened');">Print Report</button>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+    <!--Print CBRS Determination Window -->
+    <div class="modal fade overflow-y-hidden" id="printDetModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                    <h4 class="modal-title">CBRS Determination Report</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="printDet">
+                        <label>Enter Report Title:</label><br>
+                        <input type="text" id="reportTitle" placeholder="Title"><br>
+
+                        <label>Enter Comments:</label><br>
+                        <textarea rows="3" >Comments such as the location's address</textarea><br>
+
+                        <div id="pointOfInterest"></div><br>
+                        <div id="detLocation"></div><br>
+                        <div id="fiDate"><b>Flood Insurance Prohibition Date: </b> Date will go here if applicable</div><br>
+                        <div id="suDate"><b>System Unit Establishment Date: </b>Date will go here if applicable</div><br>
+
+                        <div id="showExtent">Map will go here, w/ legend, scale and zoom buttons</div>
+
+                        <div id="detDisclaimer">
+                            <b>Disclaimer:</b> The point of interest is placed by the user.  It is the responsibility of the user to ensure correct placement of the point.
+                        </div> <br>
+
+                        <button type="button" class="btn btn-success btn-fixed" onClick="printDet()" onclick="ga('send','event','navbar','click','Print Determination Report');">Print</button>
+                        <button type="button" class="btn btn-default btn-fixed" data-dismiss="modal">Dismiss</button>
                     </div>
                 </div>
             </div>

@@ -742,3 +742,21 @@ div.tooltip-inner {
     display: inline-block;
     padding-top: 20px;
 }
+
+#nearestUnit {
+    padding: 20px;
+}
+
+.printDet, .printDet div {
+    padding-top: 10px;
+}
+
+.printDet input, .printDet textarea {
+    padding-right: 10px;
+    width: 100%;
+    display: table;
+}
+
+#showExtent {
+    height: 100px;
+}
