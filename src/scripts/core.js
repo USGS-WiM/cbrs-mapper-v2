@@ -674,7 +674,7 @@ require([
     });
 
     //create CBRS Unit Search
-    var findCBRS = new FindTask('https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/GeoCBRA/MapServer');
+    var findCBRS = new FindTask('https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/CBRAmapperlive/MapServer');
     var params = new FindParameters();
     params.layerIds = [4];
     params.searchFields = ["Unit"];
