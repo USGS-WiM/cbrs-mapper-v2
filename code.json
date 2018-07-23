@@ -3,7 +3,7 @@
     "name": "cbrs-mapper-v2",
     "organization": "U.S. Geological Survey",
     "description": "Documents best practices for software development within WIM",
-    "version": "v0.0.0",
+    "version": "v2.0.2",
     "status": "Production",
 
     "permissions": {
