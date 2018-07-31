@@ -21,10 +21,8 @@ var bufferClicked = false;
 
 var selectPointonMap = false;
 var pointSelection;
-var detCount = 0;
-var detBufferCount = 0;
-var currentDistance = 0;
 var nearUnitHtML;
+var runBuffer = false;
 var lat = 0;
 var long = 0;
 
@@ -61,6 +59,9 @@ require([
     'esri/tasks/PrintTask',
     'esri/tasks/PrintParameters',
     'esri/tasks/PrintTemplate',
+    'esri/tasks/query',
+    'esri/tasks/QueryTask',
+    'esri/tasks/BufferParameters',
     'esri/geometry/webMercatorUtils',
     'esri/urlUtils',
     'dojo/dom',
@@ -103,6 +104,9 @@ require([
     PrintTask,
     PrintParameters,
     PrintTemplate,
+    Query,
+    QueryTask,
+    BufferParameters,
     webMercatorUtils,
     urlUtils,
     dom,
@@ -250,6 +254,11 @@ require([
                 $('#latitude').html(geographicMapPt.y.toFixed(3));
                 $('#longitude').html(geographicMapPt.x.toFixed(3));
             }
+            if (selectPointonMap) {
+                document.getElementById('cursorMessage').style.display = 'visible'
+                document.getElementById('cursorMessage').style.transform = 'translateY('+(cursorPosition.clientY-80)+'px)';
+                document.getElementById('cursorMessage').style.transform += 'translateX('+(cursorPosition.clientX-100)+'px)';
+            }
         });
         //updates lat/lng indicator to map center after pan and shows "map center" label.
         on(map, "pan-end", function () {
@@ -342,7 +351,7 @@ require([
         identifyParams.width = map.width;
         identifyParams.height = map.height;
         //identifyTask = new esri.tasks.IdentifyTask("http://50.17.205.92/arcgis/rest/services/NAWQA/DecadalMap/MapServer");
-        identifyTask = new IdentifyTask(allLayers[0].layers["CBRS Units"].url);
+        identifyTask = new IdentifyTask("https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/CBRS_Prohibitions_Test/MapServer");
 
         //start LobiPanel
         $("#selectionDiv").lobiPanel({
@@ -369,6 +378,22 @@ require([
             map.graphics.clear();
         });
         //End LobiPanel
+
+        $('#selectPoint').click(function() {
+            map.graphics.clear();
+            selectPointonMap = true;
+            $('#determinateModal').modal('hide');
+        });
+
+        $('#runDetermination').click(function () {
+            if (runBuffer) {
+                determinationBuffer();
+            } else if (nearUnitHtML != '') {
+                document.getElementById('nearestUnit').innerHTML = nearUnitHtML;
+            } else {
+                document.getElementById("detWarning").setAttribute("class", "detWarningVisible")
+            }
+        });
 
         //start LobiPanel for Buffer
         $("#bufferDiv").lobiPanel({
@@ -421,15 +446,21 @@ require([
             identifyParams.geometry = evt.mapPoint;
             identifyParams.mapExtent = map.extent;
 
+            document.getElementById("nearestUnit").innerHTML = ''
+            document.getElementById("detWarning").setAttribute("class", "detWarning")
+            document.getElementById('cursorMessage').style.display = 'none';
+            nearUnitHtML = '';
+
             if (map.getLevel()) {
                 //the deferred variable is set to the parameters defined above and will be used later to build the contents of the infoWindow.
-                identifyTask = new IdentifyTask(allLayers[0].layers["CBRS Units"].url);
+                identifyTask = new IdentifyTask("https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/CBRS_Prohibitions_Test/MapServer");
+                //for some reason prohibitions now showing in response -- ???
                 var deferredResult = identifyTask.execute(identifyParams);
 
                 setCursorByID("mainDiv");
 
                 deferredResult.addCallback(function (response) {
-
+                    
                     if (response.length !== 0 && !selectPointonMap) {
                         document.getElementById("legendPoint").setAttribute("class", "legendPt")
                         var feature;
@@ -577,6 +608,11 @@ require([
 
                                 map.graphics.add(graphic);
 
+                            } else if (response[i].layerName == "CBRS Prohibitions") {
+                                if (feature) {
+                                    $("#FIDate").text(attr["FI_Date"])
+                                    $("#SUDate").text(attr["SU_Date"])
+                                }
                             } if (response[i].layerId == 2) {
                                 symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
                                     new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
@@ -614,17 +650,20 @@ require([
 
 
                     } else if (selectPointonMap) {
-                        document.getElementById("nearestUnit").innerHTML = ''
-                        document.getElementById("detWarning").setAttribute("class", "detWarning")
-                        detBufferCount = 0;
-                        nearUnitHtML = ''
+                        map.graphics.clear();
                         long = evt.mapPoint.x.toString()
                         lat = evt.mapPoint.y.toString()
+                        getMapPoint(lat, long)
                         if (response.length > 1) {
-                            getNearestUnit(lat, long, true)
-                        } else {
-                            getNearestUnit(lat, long, false)
+                            for (var i = 0; i < response.length; i++) {
+                                if (response[i].layerName == 'CBRS Units') {
+                                    nearUnitHtML = '<b>The Point is Inside Unit: </b>' + response[i].feature.attributes.Unit
+                                } else if (response[i].layerName == 'CBRS Determination Zone' && nearUnitHtML == '') {
+                                    runBuffer = true;
+                                }
+                            }
                         }
+                        selectPointonMap = false;
                     }
                 });
             }
@@ -705,7 +744,7 @@ require([
         });
 
         //create CBRS Unit Search
-        var findCBRS = new FindTask('https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/GeoCBRA/MapServer');
+        var findCBRS = new FindTask('https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/CBRS_Prohibitions_Test/MapServer');
         var params = new FindParameters();
         params.layerIds = [4];
         params.searchFields = ["Unit"];
@@ -1411,7 +1450,7 @@ require([
                 }
             });//end of require statement containing legend building code
 
-        function getNearestUnit(lat, long, intersects) {
+        function getMapPoint(lat, long) {
             var point = new Point(long, lat, { wkid: 3857 })
             var symbol = new PictureMarkerSymbol(
                 '/images/glyphicons-pin.png', 10, 25);
@@ -1420,13 +1459,64 @@ require([
             document.getElementById("legendPoint").setAttribute("class", "legendPtVisible")
 
             $('#determinateModal').modal('show');
-            if (intersects) {
-                determinationQuery(-1, true);
-            } else {
-                console.log('No intersecting polygon, need to buffer')
-                determinationBuffer(10);
-            }
 
+        }
+
+        //below used to find the nearest Unit if point is within determination buffer
+        function determinationBuffer() {
+            //buffer for distance
+            var geomServ = new GeometryService("https://fwsprimary.wim.usgs.gov/server/rest/services/Utilities/Geometry/GeometryServer");
+
+            var params = new BufferParameters();
+            params.bufferSpatialReference = map.spatialReference;
+            params.distances = [0.05];
+            params.unit = GeometryService.UNIT_STATUTE_MILE;
+            params.outSpatialReference = map.spatialReference;
+            params.unionResults = false;
+            params.geodesic = true;
+            params.geometries = [webMercatorUtils.webMercatorToGeographic(map.graphics.graphics[0].geometry)];
+
+            geomServ.buffer(params, showBuffer);
+        }
+
+        function showBuffer(bufferedGeometries) {
+            var symbol = new SimpleFillSymbol(
+                SimpleFillSymbol.STYLE_SOLID,
+                new SimpleLineSymbol(
+                    SimpleLineSymbol.STYLE_SOLID,
+                    new Color([255, 0, 0, 0]), 2
+                ),
+                new Color([0, 0, 0, 0])
+            );
+
+            var graphic = new Graphic(bufferedGeometries[0], symbol);
+            map.graphics.add(graphic);
+
+            determinationQuery();
+        }
+
+        function determinationQuery() {
+            var queryTask = new QueryTask(map.getLayer("prohibitions").url + '/3');
+            var query = new Query();
+
+            query.geometry = webMercatorUtils.webMercatorToGeographic(map.graphics.graphics[1].geometry);
+            query.units = "kilometers";
+            query.returnGeometry = true;
+            query.outSpatialReference = map.spatialReference;
+
+            queryTask.execute(query).then(function (results) {
+                nearestUnit(results);
+            })
+        }
+
+        function nearestUnit(results) {
+            resultFeatures = results.features
+            if (resultFeatures.length == 1) {
+                nearUnitHtML = "<b>Point is inside the determination buffer. The Nearest Unit is: </b>" + resultFeatures[0].attributes.Unit;
+            } else {
+                nearUnitHtML = "There are more than one unit within 0.05 miles"
+            }
+            document.getElementById('nearestUnit').innerHTML = nearUnitHtML;
         }
 
 
@@ -1481,164 +1571,7 @@ function message() {
     document.getElementById("helpfulHint").innerHTML = "<hr>Click the tool again to deselect it and return to normal map controls";
 }
 
-function choosePoint(choice) {
-    pointSelection = choice;
-}
-function changePointOption() {
-    map.graphics.clear();
-    nearUnitHtML = ''
-    document.getElementById("nearestUnit").innerHTML = ''
-    document.getElementById("detWarning").setAttribute("class", "detWarning")
-    detBufferCount = 0;
-    if (pointSelection == 'selectPoint') {
-        selectPointonMap = true;
-    } else if (pointSelection == 'inputCoords') {
-        selectPointonMap = false;
-        lat = document.getElementById("deterLatitude").value;
-        long = document.getElementById("deterLongitude").value;
-
-        getNearestUnit(lat, long, false);
-    }
-}
-
-function determinationQuery(i, intersects) {
-    require([
-        'esri/tasks/query',
-        'esri/tasks/QueryTask',
-        'esri/geometry',
-        'esri/geometry/webMercatorUtils'
-    ], function (
-        Query,
-        QueryTask,
-        geometry,
-        webMercatorUtils
-    ) {
-            var queryTask = new QueryTask(map.getLayer("prohibitions").url + '/3');
-            var query = new Query();
-
-            query.geometry = webMercatorUtils.webMercatorToGeographic(map.graphics.graphics[i + 1].geometry);
-            query.units = "kilometers";
-            query.distance = [50]; //why is this not doing anything?
-            query.returnGeometry = true;
-            query.outSpatialReference = map.spatialReference;
-
-            queryTask.execute(query).then(function (results) {
-                nearestUnit(results, intersects);
-            })
-        });
-}
-
-function determinationBuffer(dist) {
-    require([
-        'esri/tasks/BufferParameters',
-        'esri/tasks/GeometryService',
-        'esri/geometry/webMercatorUtils'
-    ], function (
-        BufferParameters,
-        GeometryService,
-        webMercatorUtils
-    ) {
-            //buffer for distance
-            var geomServ = new GeometryService("https://fwsprimary.wim.usgs.gov/server/rest/services/Utilities/Geometry/GeometryServer"); //need a proxy?
-
-            var params = new BufferParameters();
-            params.bufferSpatialReference = map.spatialReference;
-            params.distances = [dist];
-            params.unit = GeometryService.UNIT_STATUTE_MILE;
-            params.outSpatialReference = map.spatialReference;
-            params.unionResults = false;
-            params.geodesic = true;
-            params.geometries = [webMercatorUtils.webMercatorToGeographic(map.graphics.graphics[0].geometry)];
-
-            geomServ.buffer(params, showBuffer);
-        });
-}
-
-function showBuffer(bufferedGeometries) {
-    require([
-        'esri/symbols/SimpleFillSymbol',
-        'esri/symbols/SimpleLineSymbol',
-        'esri/Color',
-        'esri/graphic'
-    ], function (
-        SimpleFillSymbol,
-        SimpleLineSymbol,
-        Color,
-        Graphic
-    ) {
-            var symbol = new SimpleFillSymbol(
-                SimpleFillSymbol.STYLE_SOLID,
-                new SimpleLineSymbol(
-                    SimpleLineSymbol.STYLE_SOLID,
-                    new Color([255, 0, 0, 0]), 2
-                ),
-                new Color([0, 0, 0, 0])
-            );
-
-            var graphic = new Graphic(bufferedGeometries[0], symbol);
-            map.graphics.add(graphic);
-
-            determinationQuery(detBufferCount, false);
-        })
-}
-
-function nearestUnit(results, intersects) {
-    resultFeatures = results.features
-    if (intersects) {
-        nearUnitHtML = "<b>This Location Is:</b> " + " within Unit " + resultFeatures[0].attributes.Unit;
-        document.getElementById("nearestUnit").innerHTML = nearUnitHtML
-    } else if (resultFeatures.length > 0) {
-        nearUnitHtML = "<b>This Location Is: </b> "
-        console.log('Features: ' + resultFeatures.length)
-        detBufferCount++;
-        var setDistance = 0;
-        var lastDistance = 0;
-        switch (detBufferCount) {
-            case 1:
-                setDistance = 5
-                lastDistance = 10
-                break;
-            case 2:
-                setDistance = 2
-                lastDistance = 5
-                break;
-            case 3:
-                setDistance = 1
-                lastDistance = 2
-                break;
-            case 4:
-                setDistance = 0.5
-                lastDistance = 1
-                break;
-            case 5:
-                setDistance = 0
-                lastDistance = 0.5
-                break;
-        }
-        currentDistance = lastDistance;
-        nearUnitHtML += 'within ' + currentDistance + ' miles of Unit(s) ';
-        resultFeatures.forEach(function (feat) {
-            if (feat != resultFeatures[resultFeatures.length-1]) {
-                nearUnitHtML += feat.attributes.Unit + ', '
-            } else {
-                nearUnitHtML += feat.attributes.Unit
-            }
-        })
-        determinationBuffer(setDistance);
-        var i = 0;
-        setDistance = 0;
-    } else {
-        if (detBufferCount == 0) {
-            document.getElementById("detWarning").setAttribute("class", "detWarningVisible")
-            nearUnitHtML = 'There are no units within 10 miles of this point.'
-        } else {
-            document.getElementById("nearestUnit").innerHTML = nearUnitHtML
-        }
-    }
-    selectPointonMap = false;
-}
-
-function printDetermination() {
+function showPrintSetup() {
     $('#determinateModal').modal('hide');
     $('#printDetModal').modal('show');
 

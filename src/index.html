@@ -231,9 +231,10 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                    <h4 class="modal-title">CBRS Determination <i class="fa fa-question-circle" id="showAboutDet"></i></h4>
+                    <h4 class="modal-title">CBRS Determination</h4>
+                    <!--<h4 class="modal-title">CBRS Determination <i class="fa fa-question-circle" id="showAboutDet"></i></h4>-->
                 </div>
-                <div style="display: none;" id="aboutDet">
+                <!--<div style="display: none;" id="aboutDet">
                     <p>Bacon ipsum dolor amet cupim burgdoggen ham hock, strip steak shoulder pancetta picanha jowl filet mignon landjaeger 
                         jerky ball tip venison flank drumstick. Ribeye ham frankfurter, alcatra flank ham hock doner short ribs biltong bacon 
                         venison beef picanha burgdoggen boudin. </p>
@@ -241,23 +242,25 @@
                     <p>Capicola pork short loin doner. Beef ribs venison alcatra, prosciutto turducken chuck frankfurter flank short ribs boudin 
                         pork belly swine. Bresaola rump porchetta flank turducken beef sirloin picanha landjaeger alcatra. Pork chop beef ribs salami 
                         frankfurter.</p>
-                </div>
+                </div>-->
                 <div class="modal-body">
                     <div class="determination">
-                        <div class="determinationColumns">
-                            <input type="radio" name="pointOption" value="1" id="inputCoord" onClick='choosePoint("inputCoords")'> Input Coordinates
-                            <div class="inputLatLongs" style="margin:auto">
-                                Latitude:  <input type="text" id="deterLatitude" placeholder="Enter Latitude"><br>
-                                Longitude:  <input type="text" id="deterLongitude" placeholder="Enter Longitude">
-                            </div>
-                            <input type="radio" name="pointOption" value="2" id="selectPoint" onClick='choosePoint("selectPoint")'> Select Point on Map
+                        <div class="detSteps">Step 1: Click the pin icon on the right to select your point on the map.
+                            <button id="selectPoint" type="button" onClick="ga('send', 'event', 'determination', 'click', 'Select Determination Point');" data-dismiss="modal"> <i class="fa fa-map-marker"></i> </button>
+                        <div id="cursorMessage">Click to add a point </div>
+                        </div><br>
+                        <div class="detSteps">Step 2: Hit "Go" to execute determination.
+                            <button id="runDetermination" type="button" onClick="ga('send', 'event', 'determination', 'click', 'Execute Determination');">Go</button> <br>
+                        </div><br>
+                        <div class="detSteps">Step 3: Create .pdf to print Determination Report
+                            <button onClick="showPrintSetup()"><i class="fa fa-file-pdf-o" id="showPrintSetup"></i></button>
                         </div>
                         <span class="detWarning" id="detWarning"><i class="fa fa-exclamation-circle"></i><b> There are no CBRS units nearby!</b></span>
                         <div id="nearestUnit"></div>
-                        <div class="determinationButtons">
-                            <button id="findNearestUnit" type="button" class="btn btn-success btn-fixed" onClick="changePointOption()" data-dismiss="modal"> Find Nearest CBRS Unit </button><!--add in a google analytics gtag for this-->
+                        <!--<div class="determinationButtons">
+                            <button id="findNearestUnit" type="button" class="btn btn-success btn-fixed" onClick="changePointOption()" data-dismiss="modal"> Find Nearest CBRS Unit </button><!--add in a google analytics gtag for this
                             <button id="printDetButton" type="button" class="btn btn-default btn-fixed" onclick="printDetermination()" onclick="ga('send','event','navbar','click','Print Determination Modal Opened');">Print Report</button>
-                        </div>
+                        </div>-->
                     </div>
                 </div>
             </div>
@@ -532,6 +535,8 @@
                                         <li data-toggle="tooltip" title="The Coastal Barrier Resources System (CBRS) contains two types of mapped units, System Units and Otherwise Protected Areas (OPAs). OPAs are denoted with a 'P' at the end of the unit designation (e.g., FL-64P, P10P). Most new Federal expenditures and financial assistance, including Federal flood insurance, are prohibited within System Units, while the only Federal spending prohibition within OPAs is on Federal flood insurance.">Unit Type: <label id="unitType"></label>&nbsp<span class="glyphicon glyphicon-info-sign"
                                                 style="font-size: 11px"></span></li>
                                         <li>Total Acreage: <label id="totalAcre"></label></li>
+                                        <li>Flood Insurance Prohibition Date: <label id="FIDate"></label></li>
+                                        <li>System Unit Establishment Date: <label id="SUDate"></label></li>
                                     </ul>
                                 </div>
                                 <br>

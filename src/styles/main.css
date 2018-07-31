@@ -571,7 +571,7 @@ input[type="checkbox"], input[type="radio"] {
   float: right;
   position: inherit;
   margin-right: 20px;
-  margin-top: 40px;
+  margin-top: 70px;
   margin-left: 5px;
   margin-bottom: 5px;
   clear: right;
@@ -686,22 +686,20 @@ div.tooltip-inner {
     position: relative;
     text-align: center;
     display: inline-block;
+    padding: 2px 5px;
+    float: right;
 }
 
 .determination .inputLatLongs {
     text-align: left;
-    padding-left: 20px;
+    padding-left: 30px;
     display: inline-block;
     width: 100%;
 }
 
-.determinationButtons {
-    text-align: center;
-    margin-top: 20px;
-}
 .inputLatLongs input {
-    margin-top: 10px;
     border-width: 0px 0px 1px 0px;
+    padding-top: 5px;
     border-style: solid;
 }
 
@@ -709,8 +707,12 @@ div.tooltip-inner {
     column-width:  200px;
     -moz-column-width:  200px;
     -webkit-column-width:  200px;
+    padding: 5px 0px 5px 20px;
 }
 
+.step1 div {
+    padding: 10px 0px 10px 10px;
+}
 
 .legendPtVisible img {
     margin: 10px 15px 10px 25px;
@@ -759,4 +761,10 @@ div.tooltip-inner {
 
 #showExtent {
     height: 100px;
+}
+
+#cursorMessage {
+    transition: -webkit-transform 0.23s;
+    transition: transform 0.23s;
+    display: none;
 }
