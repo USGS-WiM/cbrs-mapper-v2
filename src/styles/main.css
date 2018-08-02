@@ -681,37 +681,13 @@ div.tooltip-inner {
     padding-bottom: 0px !important;
 }
 
-.determination button {
+.validation button {
     margin: 5px;
     position: relative;
     text-align: center;
     display: inline-block;
     padding: 2px 5px;
     float: right;
-}
-
-.determination .inputLatLongs {
-    text-align: left;
-    padding-left: 30px;
-    display: inline-block;
-    width: 100%;
-}
-
-.inputLatLongs input {
-    border-width: 0px 0px 1px 0px;
-    padding-top: 5px;
-    border-style: solid;
-}
-
-.determinationColumns {
-    column-width:  200px;
-    -moz-column-width:  200px;
-    -webkit-column-width:  200px;
-    padding: 5px 0px 5px 20px;
-}
-
-.step1 div {
-    padding: 10px 0px 10px 10px;
 }
 
 .legendPtVisible img {
@@ -727,44 +703,7 @@ div.tooltip-inner {
     margin-right: 20px;
 }
 
-.aboutDetVisible {
-    display: inline-block !important;
-}
-
-#aboutDet {
-    background-color: #f2f2f2;
-    padding: 5px 15px 0px 10px;
-}
-
-.detWarning {
-    display: none;
-}
-
-.detWarningVisible {
-    display: inline-block;
-    padding-top: 20px;
-}
-
-#nearestUnit {
-    padding: 20px;
-}
-
-.printDet, .printDet div {
-    padding-top: 10px;
-}
-
-.printDet input, .printDet textarea {
-    padding-right: 10px;
-    width: 100%;
-    display: table;
-}
-
-#showExtent {
-    height: 100px;
-}
-
-#cursorMessage {
-    transition: -webkit-transform 0.23s;
-    transition: transform 0.23s;
-    display: none;
+#locationDesc {
+    margin: 5px 20px 0px 20px;
+    width: 80%;
 }

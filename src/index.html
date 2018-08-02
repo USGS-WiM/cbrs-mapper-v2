@@ -106,9 +106,9 @@
                     <span id="geosearchButtonText"> Find CBRS Unit</span>
                 </button>
             
-            <button id="determinateNav" type="button" class="btn btn-primary navbar-btn pull-right" onclick="ga('send','event','navbar','click','Determination Modal Opened');">
+            <button id="validationNav" type="button" class="btn btn-primary navbar-btn pull-right" onclick="ga('send','event','navbar','click','Validation Modal Opened');">
                 <span class="glyphicon glyphicon-search"></span>
-                <span id="geosearchButtonText"> CBRS Determination </span>
+                <span id="geosearchButtonText"> CBRS Validation Tool </span>
             </button>
 
             <button id="aboutNav" class="btn btn-default navbar-btn pull-right" onclick="ga('send','event','navbar','click','About');">
@@ -225,42 +225,30 @@
         </div>
     </div>
 
-    <!--CBRS Determination Search -->
-    <div class="modal fade overflow-y-hidden" id="determinateModal" style="display: none;" aria-hidden="true">
+    <!--CBRS Validation Tool -->
+    <div class="modal fade overflow-y-hidden" id="validationModal" style="display: none;" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                    <h4 class="modal-title">CBRS Determination</h4>
-                    <!--<h4 class="modal-title">CBRS Determination <i class="fa fa-question-circle" id="showAboutDet"></i></h4>-->
+                    <h4 class="modal-title">CBRS Validation Tool</h4>
                 </div>
-                <!--<div style="display: none;" id="aboutDet">
-                    <p>Bacon ipsum dolor amet cupim burgdoggen ham hock, strip steak shoulder pancetta picanha jowl filet mignon landjaeger 
-                        jerky ball tip venison flank drumstick. Ribeye ham frankfurter, alcatra flank ham hock doner short ribs biltong bacon 
-                        venison beef picanha burgdoggen boudin. </p>
-                    
-                    <p>Capicola pork short loin doner. Beef ribs venison alcatra, prosciutto turducken chuck frankfurter flank short ribs boudin 
-                        pork belly swine. Bresaola rump porchetta flank turducken beef sirloin picanha landjaeger alcatra. Pork chop beef ribs salami 
-                        frankfurter.</p>
-                </div>-->
-                <div class="modal-body">
-                    <div class="determination">
-                        <div class="detSteps">Step 1: Click the pin icon on the right to select your point on the map.
-                            <button id="selectPoint" type="button" onClick="ga('send', 'event', 'determination', 'click', 'Select Determination Point');" data-dismiss="modal"> <i class="fa fa-map-marker"></i> </button>
-                        <div id="cursorMessage">Click to add a point </div>
+                <div class="modal-body" id="valModalBody">
+                    <div class="validation">
+                        <div class="valSteps">Step 1: Click the pin icon on the right to select your point on the map.
+                            <button class="btn btn-default btn-fixed" id="selectPoint" type="button" onClick="ga('send', 'event', 'validation', 'click', 'Select Validation Point');" data-dismiss="modal"> <i class="fa fa-map-marker"></i> </button>
                         </div><br>
-                        <div class="detSteps">Step 2: Hit "Go" to execute determination.
-                            <button id="runDetermination" type="button" onClick="ga('send', 'event', 'determination', 'click', 'Execute Determination');">Go</button> <br>
+                        <div class="valSteps">Step 2: Enter Address or Description of Point: <br>
+                            <input type="text" placeholder="Type here" id="locationDesc"></div><br>
+                        <div class="valSteps">Step 3: Hit "Go" to execute CBRS validation.
+                            <button class="btn btn-default btn-fixed" id="runValidation" type="button" onClick="ga('send', 'event', 'validation', 'click', 'Execute Validation');">Go</button> <br>
                         </div><br>
-                        <div class="detSteps">Step 3: Create .pdf to print Determination Report
-                            <button onClick="showPrintSetup()"><i class="fa fa-file-pdf-o" id="showPrintSetup"></i></button>
+                        <div class="valSteps">Step 4: Create .pdf to print CBRS documentation
+                            <button class="btn btn-default btn-fixed" id='printVal' onClick="ga('send', 'event', 'validation', 'click', 'Print Documentation');"><i class="fa fa-file-pdf-o" id="showPrintSetup"></i></button>
                         </div>
-                        <span class="detWarning" id="detWarning"><i class="fa fa-exclamation-circle"></i><b> There are no CBRS units nearby!</b></span>
-                        <div id="nearestUnit"></div>
-                        <!--<div class="determinationButtons">
-                            <button id="findNearestUnit" type="button" class="btn btn-success btn-fixed" onClick="changePointOption()" data-dismiss="modal"> Find Nearest CBRS Unit </button><!--add in a google analytics gtag for this
-                            <button id="printDetButton" type="button" class="btn btn-default btn-fixed" onclick="printDetermination()" onclick="ga('send','event','navbar','click','Print Determination Modal Opened');">Print Report</button>
-                        </div>-->
+                        <div id="printJobsVal" style="margin-top: 5px;"><label>Print Jobs </label>
+                            <p class="toRemove"> No print jobs yet</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -269,35 +257,25 @@
         <!-- /.modal-dialog -->
     </div>
 
-    <!--Print CBRS Determination Window -->
-    <div class="modal fade overflow-y-hidden" id="printDetModal" aria-hidden="true">
+    <!--CBRS User Agreement -->
+    <div class="modal fade overflow-y-hidden" id="userAgreementModal" style="display: none;" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                    <h4 class="modal-title">CBRS Determination Report</h4>
+                    <h4 class="modal-title">CBRS User Agreement</h4>
                 </div>
                 <div class="modal-body">
-                    <div class="printDet">
-                        <label>Enter Report Title:</label><br>
-                        <input type="text" id="reportTitle" placeholder="Title"><br>
-
-                        <label>Enter Comments:</label><br>
-                        <textarea rows="3" >Comments such as the location's address</textarea><br>
-
-                        <div id="pointOfInterest"></div><br>
-                        <div id="detLocation"></div><br>
-                        <div id="fiDate"><b>Flood Insurance Prohibition Date: </b> Date will go here if applicable</div><br>
-                        <div id="suDate"><b>System Unit Establishment Date: </b>Date will go here if applicable</div><br>
-
-                        <div id="showExtent">Map will go here, w/ legend, scale and zoom buttons</div>
-
-                        <div id="detDisclaimer">
-                            <b>Disclaimer:</b> The point of interest is placed by the user.  It is the responsibility of the user to ensure correct placement of the point.
-                        </div> <br>
-
-                        <button type="button" class="btn btn-success btn-fixed" onClick="printDet()" onclick="ga('send','event','navbar','click','Print Determination Report');">Print</button>
-                        <button type="button" class="btn btn-default btn-fixed" data-dismiss="modal">Dismiss</button>
+                    <div class="userAgreement">
+                        <p>Bacon ipsum dolor amet beef ribs tail ribeye, sausage biltong pancetta kevin cupim. Swine kevin shank strip steak fatback. Meatloaf ground round 
+                            leberkas capicola picanha kielbasa turkey jerky swine beef short loin flank. Burgdoggen chicken tenderloin jowl andouille turkey fatback. Bacon 
+                            brisket chicken drumstick picanha. Swine flank short loin landjaeger tenderloin shankle turkey pork belly.</p>
+                        <p>Bacon leberkas pork belly, andouille venison jerky doner swine meatball shoulder frankfurter. Andouille pork belly beef ribs tri-tip shank buffalo. 
+                            Jerky ground round frankfurter, pig pork chop meatball ham pork shankle tenderloin. Bresaola cow drumstick landjaeger, ham hock meatloaf pork chop 
+                            prosciutto. Buffalo pig pork belly t-bone jowl ball tip, brisket short loin flank frankfurter boudin doner kielbasa pork loin tri-tip.</p>
+                        <span class="userCheck"><i class="fa fa-square-o" id="userCheckbox"></i> I agree to these terms and Condititions.</span><br>
+                        <button id="continueValidation" type="submit" class="btn btn-success btn-fixed" > Continue </button>
+                        <button id="printDismissButton" type="button" class="btn btn-default btn-fixed" data-dismiss="modal"> Dismiss</button>
                     </div>
                 </div>
             </div>

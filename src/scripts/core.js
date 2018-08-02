@@ -21,10 +21,19 @@ var bufferClicked = false;
 
 var selectPointonMap = false;
 var pointSelection;
-var nearUnitHtML;
-var runBuffer = false;
+var inUnit = '';
+var inUnitType = '';
+var fiDate = "N/A";
+var suDate = "N/A";
+var pinLoc = 'out';
+var infoPar = '';
+var mapDate = '';
+var mapNo = '';
 var lat = 0;
 var long = 0;
+var locDesc;
+var latLong;
+var userAgree = 0;
 
 require([
     'esri/map',
@@ -215,6 +224,12 @@ require([
             printMap();
         });
 
+        $('#showPrintSetup').click(function (e) {
+            e.preventDefault();
+            document.getElementById("showPrintSetup").setAttribute("class", "fa fa-spinner")
+            printVal();
+        });
+
         $('#getDataButton').click(function () {
             showGetDataModal();
         });
@@ -253,11 +268,6 @@ require([
                 var geographicMapPt = webMercatorUtils.webMercatorToGeographic(cursorPosition.mapPoint);
                 $('#latitude').html(geographicMapPt.y.toFixed(3));
                 $('#longitude').html(geographicMapPt.x.toFixed(3));
-            }
-            if (selectPointonMap) {
-                document.getElementById('cursorMessage').style.display = 'visible'
-                document.getElementById('cursorMessage').style.transform = 'translateY('+(cursorPosition.clientY-80)+'px)';
-                document.getElementById('cursorMessage').style.transform += 'translateX('+(cursorPosition.clientX-100)+'px)';
             }
         });
         //updates lat/lng indicator to map center after pan and shows "map center" label.
@@ -346,7 +356,7 @@ require([
         identifyParams.tolerance = 0;
         identifyParams.returnGeometry = true;
         identifyParams.layerOption = IdentifyParameters.LAYER_OPTION_ALL;
-        identifyParams.layerIds = [0, 2, 4];
+        identifyParams.layerIds = [0, 2, 4, 6];
         identifyParams.spatialReference = map.spatialReference;
         identifyParams.width = map.width;
         identifyParams.height = map.height;
@@ -382,18 +392,39 @@ require([
         $('#selectPoint').click(function() {
             map.graphics.clear();
             selectPointonMap = true;
-            $('#determinateModal').modal('hide');
+            $('#validationModal').modal('hide');
         });
 
-        $('#runDetermination').click(function () {
-            if (runBuffer) {
-                determinationBuffer();
-            } else if (nearUnitHtML != '') {
-                document.getElementById('nearestUnit').innerHTML = nearUnitHtML;
+        $('#runValidation').click(function () {
+            graphPoint = map.graphics.graphics[0]
+            if (graphPoint && graphPoint.geometry.type == "point" && userAgree % 2 == 0) {
+                $('#userAgreementModal').modal('show');
+            } else if (graphPoint && graphPoint.geometry.type == "point" && userAgree % 2 != 0) {
+                runValidation();
             } else {
-                document.getElementById("detWarning").setAttribute("class", "detWarningVisible")
+                alert('No map point found. Please place point on map, then try again.')
             }
         });
+
+        $('#userCheckbox').click(function() {
+            userAgree ++;
+            if (userAgree % 2 != 0) {
+                document.getElementById("userCheckbox").setAttribute("class", "fa fa-check-square-o");
+            } else {
+                document.getElementById("userCheckbox").setAttribute("class", "fa fa-square-o");
+            }
+        });
+
+        $('#continueValidation').click(function() {
+            if (userAgree % 2 != 0) {
+                $('#userAgreementModal').modal('hide');
+                $('#validationModal').modal('show');
+                ga('send', 'event', 'validation', 'click', 'User Agreement')
+                runValidation();
+            } else {
+                alert('You must agree with the terms and conditions to continue with CBRS Validation.')
+            }
+        })
 
         //start LobiPanel for Buffer
         $("#bufferDiv").lobiPanel({
@@ -439,6 +470,10 @@ require([
             }
 
             map.graphics.clear();
+            document.getElementById('runValidation').innerHTML = 'Go';
+            document.getElementById('runValidation').setAttribute("class", "btn btn-default btn-fixed");
+            document.getElementById('selectPoint').setAttribute("class", "btn btn-default btn-fixed");
+            document.getElementById('printVal').setAttribute("class", "btn btn-default btn-fixed");
             //map.infoWindow.hide();s
 
             //alert("scale: " + map.getScale() + ", level: " + map.getLevel());
@@ -446,17 +481,11 @@ require([
             identifyParams.geometry = evt.mapPoint;
             identifyParams.mapExtent = map.extent;
 
-            document.getElementById("nearestUnit").innerHTML = ''
-            document.getElementById("detWarning").setAttribute("class", "detWarning")
-            document.getElementById('cursorMessage').style.display = 'none';
-            nearUnitHtML = '';
-
             if (map.getLevel()) {
                 //the deferred variable is set to the parameters defined above and will be used later to build the contents of the infoWindow.
                 identifyTask = new IdentifyTask("https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/CBRS_Prohibitions_Test/MapServer");
-                //for some reason prohibitions now showing in response -- ???
                 var deferredResult = identifyTask.execute(identifyParams);
-
+                
                 setCursorByID("mainDiv");
 
                 deferredResult.addCallback(function (response) {
@@ -653,16 +682,33 @@ require([
                         map.graphics.clear();
                         long = evt.mapPoint.x.toString()
                         lat = evt.mapPoint.y.toString()
-                        getMapPoint(lat, long)
-                        if (response.length > 1) {
+                        inUnit = '';
+                        inUnitType = '';
+                        fiDate = 'N/A';
+                        suDate = 'N/A';
+                        pinLoc = 'out';
+                        mapDate = '';
+                        mapNo = '';
+                        locDesc = '';
+                        var inBuffer = false;
+                        if (response.length > 0) {
                             for (var i = 0; i < response.length; i++) {
-                                if (response[i].layerName == 'CBRS Units') {
-                                    nearUnitHtML = '<b>The Point is Inside Unit: </b>' + response[i].feature.attributes.Unit
-                                } else if (response[i].layerName == 'CBRS Determination Zone' && nearUnitHtML == '') {
-                                    runBuffer = true;
+                                if (response[i].layerName == 'CBRS Prohibitions' && !inBuffer) {
+                                    inUnit = response[i].feature.attributes.Unit;
+                                    inUnitType = response[i].feature.attributes.CBRS_Type;
+                                    fiDate = response[i].feature.attributes.FI_Date;
+                                    suDate = response[i].feature.attributes.SU_Date;
+                                    pinLoc = 'in';
+                                } else if (response[i].layerName == 'CBRS Determination Zone') {
+                                    inBuffer = true;
+                                    pinLoc = 'buff';
+                                } else if (response[i].layerName == 'CBRS Map Footprints') {
+                                    mapDate = response[i].feature.attributes.Map_Date;
+                                    mapNo = response[i].feature.attributes.Panel_No;
                                 }
                             }
                         }
+                        getMapPoint(lat, long)
                         selectPointonMap = false;
                     }
                 });
@@ -711,7 +757,7 @@ require([
             //"legendLayers": [legendLayer]
             var docTitle = template.layoutOptions.titleText;
             printParams.template = template;
-            var printMap = new PrintTask("http://fwsprimary.wim.usgs.gov/server/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task");
+            var printMap = new PrintTask("https://fwsprimary.wim.usgs.gov/server/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task");
             printMap.execute(printParams, printDone, printError);
 
             /* $.get("https://fwsprimary.wim.usgs.gov/pdfLoggingService/pdfLog.asmx/Log?printInfo=" + map.getScale() + "," + map.extent.xmin + "," + map.extent.ymax + "," + map.extent.xmax + "," + map.extent.ymin + ",NWIV2", function(data) {
@@ -731,6 +777,63 @@ require([
                 $("#printExecuteButton").button('reset');
             }
 
+            function printError(event) {
+                alert("Sorry, an unclear print error occurred. Please try refreshing the application to fix the problem");
+            }
+        }
+
+        function printVal() {
+            locDesc = document.getElementById('locationDesc').value;
+            if (locDesc == "") {
+                locDesc = 'N/A'
+            }
+
+            var valParams = new PrintParameters();
+            valParams.map = map;
+        
+            var valTemplate = new PrintTemplate();
+            valTemplate.exportOptions = {
+                width: 400,
+                height: 550,
+                dpi: 300
+            };
+            valTemplate.format = "PDF";
+            valTemplate.layout = "Letter ANSI A Portrait CBRS Mapper V2_Prohibitions";
+            valTemplate.preserveScale = false;
+            var prohibLegendLayer = new LegendLayer();
+            prohibLegendLayer.layerId = "prohibitions";
+            var cbrsLegendLayer = new LegendLayer();
+            cbrsLegendLayer.layerId = "cbrs";
+
+            //legendLayer.subLayerIds = [*];
+        
+            valTemplate.layoutOptions = {
+                "titleText": "CBRS Validation",
+                "authorText": "Coastal Barrier Resources System (CBRS)",
+                "copyrightText": "This page was produced by the CBRS mapper",
+                "legendLayers": [prohibLegendLayer,cbrsLegendLayer],
+                "scalebarUnit": "Miles",
+                "customTextElements": [{CustomText_FIDate: fiDate}, {CustomText_SUDate: suDate}, {CustomText_LocDesc: locDesc}, {CustomText_PinLoc: String(pinLoc)}, {CustomText_info: String(infoPar)}, {CustomText_LatLong: latLong}]
+            };
+        
+            //"legendLayers": [legendLayer]
+            var docTitle = valTemplate.layoutOptions.titleText;
+            valParams.template = valTemplate;
+            var printMap = new PrintTask("https://fwsprimary.wim.usgs.gov/server/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task");
+            printMap.execute(valParams, printDone, printError);
+        
+            function printDone(event) {
+                //alert(event.url);
+                //window.open(event.url, "_blank");
+                printCount++;
+                var printJob = $('<p><label>' + printCount + ': </label>&nbsp;&nbsp;<a href="' + event.url + '" target="_blank">' + docTitle + ' </a></p>');
+                //$("#print-form").append(printJob);
+                $("#printJobsVal").find("p.toRemove").remove();
+                $("#valModalBody").append(printJob);
+                document.getElementById("showPrintSetup").setAttribute("class", "fa fa-file-pdf-o")
+                document.getElementById('printVal').setAttribute("class", "btn btn-success btn-fixed");
+            }
+        
             function printError(event) {
                 alert("Sorry, an unclear print error occurred. Please try refreshing the application to fix the problem");
             }
@@ -1009,22 +1112,10 @@ require([
         });
 
         $(document).ready(function () {
-            function showDetModal() {
-                $('#determinateModal').modal('show');
-            }
-
-            $('#determinateNav').click(function () {
-                showDetModal();
+            $('#validationNav').click(function () {
+                $('#validationModal').modal('show');
             });
 
-            $('#showAboutDet').click(function () {
-                detCount = Number(detCount) + 1;
-                if (detCount % 2 == 1) {
-                    document.getElementById("aboutDet").setAttribute("class", "aboutDetVisible")
-                } else if (detCount % 2 == 0) {
-                    document.getElementById("aboutDet").setAttribute("class", "aboutDet")
-                }
-            });
         });
 
         require([
@@ -1451,74 +1542,75 @@ require([
             });//end of require statement containing legend building code
 
         function getMapPoint(lat, long) {
-            var point = new Point(long, lat, { wkid: 3857 })
-            var symbol = new PictureMarkerSymbol(
-                '/images/glyphicons-pin.png', 10, 25);
+            var point = new Point({"x": long, "y": lat, "spatialReference": { wkid: 3857 }})
+            var symbol = new PictureMarkerSymbol({"angle":0,"xoffset": 0, "yoffset": 6, "type": "esriPMS", "url": '/images/glyphicons-pin.png',"imageData": "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAYCAYAAADDLGwtAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABAhpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1wTU06T3JpZ2luYWxEb2N1bWVudElEPSJ1dWlkOjY1RTYzOTA2ODZDRjExREJBNkUyRDg4N0NFQUNCNDA3IiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjE0MTI1RTk3ODUzNzExRTU4RTQwRkQwODFEOUZEMEE3IiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjE0MTI1RTk2ODUzNzExRTU4RTQwRkQwODFEOUZEMEE3IiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE1IChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MTk5NzA1OGEtZDI3OC00NDZkLWE4ODgtNGM4MGQ4YWI1NzNmIiBzdFJlZjpkb2N1bWVudElEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6YzRkZmQxMGMtY2NlNS0xMTc4LWE5OGQtY2NkZmM5ODk5YWYwIi8+IDxkYzp0aXRsZT4gPHJkZjpBbHQ+IDxyZGY6bGkgeG1sOmxhbmc9IngtZGVmYXVsdCI+Z2x5cGhpY29uczwvcmRmOmxpPiA8L3JkZjpBbHQ+IDwvZGM6dGl0bGU+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+xuL6IgAAAMZJREFUeNrskrERwjAMRS2OgjIjMAJlSkrG8BiUGYERnA0oU2YEs0HYgJJOSL5vn/D5IPTo7l9k6dmOv+2Y2akkvGgRMaT5UPqAApoP0VxNCGDSSgy4gwYDMsYuYqWusb39jZQofGkARYTka2xEtxXc3R7mk3xtT0uh+GgMjwbQ3Oc+ZTNzENExWcE8v9UbIAOk+tRurT1/8HdQjN/Z8dY0TvLpTe8stSg3dC2gFPYGGs1OB8BLuWs8BoXzlk99QdKfdPASYAAYDYAkrGb8NgAAAABJRU5ErkJggg==", "contentType": "image/png", "width": 8, "height": 20 });
             map.graphics.add(new Graphic(point, symbol));
 
             document.getElementById("legendPoint").setAttribute("class", "legendPtVisible")
 
-            $('#determinateModal').modal('show');
+            $('#validationModal').modal('show');
 
+            var newpoint = webMercatorUtils.xyToLngLat(long, lat);
+            latLong = String(Math.round(newpoint[0] * 1000000)/1000000) + ', ' + String(Math.round(newpoint[1] * 1000000)/1000000);
+
+            document.getElementById('selectPoint').setAttribute("class", "btn btn-success btn-fixed")
         }
 
-        //below used to find the nearest Unit if point is within determination buffer
-        function determinationBuffer() {
-            //buffer for distance
-            var geomServ = new GeometryService("https://fwsprimary.wim.usgs.gov/server/rest/services/Utilities/Geometry/GeometryServer");
-
-            var params = new BufferParameters();
-            params.bufferSpatialReference = map.spatialReference;
-            params.distances = [0.05];
-            params.unit = GeometryService.UNIT_STATUTE_MILE;
-            params.outSpatialReference = map.spatialReference;
-            params.unionResults = false;
-            params.geodesic = true;
-            params.geometries = [webMercatorUtils.webMercatorToGeographic(map.graphics.graphics[0].geometry)];
-
-            geomServ.buffer(params, showBuffer);
-        }
-
-        function showBuffer(bufferedGeometries) {
-            var symbol = new SimpleFillSymbol(
-                SimpleFillSymbol.STYLE_SOLID,
-                new SimpleLineSymbol(
-                    SimpleLineSymbol.STYLE_SOLID,
-                    new Color([255, 0, 0, 0]), 2
-                ),
-                new Color([0, 0, 0, 0])
-            );
-
-            var graphic = new Graphic(bufferedGeometries[0], symbol);
-            map.graphics.add(graphic);
-
-            determinationQuery();
-        }
-
-        function determinationQuery() {
-            var queryTask = new QueryTask(map.getLayer("prohibitions").url + '/3');
-            var query = new Query();
-
-            query.geometry = webMercatorUtils.webMercatorToGeographic(map.graphics.graphics[1].geometry);
-            query.units = "kilometers";
-            query.returnGeometry = true;
-            query.outSpatialReference = map.spatialReference;
-
-            queryTask.execute(query).then(function (results) {
-                nearestUnit(results);
-            })
-        }
-
-        function nearestUnit(results) {
-            resultFeatures = results.features
-            if (resultFeatures.length == 1) {
-                nearUnitHtML = "<b>Point is inside the determination buffer. The Nearest Unit is: </b>" + resultFeatures[0].attributes.Unit;
-            } else {
-                nearUnitHtML = "There are more than one unit within 0.05 miles"
+        function runValidation() {
+            if (suDate == 'Null') {suDate = 'N/A'};
+            if (fiDate == 'Null') {fiDate = 'N/A'};
+            if (pinLoc == 'in') {
+                pinLoc = 'Within Unit ' + inUnit;
+                if (inUnitType == 'Otherwise Protected Area') {
+                    infoPar = 'The user placed pin location is within Otherwise Protected Area Unit ' + inUnit + ' of the CBRS.  For the official CBRS map depicting this area, please see the map ' +
+                        'numbered ' + mapNo + ', dated ' + mapDate + '. The official CBRS maps are accessible at https://www.fws.gov/cbra/maps/index.html. \r\n \r\n'+
+                        'The Coastal Barrier Improvement Act (Pub. L. 101-591; 42 U.S.C. § 4028) prohibits Federal flood insurance within OPAs, with an exception for structures' +
+                        'that are used in a manner consistent with the purpose for which the area is protected (e.g., park visitors center, park restroom facilities, etc.). \r\n' +
+                        'The prohibition on Federal flood insurance for this pin location took effect on ' + fiDate + '. Federal flood insurance through the National Flood Insurance ' +
+                        'Program is available if the subject building was constructed (or permitted and under construction) before the flood insurance prohibition date, and has not been' +
+                        'substantially improved or substantially damaged since. For more information about the restrictions on Federal flood insurance, please refer to the Federal ' +
+                        'Emergency Management Agency’s (FEMA) regulations in Title 44 Part 71 of the Code of Federal Regulations and Section 19 of FEMA’s Flood Insurance Manual: ' +
+                        'https://www.fema.gov/flood-insurance-manual. \r\n' +
+                        'The CBRS information is derived directly from the CBRS web service provided by the U.S. Fish and Wildlife Service (Service). This map was exported on <dyn type="date" format=""/> at <dyn type="time" format=""/> and ' +
+                        'does not reflect changes or amendments subsequent to this date and time.  The CBRS boundaries on this map may change or become superseded by new boundaries over time. \r\n \r\n' +
+                        'This map image is void if one or more of the following map elements do not appear: basemap imagery, CBRS unit labels, prohibition date labels, legend, scale bar, map creation date.'
+                } else if (inUnitType == 'System Unit') {
+                    infoPar = 'The user placed pin location is within System Unit ' + inUnit + ' of the CBRS.  For the official CBRS map depicting this area, please see the map ' +
+                        'numbered ' + mapNo + ', dated ' + mapDate + '. The official CBRS maps are accessible at https://www.fws.gov/cbra/maps/index.html. \r\n'+
+                        'The Coastal Barrier Resources Act (Pub. L. 97-348) and subsequent amendments (16 U.S.C. § 3501 et seq.) prohibit most Federal funding and financial assistance' +
+                        'within System Units, including flood insurance. \r\n \r\n' +
+                        'The prohibition on Federal flood insurance for this pin location took effect on ' + fiDate + '. Federal flood insurance through the National Flood Insurance ' +
+                        'Program is available if the subject building was constructed (or permitted and under construction) before the flood insurance prohibition date, and has not been' +
+                        'substantially improved or substantially damaged since. For more information about the restrictions on Federal flood insurance, please refer to the Federal ' +
+                        'Emergency Management Agency’s (FEMA) regulations in Title 44 Part 71 of the Code of Federal Regulations and Section 19 of FEMA’s Flood Insurance Manual: ' +
+                        'https://www.fema.gov/flood-insurance-manual. The prohibition on all other Federal expenditures and financial assistance (besides flood insurance) for this pin ' +
+                        'location took effect on ' + suDate + '.  \r\n' +
+                        'The CBRS information is derived directly from the CBRS web service provided by the U.S. Fish and Wildlife Service (Service). This map was exported on <dyn type="date" format=""/> at <dyn type="time" format=""/> and ' +
+                        'does not reflect changes or amendments subsequent to this date and time.  The CBRS boundaries on this map may change or become superseded by new boundaries over time. \r\n \r\n' +
+                        'This map image is void if one or more of the following map elements do not appear: basemap imagery, CBRS unit labels, prohibition date labels, legend, scale bar, map creation date.'
+                }
+            } else if (pinLoc == 'buff') {
+                pinLoc = 'Within CBRS Buffer Zone'
+                fiDate = 'Undetermined'
+                suDate = 'Undetermined'
+                infoPar = 'The user placed pin location is within the CBRS Buffer Zone. The CBRS Buffer Zone represents the area immediately adjacent to the CBRS Boundary where ' +
+                    'users are advised to contact the U.S. Fish and Wildlife Service for an official determination as to whether the property or project site is located "in" or "out" ' +
+                    'of the CBRS. For information on obtaining an official CBRS property determination, please visit: http://www.fws.gov/cbra/Determinations.html. \r\n \r\n' +
+                    'The CBRS information is derived directly from the CBRS web service provided by the U.S. Fish and Wildlife Service (Service). This map was exported on <dyn type="date" format=""/> at <dyn type="time" format=""/> ' +
+                    ' and does not reflect changes or amendments subsequent to this date and time. The CBRS boundaries on this map may change or become superseded by new boundaries over time. \r\n \r\n' +
+                    'This map image is void if one or more of the following map elements do not appear: basemap imagery, CBRS unit labels, prohibition date labels, legend, scale bar, map creation date.'
+            } else if (pinLoc == 'out') {
+                pinLoc = 'Outside CBRS'
+                infoPar = 'The user placed pin location is not within the CBRS. For the nearest official CBRS map depicting this area, please see the map numbered ' + mapNo + ', dated ' + mapDate +
+                    '. The official CBRS maps are accessible at https://www.fws.gov/cbra/maps/index.html. \r\n \r\n' +
+                    'The CBRS information is derived directly from the CBRS web service provided by the U.S. Fish and Wildlife Service (Service). This map was exported on <dyn type="date" format=""/> at <dyn type="time" format=""/>' +
+                    ' and does not reflect changes or amendments subsequent to this date and time. The CBRS boundaries on this map may change or become superseded by new boundaries over time. \r\n \r\n' +
+                    'This map image is void if one or more of the following map elements do not appear: basemap imagery, CBRS unit labels, prohibition date labels, legend, scale bar, map creation date.'
             }
-            document.getElementById('nearestUnit').innerHTML = nearUnitHtML;
+            console.log(infoPar);
+            document.getElementById('runValidation').innerHTML = 'Done!'
+            document.getElementById('runValidation').setAttribute("class", "btn btn-success btn-fixed")
         }
-
 
     });
 
@@ -1569,16 +1661,4 @@ $(function () {
 // adding helpful message to Measure button
 function message() {
     document.getElementById("helpfulHint").innerHTML = "<hr>Click the tool again to deselect it and return to normal map controls";
-}
-
-function showPrintSetup() {
-    $('#determinateModal').modal('hide');
-    $('#printDetModal').modal('show');
-
-    document.getElementById('pointOfInterest').innerHTML = '<b>Point of Interest:</b> [' + lat + ', ' + long + ']';
-    document.getElementById('detLocation').innerHTML = nearUnitHtML;
-}
-
-function printDet() {
-    //insert print function... window.print() puts the map behind... maybe use the esri PrintParameters/PrintTask instead
 }
