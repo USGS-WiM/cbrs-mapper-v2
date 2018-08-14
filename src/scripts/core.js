@@ -6,6 +6,7 @@
  * Created by bdraper on 4/3/2015.
  */
 
+var moment = require('moment-timezone');
 var map;
 var allLayers;
 var maxLegendHeight;
@@ -248,7 +249,7 @@ require([
         function showGetDataModal() {
             $('#getDataModal').modal('show');
         }
-
+        
         /*aoiSymbol = new PictureMarkerSymbol("../images/grn-pushpin.png", 45, 45);
     
         renderer.addValue({

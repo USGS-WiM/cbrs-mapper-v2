@@ -20,8 +20,12 @@
 		"gulp-uglify": "^0.2.1",
 		"gulp-useref": "^0.4.3",
 		"gulp-util": "^2.2.14",
-		"del":"^1.1.1",
+		"del": "^1.1.1",
 		"open": "0.0.5",
 		"wiredep": "^1.4.4"
+	},
+	"dependencies": {
+		"moment": "^2.22.2",
+		"moment-timezone": "^0.5.21"
 	}
 }
