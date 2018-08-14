@@ -6,7 +6,6 @@
  * Created by bdraper on 4/3/2015.
  */
 
-var moment = require('moment-timezone');
 var map;
 var allLayers;
 var maxLegendHeight;
@@ -1587,6 +1586,9 @@ require([
         }
 
         function runValidation() {
+            var datetime = new Date().toLocaleString("en-US", {timeZone: "America/New_York", timeZoneName: "short"});
+            var date = datetime.substr(0, datetime.indexOf(','));
+            var time = datetime.substr(datetime.indexOf(',') + 1);
             $('#printProc').css('display', 'inline');
             $("#printJobsVal").find("p.toRemove").remove();
             if (suDate == 'Null') {suDate = 'N/A'};
@@ -1595,30 +1597,32 @@ require([
                 pinLoc = 'Within Unit ' + inUnit;
                 if (inUnitType == 'Otherwise Protected Area') {
                     infoPar = "The user placed pin location is within Otherwise Protected Area Unit " + inUnit + " of the CBRS.  For the official CBRS map depicting this area, please see the map " +
-                        "numbered " + mapNo + ', dated ' + mapDate + ". The official CBRS maps are accessible at https://www.fws.gov/cbra/maps/index.html. \r\n \r\n" +
+                        "numbered " + mapNo + ', dated ' + mapDate + ". The official CBRS maps are accessible at <UND><CLR blue='255'><a target='_blank' href='https://www.fws.gov/cbra/maps/index.html'>" +
+                        "https://www.fws.gov/cbra/maps/index.html</a></CLR></UND>. \r\n \r\n" +
                         'The Coastal Barrier Improvement Act (Pub. L. 101-591; 42 U.S.C. § 4028) prohibits Federal flood insurance within OPAs, with an exception for structures' +
                         'that are used in a manner consistent with the purpose for which the area is protected (e.g., park visitors center, park restroom facilities, etc.). \r\n \r\n' +
                         '<BOL>The prohibition on Federal flood insurance for this pin location took effect on ' + fiDate + '. Federal flood insurance through the National Flood Insurance ' +
                         'Program is available if the subject building was constructed (or permitted and under construction) before the flood insurance prohibition date, and has not been' +
                         'substantially improved or substantially damaged since.</BOL> For more information about the restrictions on Federal flood insurance, please refer to the Federal ' +
                         "Emergency Management Agency's (FEMA) regulations in Title 44 Part 71 of the Code of Federal Regulations and Section 19 of FEMA's Flood Insurance Manual: " +
-                        'https://www.fema.gov/flood-insurance-manual. \r\n \r\n' +
-                        'The CBRS information is derived directly from the CBRS web service provided by the U.S. Fish and Wildlife Service (Service). This map was exported on <dyn type="date" format=""/> at <dyn type="time" format=""/> and ' +
-                        'does not reflect changes or amendments subsequent to this date and time.  The CBRS boundaries on this map may change or become superseded by new boundaries over time. \r\n \r\n' +
+                        "<UND><CLR blue='255'><a target='_blank' href='https://www.fema.gov/flood-insurance-manual'>https://www.fema.gov/flood-insurance-manual</a></CLR></UND>. \r\n \r\n" +
+                        'The CBRS information is derived directly from the CBRS web service provided by the U.S. Fish and Wildlife Service (Service). This map was exported on ' + date + ' at' + time +
+                        ' and does not reflect changes or amendments subsequent to this date and time.  The CBRS boundaries on this map may change or become superseded by new boundaries over time. \r\n \r\n' +
                         'This map image is void if one or more of the following map elements do not appear: basemap imagery, CBRS unit labels, prohibition date labels, legend, scale bar, map creation date.'
                 } else if (inUnitType == 'System Unit') {
                     infoPar = 'The user placed pin location is within System Unit ' + inUnit + ' of the CBRS.  For the official CBRS map depicting this area, please see the map ' +
-                        'numbered ' + mapNo + ', dated ' + mapDate + '. The official CBRS maps are accessible at https://www.fws.gov/cbra/maps/index.html. \r\n \r\n'+
+                        'numbered ' + mapNo + ', dated ' + mapDate + ". The official CBRS maps are accessible at <UND><CLR blue='255'><a target='_blank' href='https://www.fws.gov/cbra/maps/index.html'>" +
+                        "https://www.fws.gov/cbra/maps/index.html</a></CLR></UND>. \r\n \r\n" +
                         'The Coastal Barrier Resources Act (Pub. L. 97-348) and subsequent amendments (16 U.S.C. § 3501 et seq.) prohibit most Federal funding and financial assistance' +
                         'within System Units, including flood insurance. \r\n \r\n' +
                         '<BOL>The prohibition on Federal flood insurance for this pin location took effect on ' + fiDate + '. Federal flood insurance through the National Flood Insurance ' +
                         'Program is available if the subject building was constructed (or permitted and under construction) before the flood insurance prohibition date, and has not been' +
                         'substantially improved or substantially damaged since.</BOL> For more information about the restrictions on Federal flood insurance, please refer to the Federal ' +
                         "Emergency Management Agency's (FEMA) regulations in Title 44 Part 71 of the Code of Federal Regulations and Section 19 of FEMA's Flood Insurance Manual: " +
-                        'https://www.fema.gov/flood-insurance-manual. The prohibition on all other Federal expenditures and financial assistance (besides flood insurance) for this pin ' +
-                        'location took effect on ' + suDate + '.  \r\n \r\n' +
-                        'The CBRS information is derived directly from the CBRS web service provided by the U.S. Fish and Wildlife Service (Service). This map was exported on <dyn type="date" format=""/> at <dyn type="time" format=""/> and ' +
-                        'does not reflect changes or amendments subsequent to this date and time.  The CBRS boundaries on this map may change or become superseded by new boundaries over time. \r\n \r\n' +
+                        "<UND><CLR blue='255'><a target='_blank' href='https://www.fema.gov/flood-insurance-manual'>https://www.fema.gov/flood-insurance-manual</a></CLR></UND>. " +
+                        'The prohibition on all other Federal expenditures and financial assistance (besides flood insurance) for this pin location took effect on ' + suDate + '.  \r\n \r\n' +
+                        'The CBRS information is derived directly from the CBRS web service provided by the U.S. Fish and Wildlife Service (Service). This map was exported on ' + date + ' at' + time +
+                        ' and does not reflect changes or amendments subsequent to this date and time.  The CBRS boundaries on this map may change or become superseded by new boundaries over time. \r\n \r\n' +
                         'This map image is void if one or more of the following map elements do not appear: basemap imagery, CBRS unit labels, prohibition date labels, legend, scale bar, map creation date.'
                 }
             } else if (pinLoc == 'buff') {
@@ -1627,15 +1631,16 @@ require([
                 suDate = 'Undetermined'
                 infoPar = 'The user placed pin location is within the CBRS Buffer Zone. The CBRS Buffer Zone represents the area immediately adjacent to the CBRS Boundary where ' +
                     'users are advised to contact the U.S. Fish and Wildlife Service for an official determination as to whether the property or project site is located "in" or "out" ' +
-                    'of the CBRS. For information on obtaining an official CBRS property determination, please visit: http://www.fws.gov/cbra/Determinations.html. \r\n \r\n' +
-                    'The CBRS information is derived directly from the CBRS web service provided by the U.S. Fish and Wildlife Service (Service). This map was exported on <dyn type="date" format=""/> at <dyn type="time" format=""/> ' +
+                    "of the CBRS. For information on obtaining an official CBRS property determination, please visit: <UND><CLR blue='255'><a target='_blank' href='http://www.fws.gov/cbra/Determinations.html'>" +
+                    "http://www.fws.gov/cbra/Determinations.html.</a></CLR></UND> \r\n \r\n" +
+                    'The CBRS information is derived directly from the CBRS web service provided by the U.S. Fish and Wildlife Service (Service). This map was exported on ' + date + ' at' + time +
                     ' and does not reflect changes or amendments subsequent to this date and time. The CBRS boundaries on this map may change or become superseded by new boundaries over time. \r\n \r\n' +
                     'This map image is void if one or more of the following map elements do not appear: basemap imagery, CBRS unit labels, prohibition date labels, legend, scale bar, map creation date.'
             } else if (pinLoc == 'out') {
                 pinLoc = 'Outside CBRS'
                 infoPar = 'The user placed pin location is not within the CBRS. For the nearest official CBRS map depicting this area, please see the map numbered ' + mapNo + ', dated ' + mapDate +
-                    '. The official CBRS maps are accessible at https://www.fws.gov/cbra/maps/index.html. \r\n \r\n' +
-                    'The CBRS information is derived directly from the CBRS web service provided by the U.S. Fish and Wildlife Service (Service). This map was exported on <dyn type="date" format=""/> at <dyn type="time" format=""/>' +
+                    ". The official CBRS maps are accessible at <UND><CLR blue='255'><a target='_blank' href='https://www.fws.gov/cbra/maps/index.html'> https://www.fws.gov/cbra/maps/index.html</a></CLR></UND>. \r\n \r\n" +
+                    'The CBRS information is derived directly from the CBRS web service provided by the U.S. Fish and Wildlife Service (Service). This map was exported on ' + date + ' at' + time +
                     ' and does not reflect changes or amendments subsequent to this date and time. The CBRS boundaries on this map may change or become superseded by new boundaries over time. \r\n \r\n' +
                     'This map image is void if one or more of the following map elements do not appear: basemap imagery, CBRS unit labels, prohibition date labels, legend, scale bar, map creation date.'
             }
