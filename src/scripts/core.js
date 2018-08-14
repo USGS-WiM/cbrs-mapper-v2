@@ -33,7 +33,6 @@ var lat = 0;
 var long = 0;
 var locDesc;
 var latLong;
-var userAgree = 0;
 
 require([
     'esri/map',
@@ -200,7 +199,7 @@ require([
         $(window).resize(function () {
             if ($("#legendCollapse").hasClass('in')) {
                 maxLegendHeight = ($('#mapDiv').height()) * 0.90;
-                $('#legendElement').css('height', maxLegendHeight);
+                //$('#legendElement').css('height', maxLegendHeight);
                 $('#legendElement').css('max-height', maxLegendHeight);
                 maxLegendDivHeight = ($('#legendElement').height());
                 $('#legendDiv').css('max-height', maxLegendDivHeight);
@@ -208,7 +207,14 @@ require([
             else {
                 $('#legendElement').css('height', 'initial');
             }
+            var maxDisclaimerHeight = ($(window).height()) * 0.80;
+            $('#disclaimerModal .modal-content').css('max-height', maxDisclaimerHeight);
+            $('#validationModal .modal-content').css('max-height', maxDisclaimerHeight);
         });
+
+        var maxDisclaimerHeight = ($(window).height()) * 0.80;
+        $('#disclaimerModal .modal-content').css('max-height', maxDisclaimerHeight);
+        $('#validationModal .modal-content').css('max-height', maxDisclaimerHeight);
 
         function showPrintModal() {
             $('#printModal').modal('show');
@@ -224,11 +230,16 @@ require([
             printMap();
         });
 
-        $('#showPrintSetup').click(function (e) {
-            e.preventDefault();
-            document.getElementById("showPrintSetup").setAttribute("class", "fa fa-spinner")
-            printVal();
-        });
+        $('#clearPoint').click(function() {
+            map.graphics.clear();
+            document.getElementById('selectPoint').setAttribute("class", "btn btn-default btn-fixed");
+            document.getElementById("legendPoint").setAttribute("class", "legendPt")
+        })
+
+        $('#clearPrintJobs').click(function() {
+            $('.printJobs').html('<p class="toRemove"> No print jobs yet</p><br>');
+            $('#clearPrintJobs').css("display", "none");
+        })
 
         $('#getDataButton').click(function () {
             showGetDataModal();
@@ -397,34 +408,13 @@ require([
 
         $('#runValidation').click(function () {
             graphPoint = map.graphics.graphics[0]
-            if (graphPoint && graphPoint.geometry.type == "point" && userAgree % 2 == 0) {
-                $('#userAgreementModal').modal('show');
-            } else if (graphPoint && graphPoint.geometry.type == "point" && userAgree % 2 != 0) {
+            if (graphPoint && graphPoint.geometry.type == "point") {
                 runValidation();
             } else {
                 alert('No map point found. Please place point on map, then try again.')
             }
         });
 
-        $('#userCheckbox').click(function() {
-            userAgree ++;
-            if (userAgree % 2 != 0) {
-                document.getElementById("userCheckbox").setAttribute("class", "fa fa-check-square-o");
-            } else {
-                document.getElementById("userCheckbox").setAttribute("class", "fa fa-square-o");
-            }
-        });
-
-        $('#continueValidation').click(function() {
-            if (userAgree % 2 != 0) {
-                $('#userAgreementModal').modal('hide');
-                $('#validationModal').modal('show');
-                ga('send', 'event', 'validation', 'click', 'User Agreement')
-                runValidation();
-            } else {
-                alert('You must agree with the terms and conditions to continue with CBRS Validation.')
-            }
-        })
 
         //start LobiPanel for Buffer
         $("#bufferDiv").lobiPanel({
@@ -470,10 +460,7 @@ require([
             }
 
             map.graphics.clear();
-            document.getElementById('runValidation').innerHTML = 'Go';
-            document.getElementById('runValidation').setAttribute("class", "btn btn-default btn-fixed");
             document.getElementById('selectPoint').setAttribute("class", "btn btn-default btn-fixed");
-            document.getElementById('printVal').setAttribute("class", "btn btn-default btn-fixed");
             //map.infoWindow.hide();s
 
             //alert("scale: " + map.getScale() + ", level: " + map.getLevel());
@@ -524,7 +511,7 @@ require([
                                     totalAcre = Number(attr["Fast_Acres"]) + Number(attr["Wet_Acres"]) || "Data not available at this time";
                                 };
 
-                                $('#totalAcre').text(totalAcre);
+                                $('#totalAcre').text(addCommas(totalAcre));
 
                                 symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
                                     new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
@@ -639,8 +626,12 @@ require([
 
                             } else if (response[i].layerName == "CBRS Prohibitions") {
                                 if (feature) {
-                                    $("#FIDate").text(attr["FI_Date"])
-                                    $("#SUDate").text(attr["SU_Date"])
+                                    var su_date = attr["SU_Date"];
+                                    if (su_date == "Null") {
+                                        su_date = "N/A"
+                                    }
+                                    $("#FIDate").text(attr["FI_Date"]);
+                                    $("#SUDate").text(su_date);
                                 }
                             } if (response[i].layerId == 2) {
                                 symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
@@ -679,37 +670,41 @@ require([
 
 
                     } else if (selectPointonMap) {
-                        map.graphics.clear();
-                        long = evt.mapPoint.x.toString()
-                        lat = evt.mapPoint.y.toString()
-                        inUnit = '';
-                        inUnitType = '';
-                        fiDate = 'N/A';
-                        suDate = 'N/A';
-                        pinLoc = 'out';
-                        mapDate = '';
-                        mapNo = '';
-                        locDesc = '';
-                        var inBuffer = false;
-                        if (response.length > 0) {
-                            for (var i = 0; i < response.length; i++) {
-                                if (response[i].layerName == 'CBRS Prohibitions' && !inBuffer) {
-                                    inUnit = response[i].feature.attributes.Unit;
-                                    inUnitType = response[i].feature.attributes.CBRS_Type;
-                                    fiDate = response[i].feature.attributes.FI_Date;
-                                    suDate = response[i].feature.attributes.SU_Date;
-                                    pinLoc = 'in';
-                                } else if (response[i].layerName == 'CBRS Determination Zone') {
-                                    inBuffer = true;
-                                    pinLoc = 'buff';
-                                } else if (response[i].layerName == 'CBRS Map Footprints') {
-                                    mapDate = response[i].feature.attributes.Map_Date;
-                                    mapNo = response[i].feature.attributes.Panel_No;
+                        if (map.getLevel() < 16) {
+                            alert('Please zoom in closer to select a point on the map.')
+                        } else {
+                            map.graphics.clear();
+                            long = evt.mapPoint.x.toString()
+                            lat = evt.mapPoint.y.toString()
+                            inUnit = '';
+                            inUnitType = '';
+                            fiDate = 'N/A';
+                            suDate = 'N/A';
+                            pinLoc = 'out';
+                            mapDate = '';
+                            mapNo = '';
+                            locDesc = '';
+                            var inBuffer = false;
+                            if (response.length > 0) {
+                                for (var i = 0; i < response.length; i++) {
+                                    if (response[i].layerName == 'CBRS Prohibitions' && !inBuffer) {
+                                        inUnit = response[i].feature.attributes.Unit;
+                                        inUnitType = response[i].feature.attributes.CBRS_Type;
+                                        fiDate = response[i].feature.attributes.FI_Date;
+                                        suDate = response[i].feature.attributes.SU_Date;
+                                        pinLoc = 'in';
+                                    } else if (response[i].layerName == 'CBRS Determination Zone') {
+                                        inBuffer = true;
+                                        pinLoc = 'buff';
+                                    } else if (response[i].layerName == 'CBRS Map Footprints') {
+                                        mapDate = response[i].feature.attributes.Map_Date;
+                                        mapNo = response[i].feature.attributes.Panel_No;
+                                    }
                                 }
                             }
+                            getMapPoint(lat, long)
+                            selectPointonMap = false;
                         }
-                        getMapPoint(lat, long)
-                        selectPointonMap = false;
                     }
                 });
             }
@@ -741,15 +736,13 @@ require([
             if (userTitle == "") {
                 template.layoutOptions = {
                     "titleText": "CBRS",
-                    "authorText": "Coastal Barrier Resources System (CBRS)",
-                    "copyrightText": "This page was produced by the CBRS mapper",
+                    "copyrightText": "This page was produced by the CBRS Mapper",
                     "legendLayers": [cbrsLegendLayer]
                 };
             } else {
                 template.layoutOptions = {
                     "titleText": userTitle,
-                    "authorText": "Coastal Barrier Resources System (CBRS)",
-                    "copyrightText": "This page was produced by the CBRS mapper",
+                    "copyrightText": "This page was produced by the CBRS Mapper",
                     "legendLayers": [cbrsLegendLayer]
                 };
             }
@@ -788,6 +781,13 @@ require([
                 locDesc = 'N/A'
             }
 
+            if (map.getLevel() < 16) {
+                map.setLevel(16);
+            }
+
+            var graphExtent = esri.graphicsExtent(map.graphics.graphics);
+            map.setExtent(graphExtent);
+
             var valParams = new PrintParameters();
             valParams.map = map;
         
@@ -809,10 +809,9 @@ require([
         
             valTemplate.layoutOptions = {
                 "titleText": "CBRS Validation",
-                "authorText": "Coastal Barrier Resources System (CBRS)",
-                "copyrightText": "This page was produced by the CBRS mapper",
-                "legendLayers": [prohibLegendLayer,cbrsLegendLayer],
-                "scalebarUnit": "Miles",
+                "copyrightText": "This page was produced by the CBRS Mapper",
+                "legendLayers": [cbrsLegendLayer],
+                "scalebarUnit": "Feet",
                 "customTextElements": [{CustomText_FIDate: fiDate}, {CustomText_SUDate: suDate}, {CustomText_LocDesc: locDesc}, {CustomText_PinLoc: String(pinLoc)}, {CustomText_info: String(infoPar)}, {CustomText_LatLong: latLong}]
             };
         
@@ -828,15 +827,41 @@ require([
                 printCount++;
                 var printJob = $('<p><label>' + printCount + ': </label>&nbsp;&nbsp;<a href="' + event.url + '" target="_blank">' + docTitle + ' </a></p>');
                 //$("#print-form").append(printJob);
-                $("#printJobsVal").find("p.toRemove").remove();
-                $("#valModalBody").append(printJob);
-                document.getElementById("showPrintSetup").setAttribute("class", "fa fa-file-pdf-o")
-                document.getElementById('printVal').setAttribute("class", "btn btn-success btn-fixed");
+                $(".printJobs").append(printJob);
+                $('#printProc').css("display", "none");
+                document.getElementById('locationDesc').value = '';
+                document.getElementById('selectPoint').setAttribute("class", "btn btn-default btn-fixed")
+                $('#clearPrintJobs').css("display", "inline");
+
             }
         
             function printError(event) {
                 alert("Sorry, an unclear print error occurred. Please try refreshing the application to fix the problem");
             }
+
+            //saveCoord()
+        }
+
+        function saveCoord() {
+            var request;
+            if (request) {
+                request.abort();
+            }
+
+            var now = new Date();
+            var datetime = now.getDate();
+
+            $.ajax({
+                url: "https://docs.google.com/spreadsheets/d/1rtSXuVChGHwN97wfxs-nEIOjh4G7iS_NUAlMXspZmXM/edit#gid=0",
+                type: "post",
+                data: datetime,
+                success: function (response) {
+                    console.log(response);
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(textStatus, errorThrown);
+                }
+            }) //may need to do some sort of form
         }
 
         map.on('load', function () {
@@ -1207,6 +1232,10 @@ require([
                             if (layerDetails.wimOptions && layerDetails.wimOptions.includeLegend == true) {
                                 legendLayers.unshift({ layer: layer, title: layerName });
                             }
+
+                            if (legendLayers[0].title == "CBRS Units" && legendLayers[0].layer.visibleLayers.length == 4) {
+                                legendLayers[0].layer.visibleLayers.pop();
+                            }
                             //map.addLayer(layer);
                             addLayer(group.groupHeading, group.showGroupHeading, layer, layerName, exclusiveGroupName, layerDetails.options, layerDetails.wimOptions);
                             //addMapServerLegend(layerName, layerDetails);
@@ -1557,34 +1586,36 @@ require([
         }
 
         function runValidation() {
+            $('#printProc').css('display', 'inline');
+            $("#printJobsVal").find("p.toRemove").remove();
             if (suDate == 'Null') {suDate = 'N/A'};
             if (fiDate == 'Null') {fiDate = 'N/A'};
             if (pinLoc == 'in') {
                 pinLoc = 'Within Unit ' + inUnit;
                 if (inUnitType == 'Otherwise Protected Area') {
-                    infoPar = 'The user placed pin location is within Otherwise Protected Area Unit ' + inUnit + ' of the CBRS.  For the official CBRS map depicting this area, please see the map ' +
-                        'numbered ' + mapNo + ', dated ' + mapDate + '. The official CBRS maps are accessible at https://www.fws.gov/cbra/maps/index.html. \r\n \r\n'+
+                    infoPar = "The user placed pin location is within Otherwise Protected Area Unit " + inUnit + " of the CBRS.  For the official CBRS map depicting this area, please see the map " +
+                        "numbered " + mapNo + ', dated ' + mapDate + ". The official CBRS maps are accessible at https://www.fws.gov/cbra/maps/index.html. \r\n \r\n" +
                         'The Coastal Barrier Improvement Act (Pub. L. 101-591; 42 U.S.C. § 4028) prohibits Federal flood insurance within OPAs, with an exception for structures' +
-                        'that are used in a manner consistent with the purpose for which the area is protected (e.g., park visitors center, park restroom facilities, etc.). \r\n' +
-                        'The prohibition on Federal flood insurance for this pin location took effect on ' + fiDate + '. Federal flood insurance through the National Flood Insurance ' +
+                        'that are used in a manner consistent with the purpose for which the area is protected (e.g., park visitors center, park restroom facilities, etc.). \r\n \r\n' +
+                        '<BOL>The prohibition on Federal flood insurance for this pin location took effect on ' + fiDate + '. Federal flood insurance through the National Flood Insurance ' +
                         'Program is available if the subject building was constructed (or permitted and under construction) before the flood insurance prohibition date, and has not been' +
-                        'substantially improved or substantially damaged since. For more information about the restrictions on Federal flood insurance, please refer to the Federal ' +
-                        'Emergency Management Agency’s (FEMA) regulations in Title 44 Part 71 of the Code of Federal Regulations and Section 19 of FEMA’s Flood Insurance Manual: ' +
-                        'https://www.fema.gov/flood-insurance-manual. \r\n' +
+                        'substantially improved or substantially damaged since.</BOL> For more information about the restrictions on Federal flood insurance, please refer to the Federal ' +
+                        "Emergency Management Agency's (FEMA) regulations in Title 44 Part 71 of the Code of Federal Regulations and Section 19 of FEMA's Flood Insurance Manual: " +
+                        'https://www.fema.gov/flood-insurance-manual. \r\n \r\n' +
                         'The CBRS information is derived directly from the CBRS web service provided by the U.S. Fish and Wildlife Service (Service). This map was exported on <dyn type="date" format=""/> at <dyn type="time" format=""/> and ' +
                         'does not reflect changes or amendments subsequent to this date and time.  The CBRS boundaries on this map may change or become superseded by new boundaries over time. \r\n \r\n' +
                         'This map image is void if one or more of the following map elements do not appear: basemap imagery, CBRS unit labels, prohibition date labels, legend, scale bar, map creation date.'
                 } else if (inUnitType == 'System Unit') {
                     infoPar = 'The user placed pin location is within System Unit ' + inUnit + ' of the CBRS.  For the official CBRS map depicting this area, please see the map ' +
-                        'numbered ' + mapNo + ', dated ' + mapDate + '. The official CBRS maps are accessible at https://www.fws.gov/cbra/maps/index.html. \r\n'+
+                        'numbered ' + mapNo + ', dated ' + mapDate + '. The official CBRS maps are accessible at https://www.fws.gov/cbra/maps/index.html. \r\n \r\n'+
                         'The Coastal Barrier Resources Act (Pub. L. 97-348) and subsequent amendments (16 U.S.C. § 3501 et seq.) prohibit most Federal funding and financial assistance' +
                         'within System Units, including flood insurance. \r\n \r\n' +
-                        'The prohibition on Federal flood insurance for this pin location took effect on ' + fiDate + '. Federal flood insurance through the National Flood Insurance ' +
+                        '<BOL>The prohibition on Federal flood insurance for this pin location took effect on ' + fiDate + '. Federal flood insurance through the National Flood Insurance ' +
                         'Program is available if the subject building was constructed (or permitted and under construction) before the flood insurance prohibition date, and has not been' +
-                        'substantially improved or substantially damaged since. For more information about the restrictions on Federal flood insurance, please refer to the Federal ' +
-                        'Emergency Management Agency’s (FEMA) regulations in Title 44 Part 71 of the Code of Federal Regulations and Section 19 of FEMA’s Flood Insurance Manual: ' +
+                        'substantially improved or substantially damaged since.</BOL> For more information about the restrictions on Federal flood insurance, please refer to the Federal ' +
+                        "Emergency Management Agency's (FEMA) regulations in Title 44 Part 71 of the Code of Federal Regulations and Section 19 of FEMA's Flood Insurance Manual: " +
                         'https://www.fema.gov/flood-insurance-manual. The prohibition on all other Federal expenditures and financial assistance (besides flood insurance) for this pin ' +
-                        'location took effect on ' + suDate + '.  \r\n' +
+                        'location took effect on ' + suDate + '.  \r\n \r\n' +
                         'The CBRS information is derived directly from the CBRS web service provided by the U.S. Fish and Wildlife Service (Service). This map was exported on <dyn type="date" format=""/> at <dyn type="time" format=""/> and ' +
                         'does not reflect changes or amendments subsequent to this date and time.  The CBRS boundaries on this map may change or become superseded by new boundaries over time. \r\n \r\n' +
                         'This map image is void if one or more of the following map elements do not appear: basemap imagery, CBRS unit labels, prohibition date labels, legend, scale bar, map creation date.'
@@ -1607,9 +1638,7 @@ require([
                     ' and does not reflect changes or amendments subsequent to this date and time. The CBRS boundaries on this map may change or become superseded by new boundaries over time. \r\n \r\n' +
                     'This map image is void if one or more of the following map elements do not appear: basemap imagery, CBRS unit labels, prohibition date labels, legend, scale bar, map creation date.'
             }
-            console.log(infoPar);
-            document.getElementById('runValidation').innerHTML = 'Done!'
-            document.getElementById('runValidation').setAttribute("class", "btn btn-success btn-fixed")
+            printVal();
         }
 
     });

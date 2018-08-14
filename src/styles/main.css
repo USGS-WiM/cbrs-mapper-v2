@@ -192,6 +192,7 @@ body {
 
 #legendDiv {
     overflow-y: auto;
+    padding-top: 0px;
     /*max-height: inherit;*/
 }
 
@@ -490,7 +491,7 @@ input[type="checkbox"], input[type="radio"] {
 .siteInfoClass {
     position:absolute;
     width:570px;
-    height:420px;
+    height:450px;
     z-index:2;
     color: black;
     background-color: rgb(255,255,255);
@@ -681,13 +682,9 @@ div.tooltip-inner {
     padding-bottom: 0px !important;
 }
 
-.validation button {
-    margin: 5px;
-    position: relative;
+.valButtons {
     text-align: center;
-    display: inline-block;
-    padding: 2px 5px;
-    float: right;
+    padding-top: 5px;
 }
 
 .legendPtVisible img {
@@ -704,6 +701,22 @@ div.tooltip-inner {
 }
 
 #locationDesc {
-    margin: 5px 20px 0px 20px;
+    margin: 5px 50px;
     width: 80%;
+}
+
+#disclaimerModal .modal-content {
+    overflow-y: auto;
+}
+
+#selecionDiv {
+    max-height: 550px;
+}
+
+.printJobs p:first-child {
+    padding-top: 5px;
+}
+
+#validationModal .modal-content {
+    overflow-y: auto;
 }
