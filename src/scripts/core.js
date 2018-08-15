@@ -670,7 +670,7 @@ require([
 
 
                     } else if (selectPointonMap) {
-                        if (map.getLevel() < 16) {
+                        if (map.getLevel() < 17) {
                             alert('Please zoom in closer to select a point on the map.')
                         } else {
                             map.graphics.clear();
@@ -704,6 +704,8 @@ require([
                             }
                             getMapPoint(lat, long)
                             selectPointonMap = false;
+                            var graphExtent = esri.graphicsExtent(map.graphics.graphics);
+                            map.setExtent(graphExtent);
                         }
                     }
                 });
@@ -714,6 +716,13 @@ require([
         /*var sym = createPictureSymbol('../images/purple-pin.png', 0, 12, 13, 24);*/
 
         function printMap() {
+            var text = "This map is for general reference only. The Coastal Barrier Resources System (CBRS) boundaries depicted on this map are representations " +
+                "of the controlling CBRS boundaries, which are shown on the official maps, accessible at <a href='https://www.fws.gov/cbra/maps/index.html' target='_blank'>" +
+                "<UND><CLR blue='255'>https://www.fws.gov/cbra/maps/index.html</CLR></UND></a>. All CBRS related data should be used in accordance with the layer metadata found " +
+                "on the CBRS Mapper website. \r\n\r\n The CBRS Buffer Zone represents the area immediately adjacent to the CBRS boundary where users are advised to contact " +
+                "the Service for an official determination (<a href='http://www.fws.gov/cbra/Determinations.html' target='_blank'><UND><CLR blue='255'>http://www.fws.gov/cbra/Determinations.html" +
+                '</CLR></UND></a>) as to whether the property or project site is located "in" or "out" of the CBRS. \r\n\r\n CBRS Units normally extend seaward out to the ' +
+                "20- or 30-foot bathymetric contour (depending on the location of the unit). The true seaward extent of the units is not shown in the CBRS mapper."
 
             var printParams = new PrintParameters();
             printParams.map = map;
@@ -737,13 +746,15 @@ require([
                 template.layoutOptions = {
                     "titleText": "CBRS",
                     "copyrightText": "This page was produced by the CBRS Mapper",
-                    "legendLayers": [cbrsLegendLayer]
+                    "legendLayers": [cbrsLegendLayer],
+                    "customTextElements": [{CustomText: text}]
                 };
             } else {
                 template.layoutOptions = {
                     "titleText": userTitle,
                     "copyrightText": "This page was produced by the CBRS Mapper",
-                    "legendLayers": [cbrsLegendLayer]
+                    "legendLayers": [cbrsLegendLayer],
+                    "customTextElements": [{CustomText: text}]
                 };
             }
 
@@ -780,13 +791,7 @@ require([
             if (locDesc == "") {
                 locDesc = 'N/A'
             }
-
-            if (map.getLevel() < 16) {
-                map.setLevel(16);
-            }
-
-            var graphExtent = esri.graphicsExtent(map.graphics.graphics);
-            map.setExtent(graphExtent);
+            
 
             var valParams = new PrintParameters();
             valParams.map = map;
