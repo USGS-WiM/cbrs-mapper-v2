@@ -67,6 +67,11 @@
                     <span id="geosearchButtonText"> Print</span>
                 </button>
 
+            <button id="validationNav" type="button" class="btn btn-primary navbar-btn pull-right" onclick="ga('send','event','navbar','click','Validation Modal Opened');">
+                <span class="glyphicon glyphicon-search"></span>
+                <span id="geosearchButtonText"> CBRS Validation Tool </span>
+            </button>
+
             <button id="geosearchNav" type="button" class="btn btn-primary navbar-btn pull-right" onclick="ga('send','event','navbar','click','Find Location Modal Opened');">
                     <span class="glyphicon glyphicon-search"></span>
                     <span id="geosearchButtonText"> Find Location</span>
@@ -77,10 +82,6 @@
                     <span id="geosearchButtonText"> Find CBRS Unit</span>
                 </button>
             
-            <button id="validationNav" type="button" class="btn btn-primary navbar-btn pull-right" onclick="ga('send','event','navbar','click','Validation Modal Opened');">
-                <span class="glyphicon glyphicon-search"></span>
-                <span id="geosearchButtonText"> CBRS Validation Tool </span>
-            </button>
 
             <button id="aboutNav" class="btn btn-default navbar-btn pull-right" onclick="ga('send','event','navbar','click','About');">
                     <i class="fa fa-question-circle"></i><span class="hidden-xs">&nbsp;&nbsp;About</span>
@@ -206,47 +207,31 @@
                 </div>
                 <div class="modal-body" id="valModalBody">
                     <div class="validation">
-                        <div class="valSteps">Step 1: Click the pin icon on the right to select your point on the map.
-                            <button class="btn btn-default btn-fixed" id="selectPoint" type="button" onClick="ga('send', 'event', 'validation', 'click', 'Select Validation Point');" data-dismiss="modal"> <i class="fa fa-map-marker"></i> </button>
+                        <div class="valSteps"><b>Step 1: </b> Click the pin icon below to select your point of interest on the map (e.g., the structure or property for which you require 
+                            CBRS information). A structure bisected by the CBRS boundary (i.e., both partially in and partially out) is within the CBRS. A pin placed on a bisected structure 
+                            must be placed on the portion of the structure within the unit (including any attached features such as a deck or stairs). <br>
+                            <div class="valButtons">
+                                <button class="btn btn-default btn-fixed" id="selectPoint" type="button" onClick="ga('send', 'event', 'validation', 'click', 'Select Validation Point');" data-dismiss="modal"> <i class="fa fa-map-marker"></i> </button>
+                                <button class="btn btn-default btn-fixed" id="clearPoint" type="button"> Clear Pin </button><br>
+                            </div>
                         </div><br>
-                        <div class="valSteps">Step 2: Enter Address or Description of Point: <br>
+                        <div class="valSteps"><b>Step 2: </b>Enter address or description of point location (e.g., 123 Ocean Drive, Seatown, Maryland) in the space below. <br>
                             <input type="text" placeholder="Type here" id="locationDesc"></div><br>
-                        <div class="valSteps">Step 3: Hit "Go" to execute CBRS validation.
-                            <button class="btn btn-default btn-fixed" id="runValidation" type="button" onClick="ga('send', 'event', 'validation', 'click', 'Execute Validation');">Go</button> <br>
+                        <div class="valSteps"><b>Point Placement Certification Statement:</b>
+                                I certify that the pin location corresponds to the property address or description that I provided. Additionally, I certify that if pin is placed on a structure 
+                                that is bisected by the CBRS boundary, I placed the pin on the portion of the structure within the unit.  <br>    
+                            <div class="valButtons">                          
+                                <button class="btn btn-default btn-fixed" id="runValidation" type="button" onClick="ga('send', 'event', 'validation', 'click', 'Execute Validation');">Certify and Create PDF</button> <br>
+                            </div>
                         </div><br>
-                        <div class="valSteps">Step 4: Create .pdf to print CBRS documentation
-                            <button class="btn btn-default btn-fixed" id='printVal' onClick="ga('send', 'event', 'validation', 'click', 'Print Documentation');"><i class="fa fa-file-pdf-o" id="showPrintSetup"></i></button>
+                        <div id="printJobsVal" style="margin-top: 5px;"><label>CBRS Documentation </label>
+                            <p class="toRemove"> No print jobs yet</p><br>
+                            <p id="printProc" style="display: none;">Processing, please wait...</p>
+                            <div class="printJobs"></div>
+                            <div class="valButtons">
+                                <button class="btn btn-default btn-fixed" id="clearPrintJobs" type="button" style="display: none;"> Clear Print Jobs </button><br>
+                            </div>
                         </div>
-                        <div id="printJobsVal" style="margin-top: 5px;"><label>Print Jobs </label>
-                            <p class="toRemove"> No print jobs yet</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- /.modal-content -->
-        </div>
-        <!-- /.modal-dialog -->
-    </div>
-
-    <!--CBRS User Agreement -->
-    <div class="modal fade overflow-y-hidden" id="userAgreementModal" style="display: none;" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                    <h4 class="modal-title">CBRS User Agreement</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="userAgreement">
-                        <p>Bacon ipsum dolor amet beef ribs tail ribeye, sausage biltong pancetta kevin cupim. Swine kevin shank strip steak fatback. Meatloaf ground round 
-                            leberkas capicola picanha kielbasa turkey jerky swine beef short loin flank. Burgdoggen chicken tenderloin jowl andouille turkey fatback. Bacon 
-                            brisket chicken drumstick picanha. Swine flank short loin landjaeger tenderloin shankle turkey pork belly.</p>
-                        <p>Bacon leberkas pork belly, andouille venison jerky doner swine meatball shoulder frankfurter. Andouille pork belly beef ribs tri-tip shank buffalo. 
-                            Jerky ground round frankfurter, pig pork chop meatball ham pork shankle tenderloin. Bresaola cow drumstick landjaeger, ham hock meatloaf pork chop 
-                            prosciutto. Buffalo pig pork belly t-bone jowl ball tip, brisket short loin flank frankfurter boudin doner kielbasa pork loin tri-tip.</p>
-                        <span class="userCheck"><i class="fa fa-square-o" id="userCheckbox"></i> I agree to these terms and Condititions.</span><br>
-                        <button id="continueValidation" type="submit" class="btn btn-success btn-fixed" > Continue </button>
-                        <button id="printDismissButton" type="button" class="btn btn-default btn-fixed" data-dismiss="modal"> Dismiss</button>
                     </div>
                 </div>
             </div>

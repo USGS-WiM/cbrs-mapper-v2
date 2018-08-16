@@ -407,12 +407,10 @@ require([
         });
 
         $('#runValidation').click(function () {
-            graphPoint = map.graphics.graphics[0]
-            if (graphPoint && graphPoint.geometry.type == "point") {
-                runValidation();
-            } else {
-                alert('No map point found. Please place point on map, then try again.')
-            }
+            var proc = deferredProcess();
+            proc.then(function(results) {
+                printVal();
+            })
         });
 
 
@@ -670,7 +668,7 @@ require([
 
 
                     } else if (selectPointonMap) {
-                        if (map.getLevel() < 17) {
+                        if (map.getLevel() < 16) {
                             alert('Please zoom in closer to select a point on the map.')
                         } else {
                             map.graphics.clear();
@@ -704,8 +702,6 @@ require([
                             }
                             getMapPoint(lat, long)
                             selectPointonMap = false;
-                            var graphExtent = esri.graphicsExtent(map.graphics.graphics);
-                            map.setExtent(graphExtent);
                         }
                     }
                 });
@@ -805,17 +801,11 @@ require([
             valTemplate.format = "PDF";
             valTemplate.layout = "Letter ANSI A Portrait CBRS Mapper V2_Prohibitions";
             valTemplate.preserveScale = false;
-            var prohibLegendLayer = new LegendLayer();
-            prohibLegendLayer.layerId = "prohibitions";
-            var cbrsLegendLayer = new LegendLayer();
-            cbrsLegendLayer.layerId = "cbrs";
-
-            //legendLayer.subLayerIds = [*];
         
             valTemplate.layoutOptions = {
                 "titleText": "CBRS Validation",
                 "copyrightText": "This page was produced by the CBRS Mapper",
-                "legendLayers": [cbrsLegendLayer],
+                "legendLayers": [],
                 "scalebarUnit": "Feet",
                 "customTextElements": [{CustomText_FIDate: fiDate}, {CustomText_SUDate: suDate}, {CustomText_LocDesc: locDesc}, {CustomText_PinLoc: String(pinLoc)}, {CustomText_info: String(infoPar)}, {CustomText_LatLong: latLong}]
             };
@@ -1239,7 +1229,7 @@ require([
                             }
 
                             if (legendLayers[0].title == "CBRS Units" && legendLayers[0].layer.visibleLayers.length == 4) {
-                                legendLayers[0].layer.visibleLayers.pop();
+                                legendLayers[0].layer.visibleLayers.unshift();
                             }
                             //map.addLayer(layer);
                             addLayer(group.groupHeading, group.showGroupHeading, layer, layerName, exclusiveGroupName, layerDetails.options, layerDetails.wimOptions);
@@ -1396,7 +1386,7 @@ require([
                         //create layer toggle
                         //var button = $('<div align="left" style="cursor: pointer;padding:5px;"><span class="glyphspan glyphicon glyphicon-check"></span>&nbsp;&nbsp;' + layerName + '</div>');
                         if ((layer.visible && wimOptions.hasOpacitySlider)) {
-                            var button = $('<div class="btn-group-vertical lyrTog" style="cursor: pointer;" data-toggle="buttons"> <button type="button" class="btn btn-default" aria-pressed="true" style="font-weight: bold;text-align: left"><i class="glyphspan fa fa-check-square-o"></i>&nbsp;&nbsp;' + layerName + '<span id="opacity' + camelize(layerName) + '" style="padding-right: 5px" class="glyphspan glyphicon glyphicon-adjust pull-right"></span></button></div>');
+                            var button = $('<div class="btn-group-vertical lyrTog" style="cursor: pointer;" data-toggle="buttons"> <button type="button" class="btn btn-default" aria-pressed="true" style="font-weight: bold;text-align: left" id=' + layer.id + 'Selector><i class="glyphspan fa fa-check-square-o"></i>&nbsp;&nbsp;' + layerName + '<span id="opacity' + camelize(layerName) + '" style="padding-right: 5px" class="glyphspan glyphicon glyphicon-adjust pull-right"></span></button></div>');
                         } else if ((!layer.visible && wimOptions.hasOpacitySlider)) {
                             var button = $('<div class="btn-group-vertical lyrTog" style="cursor: pointer;" data-toggle="buttons"> <button type="button" class="btn btn-default" aria-pressed="true" style="font-weight: bold;text-align: left"><i class="glyphspan fa fa-square-o"></i>&nbsp;&nbsp;' + layerName + '<span id="info' + camelize(layerName) + '" title="more info" class="glyphspan glyphicon glyphicon-question-sign pull-right"></span><span id="opacity' + camelize(layerName) + '" style="padding-right: 5px" class="glyphspan glyphicon glyphicon-adjust pull-right"></span></button></div>');
                         } else if (layer.visible && wimOptions.hasOpacitySlider !== undefined && wimOptions.hasOpacitySlider == true) {
@@ -1577,7 +1567,7 @@ require([
 
         function getMapPoint(lat, long) {
             var point = new Point({"x": long, "y": lat, "spatialReference": { wkid: 3857 }})
-            var symbol = new PictureMarkerSymbol({"angle":0,"xoffset": 0, "yoffset": 6, "type": "esriPMS", "url": '/images/glyphicons-pin.png',"imageData": "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAYCAYAAADDLGwtAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABAhpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1wTU06T3JpZ2luYWxEb2N1bWVudElEPSJ1dWlkOjY1RTYzOTA2ODZDRjExREJBNkUyRDg4N0NFQUNCNDA3IiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjE0MTI1RTk3ODUzNzExRTU4RTQwRkQwODFEOUZEMEE3IiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjE0MTI1RTk2ODUzNzExRTU4RTQwRkQwODFEOUZEMEE3IiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE1IChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MTk5NzA1OGEtZDI3OC00NDZkLWE4ODgtNGM4MGQ4YWI1NzNmIiBzdFJlZjpkb2N1bWVudElEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6YzRkZmQxMGMtY2NlNS0xMTc4LWE5OGQtY2NkZmM5ODk5YWYwIi8+IDxkYzp0aXRsZT4gPHJkZjpBbHQ+IDxyZGY6bGkgeG1sOmxhbmc9IngtZGVmYXVsdCI+Z2x5cGhpY29uczwvcmRmOmxpPiA8L3JkZjpBbHQ+IDwvZGM6dGl0bGU+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+xuL6IgAAAMZJREFUeNrskrERwjAMRS2OgjIjMAJlSkrG8BiUGYERnA0oU2YEs0HYgJJOSL5vn/D5IPTo7l9k6dmOv+2Y2akkvGgRMaT5UPqAApoP0VxNCGDSSgy4gwYDMsYuYqWusb39jZQofGkARYTka2xEtxXc3R7mk3xtT0uh+GgMjwbQ3Oc+ZTNzENExWcE8v9UbIAOk+tRurT1/8HdQjN/Z8dY0TvLpTe8stSg3dC2gFPYGGs1OB8BLuWs8BoXzlk99QdKfdPASYAAYDYAkrGb8NgAAAABJRU5ErkJggg==", "contentType": "image/png", "width": 8, "height": 20 });
+            var symbol = new PictureMarkerSymbol({"angle":0,"xoffset": 0, "yoffset": 12, "type": "esriPMS", "url": 'http://static.arcgis.com/images/Symbols/Basic/RedStickpin.png', "contentType": "image/png", "width": 30, "height": 30 });
             map.graphics.add(new Graphic(point, symbol));
 
             document.getElementById("legendPoint").setAttribute("class", "legendPtVisible")
@@ -1588,6 +1578,38 @@ require([
             latLong = String(Math.round(newpoint[0] * 1000000)/1000000) + ', ' + String(Math.round(newpoint[1] * 1000000)/1000000);
 
             document.getElementById('selectPoint').setAttribute("class", "btn btn-success btn-fixed")
+        }
+
+        function deferredProcess() {
+            var deferred = new dojo.Deferred();
+            checkMap();
+            runValidation();
+            setTimeout(function() {
+                deferred.resolve('success');
+            }, 1000);
+            return deferred.promise;
+        }
+
+        function checkMap() {
+            graphPoint = map.graphics.graphics[0];
+            if (!map._layers.cbrs.visible) {
+                document.getElementById('cbrsSelector').click();
+            }
+            
+            if (!(graphPoint && graphPoint.geometry.type == "point")) {
+                alert('No map point found. Please place point on map, then try again.')
+            }
+
+            if ( 19 <= map.getLevel() || map.getLevel() < 16) {
+                map.setLevel(16)
+            }
+
+            var graphExtent = esri.graphicsExtent(map.graphics.graphics);
+            map.setExtent(graphExtent);
+
+            if (!(map._basemap == 'satellite' || map._basemap == 'hybrid')) {
+                document.getElementById('btnSatellite').click();
+            }
         }
 
         function runValidation() {
@@ -1649,7 +1671,6 @@ require([
                     ' and does not reflect changes or amendments subsequent to this date and time. The CBRS boundaries on this map may change or become superseded by new boundaries over time. \r\n \r\n' +
                     'This map image is void if one or more of the following map elements do not appear: basemap imagery, CBRS unit labels, prohibition date labels, legend, scale bar, map creation date.'
             }
-            printVal();
         }
 
     });
