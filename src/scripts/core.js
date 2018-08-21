@@ -734,7 +734,7 @@ require([
             template.preserveScale = false;
             var cbrsLegendLayer = new LegendLayer();
             cbrsLegendLayer.layerId = "cbrs";
-            //legendLayer.subLayerIds = [*];
+            cbrsLegendLayer.subLayerIds = [2,4,5];
 
             var userTitle = $("#printTitle").val();
             //if user does not provide title, use default. otherwise apply user title
@@ -784,8 +784,10 @@ require([
 
         function printVal() {
             locDesc = document.getElementById('locationDesc').value;
+            userTitle = document.getElementById('locationDesc').value;
             if (locDesc == "") {
                 locDesc = 'N/A'
+                userTitle = 'CBRS Documentation'
             }
             
 
@@ -803,7 +805,7 @@ require([
             valTemplate.preserveScale = false;
         
             valTemplate.layoutOptions = {
-                "titleText": "CBRS Validation",
+                "titleText": userTitle,
                 "copyrightText": "This page was produced by the CBRS Mapper",
                 "legendLayers": [],
                 "scalebarUnit": "Feet",
@@ -1228,9 +1230,6 @@ require([
                                 legendLayers.unshift({ layer: layer, title: layerName });
                             }
 
-                            if (legendLayers[0].title == "CBRS Units" && legendLayers[0].layer.visibleLayers.length == 4) {
-                                legendLayers[0].layer.visibleLayers.unshift();
-                            }
                             //map.addLayer(layer);
                             addLayer(group.groupHeading, group.showGroupHeading, layer, layerName, exclusiveGroupName, layerDetails.options, layerDetails.wimOptions);
                             //addMapServerLegend(layerName, layerDetails);
