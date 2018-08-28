@@ -47,7 +47,7 @@ require([
                         'includeInLayerList': true,
                         /*'zoomScale': 144448,*/
                         'hasOpacitySlider': true,
-                        'moreinfo': 'http://www.fws.gov/wetlands/Data/Wetlands-V2-Product-Summary.html',
+                        'moreinfo': 'https://www.fws.gov/wetlands/Data/Wetlands-V2-Product-Summary.html',
                         'includeLegend' : true
                     }
                 },
