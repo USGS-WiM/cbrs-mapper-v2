@@ -1714,7 +1714,9 @@ $(function () {
     $('[data-toggle="tooltip"]').tooltip({
         'selector': '',
         'placement': 'top',
-        'container': 'body'
+        'container': 'body',
+        'html': true,
+        'delay': {show: 0, hide: 600}
     });
 });
 
