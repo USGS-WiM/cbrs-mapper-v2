@@ -691,7 +691,7 @@ require([
                                         fiDate = response[i].feature.attributes.FI_Date;
                                         suDate = response[i].feature.attributes.SU_Date;
                                         pinLoc = 'in';
-                                    } else if (response[i].layerName == 'CBRS Determination Zone') {
+                                    } else if (response[i].layerName == 'CBRS Buffer Zone') {
                                         inBuffer = true;
                                         pinLoc = 'buff';
                                     } else if (response[i].layerName == 'CBRS Map Footprints') {
@@ -1556,7 +1556,7 @@ require([
 
         function getMapPoint(lat, long) {
             var point = new Point({"x": long, "y": lat, "spatialReference": { wkid: 3857 }})
-            var symbol = new PictureMarkerSymbol({"angle":0,"xoffset": 0, "yoffset": 12, "type": "esriPMS", "url": 'http://static.arcgis.com/images/Symbols/Basic/RedStickpin.png', "contentType": "image/png", "width": 30, "height": 30 });
+            var symbol = new PictureMarkerSymbol({"angle":0,"xoffset": 0, "yoffset": 12, "type": "esriPMS", "url": 'https://static.arcgis.com/images/Symbols/Basic/RedStickpin.png', "contentType": "image/png", "width": 30, "height": 30 });
             map.graphics.add(new Graphic(point, symbol));
 
             document.getElementById("legendPoint").setAttribute("class", "legendPtVisible")
@@ -1625,9 +1625,9 @@ require([
                         'The Coastal Barrier Improvement Act (Pub. L. 101-591; 42 U.S.C. &#167; 4028) prohibits most new federal flood insurance within OPAs, with an exception for structures ' +
                         'that are used in a manner consistent with the purpose for which the area is protected (e.g., park visitors center, park restroom facilities, etc.). \r\n \r\n' +
                         '<BOL>The prohibition on federal flood insurance for this pin location took effect on ' + fiDate + '. Federal flood insurance through the National Flood Insurance ' +
-                        'Program is available if the subject building was constructed (or permitted and under construction) before the flood insurance prohibition date, and has not been ' +
+                        "Program is available if the subject building was constructed (or permitted and under construction) before the area's flood insurance prohibition date, and has not been " +
                         'substantially improved or substantially damaged since.</BOL> For more information about the restrictions on federal flood insurance, please refer to the Federal ' +
-                        "Emergency Management Agency's (FEMA) regulations in Title 44 Part 71 of the Code of Federal Regulations and Section 19 of FEMA's Flood Insurance Manual: " +
+                        "Emergency Management Agency's (FEMA) regulations in Title 44 Part 71 of the Code of Federal Regulations and FEMA's Flood Insurance Manual: " +
                         "<UND><CLR blue='255'><a target='_blank' href='https://www.fema.gov/flood-insurance-manual'>https://www.fema.gov/flood-insurance-manual</a></CLR></UND>.\r\n \r\n"
                     
                 } else if (inUnitType == 'System Unit') {
@@ -1639,9 +1639,9 @@ require([
                         'The Coastal Barrier Resources Act (Pub. L. 97-348) and subsequent amendments (16 U.S.C. &#167; 3501 et seq.) prohibit most new federal funding and financial assistance ' +
                         'within System Units, including flood insurance. \r\n \r\n' +
                         '<BOL>The prohibition on federal flood insurance for this pin location took effect on ' + fiDate + '. Federal flood insurance through the National Flood Insurance ' +
-                        'Program is available if the subject building was constructed (or permitted and under construction) before the flood insurance prohibition date, and has not been ' +
+                        "Program is available if the subject building was constructed (or permitted and under construction) before the area's flood insurance prohibition date, and has not been " +
                         'substantially improved or substantially damaged since.</BOL> For more information about the restrictions on federal flood insurance, please refer to the Federal ' +
-                        "Emergency Management Agency's (FEMA) regulations in Title 44 Part 71 of the Code of Federal Regulations and Section 19 of FEMA's Flood Insurance Manual: " +
+                        "Emergency Management Agency's (FEMA) regulations in Title 44 Part 71 of the Code of Federal Regulations and FEMA's Flood Insurance Manual: " +
                         "<UND><CLR blue='255'><a target='_blank' href='https://www.fema.gov/flood-insurance-manual'>https://www.fema.gov/flood-insurance-manual</a></CLR></UND>. " +
                         'The prohibition on all other federal expenditures and financial assistance (besides flood insurance) for this pin location took effect on ' + suDate + '.  \r\n \r\n'
                     
@@ -1654,16 +1654,21 @@ require([
                     "<BOL>Pin Flood Insurance Prohibition Date: </BOL>" + fiDate + "\r\n <BOL>Pin System Unit Establishment Date: </BOL>" + suDate + "\r\n \r\n" +
                     'The user placed pin location is within the CBRS Buffer Zone. The CBRS Buffer Zone represents the area immediately adjacent to the CBRS boundary where ' +
                     'users are advised to contact the Service for an official determination as to whether the property or project site is located "in" or "out" ' +
-                    "of the CBRS. For information on obtaining an official CBRS property determination, please visit: <UND><CLR blue='255'><a target='_blank' href='http://www.fws.gov/cbra/Determinations.html'>" +
+                    "of the CBRS. For information on obtaining an official CBRS Property Determination, please visit: <UND><CLR blue='255'><a target='_blank' href='http://www.fws.gov/cbra/Determinations.html'>" +
                     "http://www.fws.gov/cbra/Determinations.html.</a></CLR></UND> \r\n \r\n"
                 
             } else if (pinLoc == 'out') {
                 pinLocDesc = 'Outside CBRS'
-                infoPar = "<BOL>User Supplied Address/Location Description: </BOL>" + locDesc + "\r\n <BOL>Pin Location: </BOL>" + pinLocDesc + "\r\n" +
+                if (mapNo == "") {
+                    infoPar = "<BOL>User Supplied Address/Location Description: </BOL>" + locDesc + "\r\n <BOL>Pin Location: </BOL>" + pinLocDesc + "\r\n" +
+                    "<BOL>Pin Flood Insurance Prohibition Date: </BOL>" + fiDate + "\r\n <BOL>Pin System Unit Establishment Date: </BOL>" + suDate + "\r\n \r\n" +
+                    "The user placed pin location is not within the CBRS. The official CBRS maps are accessible at <UND><CLR blue='255'><a target='_blank' href='https://www.fws.gov/cbra/maps/index.html'> https://www.fws.gov/cbra/maps/index.html</a></CLR></UND>. \r\n \r\n"
+                } else {
+                    infoPar = "<BOL>User Supplied Address/Location Description: </BOL>" + locDesc + "\r\n <BOL>Pin Location: </BOL>" + pinLocDesc + "\r\n" +
                     "<BOL>Pin Flood Insurance Prohibition Date: </BOL>" + fiDate + "\r\n <BOL>Pin System Unit Establishment Date: </BOL>" + suDate + "\r\n \r\n" +
                     'The user placed pin location is not within the CBRS. For the nearest official CBRS map depicting this area, please see the map numbered ' + mapNo + ', dated ' + mapDate +
                     ". The official CBRS maps are accessible at <UND><CLR blue='255'><a target='_blank' href='https://www.fws.gov/cbra/maps/index.html'> https://www.fws.gov/cbra/maps/index.html</a></CLR></UND>. \r\n \r\n"
-                
+                }
             }
             infoPar += '<FNT size="8">The CBRS information is derived directly from the CBRS web service provided by the Service. This map was exported on ' + date +
                 ' and does not reflect changes or amendments subsequent to this date.  The CBRS boundaries on this map may become superseded by new boundaries over time. \r\n \r\n' +
