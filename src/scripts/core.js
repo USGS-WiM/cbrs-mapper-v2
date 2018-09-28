@@ -1660,7 +1660,7 @@ require([
                     'The user placed pin location is within the CBRS Buffer Zone. The CBRS Buffer Zone represents the area immediately adjacent to the CBRS boundary where ' +
                     'users are advised to contact the Service for an official determination as to whether the property or project site is located "in" or "out" ' +
                     "of the CBRS. For information on obtaining an official CBRS Property Determination, please visit: <UND><CLR blue='255'><a target='_blank' href='http://www.fws.gov/cbra/Determinations.html'>" +
-                    "http://www.fws.gov/cbra/Determinations.html.</a></CLR></UND> \r\n \r\n"
+                    "https://www.fws.gov/cbra/documentation.html.</a></CLR></UND> \r\n \r\n"
                 
             } else if (pinLoc == 'out') {
                 pinLocDesc = 'Outside CBRS'
