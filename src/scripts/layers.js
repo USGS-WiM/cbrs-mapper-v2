@@ -34,8 +34,8 @@ require([
             'includeInLayerList': true,
             'layers': {
                 'CBRS Units' : {
-                    'url': 'https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/CBRAmapperlive/MapServer',
-                    'visibleLayers': [2,4,5],
+                    'url': 'https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/CBRS_Prohibitions_Test/MapServer',
+                    'visibleLayers': [2,4,5,6],
                     'options': {
                         'id': 'cbrs',
                         'opacity': 0.75,
@@ -47,12 +47,12 @@ require([
                         'includeInLayerList': true,
                         /*'zoomScale': 144448,*/
                         'hasOpacitySlider': true,
-                        'moreinfo': 'http://www.fws.gov/wetlands/Data/Wetlands-V2-Product-Summary.html',
+                        'moreinfo': 'https://www.fws.gov/wetlands/Data/Wetlands-V2-Product-Summary.html',
                         'includeLegend' : true
                     }
                 },
                 'CBRS Footprints' : {
-                    'url': 'https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/CBRAmapperlive/MapServer',
+                    'url': 'https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/CBRS_Prohibitions_Test/MapServer',
                     'visibleLayers': [0],
                     'options': {
                         'id': 'footprints',
@@ -69,7 +69,7 @@ require([
                     }
                 },
                 'two' : {
-                    'url': 'https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/CBRAmapperlive/MapServer',
+                    'url': 'https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/CBRS_Prohibitions_Test/MapServer',
                     'visibleLayers': [2],
                     'options': {
                         'id': 'footprints',
@@ -86,7 +86,7 @@ require([
                     }
                 },
                 'four' : {
-                    'url': 'https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/CBRAmapperlive/MapServer',
+                    'url': 'https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/CBRS_Prohibitions_Test/MapServer',
                     'visibleLayers': [4],
                     'options': {
                         'id': 'footprints',
@@ -103,7 +103,7 @@ require([
                     }
                 },
                 'five' : {
-                    'url': 'https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/CBRAmapperlive/MapServer',
+                    'url': 'https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/CBRS_Prohibitions_Test/MapServer',
                     'visibleLayers': [5],
                     'options': {
                         'id': 'footprints',

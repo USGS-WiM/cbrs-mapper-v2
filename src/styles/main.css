@@ -192,6 +192,7 @@ body {
 
 #legendDiv {
     overflow-y: auto;
+    padding-top: 0px;
     /*max-height: inherit;*/
 }
 
@@ -490,7 +491,7 @@ input[type="checkbox"], input[type="radio"] {
 .siteInfoClass {
     position:absolute;
     width:570px;
-    height:420px;
+    height:450px;
     z-index:2;
     color: black;
     background-color: rgb(255,255,255);
@@ -571,7 +572,7 @@ input[type="checkbox"], input[type="radio"] {
   float: right;
   position: inherit;
   margin-right: 20px;
-  margin-top: 40px;
+  margin-top: 70px;
   margin-left: 5px;
   margin-bottom: 5px;
   clear: right;
@@ -671,4 +672,66 @@ div.tooltip-inner {
 
 .map .logo-med{
     display: none;
+}
+
+.esriLegendLeft {
+    padding-left: 0px !important;
+}
+
+.esriLegendService {
+    padding-bottom: 0px !important;
+}
+
+.valButtons {
+    text-align: center;
+    padding-top: 5px;
+}
+
+.legendPtVisible img {
+    margin: 10px 5px 10px 17px;
+    max-height: 30px;
+}
+
+.legendPt {
+    display: none;
+}
+
+.legendPtVisible {
+    display: inline-block !important;
+    margin-right: 20px;
+}
+
+#locationDesc {
+    margin: 5px 50px;
+    width: 80%;
+    background-color: rgba(255,255,255, 0.4);
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgba(0,0,0,0.2);
+    padding: 2px;
+}
+
+#disclaimerModal .modal-content {
+    overflow-y: auto;
+}
+
+#selecionDiv {
+    max-height: 550px;
+}
+
+.printJobs p:first-child {
+    padding-top: 5px;
+}
+
+#validationModal .modal-content {
+    overflow-y: auto;
+    background-color: rgba(255,255,255, 0.9)
+}
+
+.valButtons .btn-default {
+    background-color: rgba(255,255,255, 0.4)
+}
+
+#legendDiv_cbrs_6 {
+    display: none !important;
 }

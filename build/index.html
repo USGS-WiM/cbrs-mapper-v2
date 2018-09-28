@@ -52,7 +52,7 @@
                     </button>
                 <a class="navbar-brand" href="https://www.fws.gov">
                         <img id="fwsLogo" alt="FWS logo" src="images/fwsLogo.png" style="padding: 10px 0 0 0;">
-                        <a class="navbar-brand" target="_blank" href="http://www.fws.gov/cbra">
+                        <a class="navbar-brand" target="_blank" href="https://www.fws.gov/cbra">
                             <div id="titles">
                                 <div class='hidden-lg hidden-md hidden-sm' style='font-size:20px;'>CBRS</div>
                                 <div class='hidden-xs' style='font-size:20px;'>Coastal Barrier Resources System Mapper</div>
@@ -67,6 +67,11 @@
                     <span id="geosearchButtonText"> Print</span>
                 </button>
 
+            <button id="validationNav" type="button" class="btn btn-primary navbar-btn pull-right" onclick="ga('send','event','navbar','click','Validation Modal Opened');">
+                <span class="glyphicon glyphicon-map-marker"></span>
+                <span id="geosearchButtonText"> CBRS Validation Tool </span>
+            </button>
+
             <button id="geosearchNav" type="button" class="btn btn-primary navbar-btn pull-right" onclick="ga('send','event','navbar','click','Find Location Modal Opened');">
                     <span class="glyphicon glyphicon-search"></span>
                     <span id="geosearchButtonText"> Find Location</span>
@@ -76,6 +81,7 @@
                     <span class="glyphicon glyphicon-search"></span>
                     <span id="geosearchButtonText"> Find CBRS Unit</span>
                 </button>
+            
 
             <button id="aboutNav" class="btn btn-default navbar-btn pull-right" onclick="ga('send','event','navbar','click','About');">
                     <i class="fa fa-question-circle"></i><span class="hidden-xs">&nbsp;&nbsp;About</span>
@@ -130,7 +136,7 @@
                 <div class="modal-body">
                     <div class="form-group" style="outline:none;">
                         <div class="search-api-container search-api-md" style="margin:auto">
-                            <span class="search-api-icon"><svg focusable="false" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg></span>
+                            <span class="search-api-icon"><svg focusable="false" xmlns="https://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg></span>
                             <span>
                                         <input type="text" id="searchText" placeholder="Enter CBRS unit number (e.g Q01P)">
                                     </span>
@@ -189,6 +195,50 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!--CBRS Validation Tool -->
+    <div class="modal fade overflow-y-hidden" id="validationModal" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                    <h4 class="modal-title">CBRS Validation Tool</h4>
+                </div>
+                <div class="modal-body" id="valModalBody">
+                    <div class="validation">
+                        <div class="valSteps"><b>Step 1: </b> Click the pin icon below to select your point of interest on the map (e.g., the structure or property for which you require 
+                            CBRS information). A structure bisected by the CBRS boundary (i.e., both partially in and partially out) is within the CBRS. A pin placed on a bisected structure 
+                            must be placed on the portion of the structure within the unit (including any attached features such as a deck or stairs). <br>
+                            <div class="valButtons">
+                                <button class="btn btn-default btn-fixed" id="selectPoint" type="button" onClick="ga('send', 'event', 'Validation', 'click', 'Select Validation Point');" data-dismiss="modal"> <i class="fa fa-map-marker"></i> </button>
+                                <button class="btn btn-default btn-fixed" id="clearPoint" type="button"> Clear Pin </button><br>
+                            </div>
+                        </div><br>
+                        <div class="valSteps"><b>Step 2: </b>Enter address or description of point location (e.g., 123 Ocean Drive, Seatown, Maryland) in the space below. <br>
+                            <input type="text" placeholder="Type here" id="locationDesc"></div><br>
+                        <div class="valSteps">Please note that false statements or representations may be subject to the criminal penalties under 18 U.S. Code section 1001.</div><br>
+                        <div class="valSteps"><b>Point Placement Certification Statement:</b>
+                                I certify that the pin location corresponds to the property address or description that I provided. Additionally, I certify that if pin is placed on a structure 
+                                that is bisected by the CBRS boundary, I placed the pin on the portion of the structure within the unit.  <br>    
+                            <div class="valButtons">                          
+                                <button class="btn btn-default btn-fixed" id="runValidation" type="button" onClick="ga('send', 'event', 'Validation', 'click', 'Execute Validation');">Certify and Create PDF</button> <br>
+                            </div>
+                        </div><br>
+                        <div id="printJobsVal" style="margin-top: 5px;"><label>CBRS Documentation </label>
+                            <p class="toRemove"> No print jobs yet</p><br>
+                            <p id="printProc" style="display: none;">Processing, please wait...</p>
+                            <div class="printJobs"></div>
+                            <div class="valButtons">
+                                <button class="btn btn-default btn-fixed" id="clearPrintJobs" type="button" style="display: none;"> Clear Print Jobs </button><br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
     </div>
 
     <!-- Disclaimer -->
@@ -275,11 +325,13 @@
                     <ul class="nav nav-tabs" id="aboutModalTabs">
                         <li role="presentation" class="active"><a id="aboutTab" href="#aboutTabPane" data-toggle="tab"><i class="fa fa-question-circle"></i>&nbsp;CBRS Unit Information</a></li>
                         <li role="presentation"><a id="contactTab" href="#contactTabPane" data-toggle="tab" onclick="ga('send','event','About Modal','click','Contact Us Tab');"><i class="fa fa-exclamation-circle"></i>&nbsp;Contact Us</a></li>
+                        <li role="presentation"><a id="disclaimerTab" href="#disclaimerTabPane" data-toggle="tab"><i class="fa fa-exclamation-triangle"></i>&nbsp;Disclaimer</a></li>
                     </ul>
                     <div class="tab-content">
                         <div role="tabpanel" class="tab-pane active" id="aboutTabPane">
                             </br>
-                            <p>The <a href="https://www.fws.gov/cbra/Act.html" target="_blank">Coastal Barrier Resources Act (CBRA)</a>                                of 1982 and subsequent amendments designated relatively undeveloped coastal barriers along
+                            <p>The <a href="https://www.fws.gov/cbra/Act.html" target="_blank">Coastal Barrier Resources Act (CBRA)</a>                                
+                                of 1982 and subsequent amendments designated relatively undeveloped coastal barriers along
                                 the Atlantic, Gulf of Mexico, Great Lakes, U.S. Virgin Island, and Puerto Rico coasts as
                                 part of the John H. Chafee Coastal Barrier Resources System (CBRS), and made these areas
                                 ineligible for most new federal expenditures and financial assistance. CBRA encourages the
@@ -306,9 +358,10 @@
                                 emailing CBRA@fws.gov or calling 703-358-2171.</p>
 
                         </div>
-                        <div role="tabpanel" class="tab-pane" id="dataLimitationsTabPane">
+                        <div role="tabpanel" class="tab-pane" id="disclaimerTabPane">
                             </br>
-
+                            <h3>Disclaimer</h3>
+                            <p id="disclaimerText">Any use of trade, firm or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government. <br> <br> Version 2.1.0</p>
                         </div>
                     </div>
 
@@ -420,6 +473,10 @@
                                         <li data-toggle="tooltip" title="The Coastal Barrier Resources System (CBRS) contains two types of mapped units, System Units and Otherwise Protected Areas (OPAs). OPAs are denoted with a 'P' at the end of the unit designation (e.g., FL-64P, P10P). Most new Federal expenditures and financial assistance, including Federal flood insurance, are prohibited within System Units, while the only Federal spending prohibition within OPAs is on Federal flood insurance.">Unit Type: <label id="unitType"></label>&nbsp<span class="glyphicon glyphicon-info-sign"
                                                 style="font-size: 11px"></span></li>
                                         <li>Total Acreage: <label id="totalAcre"></label></li>
+                                        <li data-toggle="tooltip" id="fiToolTip" title="The date on which the prohibition on Federal flood insurance first took effect for a given area. The Federal Emergency Management Agency's (FEMA) National Flood Insurance Program uses this date to determine whether a structure located within the CBRS is eligible for Federal flood insurance.  Federal flood insurance is available within the CBRS for structures that were constructed (or permitted and under construction) before the area's flood insurance prohibition date (which is generally tied to the date that the area was first established as either a System Unit or OPA, but may differ in some cases).  If an existing insured structure within the CBRS is substantially improved or damaged (i.e., over 50 percent of the structure's market value), its Federal flood insurance policy cannot be renewed. See <a href='https://www.fws.gov/cbra/Flood-Insurance.html' target='_blank'>https://www.fws.gov/cbra/Flood-Insurance.html</a> and FEMA's Flood Insurance Manual for additional information.">Flood Insurance Prohibition Date&nbsp<span class="glyphicon glyphicon-info-sign"
+                                            style="font-size: 11px"></span>: <label id="FIDate"></label></li>
+                                        <li data-toggle="tooltip" title="The date on which prohibitions on Federal expenditures besides flood insurance (e.g., dredging and disaster assistance) went into effect. This is the date that FEMA uses to determine whether a road, structure, or facility is an &quot;existing facility&quot; as defined by its regulations implementing CBRA and the Stafford Act (44 CFR Part 206.342(c)). Additionally, this is the date used to determine whether Federal navigation channels and related structures were authorized prior to the date on which the area was included in a System Unit (16 U.S.C. 3505(b)). In most cases, the System Unit establishment date is the same as the flood insurance prohibition date. However, these dates differ in areas that were first designated in 1982 and also in areas that have been reclassified from OPA to System Unit.">System Unit Establishment Date&nbsp<span class="glyphicon glyphicon-info-sign"
+                                            style="font-size: 11px"></span>: <label id="SUDate"></label></li>
                                     </ul>
                                 </div>
                                 <br>
@@ -457,11 +514,11 @@
                                         immediately adjacent to the CBRS boundary where users are advised to contact the
                                         U.S. Fish and Wildlife Service for an official determination as to whether the property
                                         or project site is located &quot;in&quot; or &quot;out&quot; of the CBRS. For information
-                                        on obtaining an official CBRS property determination, please visit: <a href="http://www.fws.gov/cbra/Determinations.html">http://www.fws.gov/cbra/Determinations.html</a>.
-                                        <br> For more information on project consultations, please visit: <a href="http://www.fws.gov/cbra/Consultations.html">http://www.fws.gov/cbra/Consultations.html</a>.</p>
+                                        on obtaining an official CBRS property determination, please visit: <a href="https://www.fws.gov/cbra/Determinations.html">https://www.fws.gov/cbra/Determinations.html</a>.
+                                        <br> For more information on project consultations, please visit: <a href="https://www.fws.gov/cbra/Consultations.html">https://www.fws.gov/cbra/Consultations.html</a>.</p>
                                     <br>
                                     <div><img class="fwslogo" src="images/fwsLogo.png" /></div>
-                                    <p style="padding-top: 15px;">For more information on project consultations, please visit: <a href="http://www.fws.gov/cbra/Consultations.html">http://www.fws.gov/cbra/Consultations.html</a>.</p>
+                                    <p style="padding-top: 15px;">For more information on project consultations, please visit: <a href="https://www.fws.gov/cbra/Consultations.html">http://www.fws.gov/cbra/Consultations.html</a>.</p>
                                 </div>
                             </div>
                         </div>
@@ -479,6 +536,7 @@
                         </div>
                         <div id="legendCollapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
                             <h4 class="cbrsLegendTitle"> CBRS Units</h4>
+                            <div class="legendPt" id="legendPoint"><img src='https://static.arcgis.com/images/Symbols/Basic/RedStickpin.png'>Point of Interest</div>
                             <div id="legendDiv" style="background-color:transparent;" class="panel-body"></div>
                         </div>
                     </div>

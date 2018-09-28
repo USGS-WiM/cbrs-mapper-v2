@@ -9,6 +9,10 @@
     "bootstrap": "latest",
     "bootstrap-sidebar": "^0.2.2",
     "bootstrap-map-js": "latest",
-    "lobipanel": "^0.7.1"
+    "lobipanel": "^0.7.1",
+    "moment": "^2.22.2"
+  },
+  "resolutions": {
+    "bootstrap": "~3.1.1"
   }
 }
