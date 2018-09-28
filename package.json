@@ -1,6 +1,6 @@
 {
 	"name": "cbrs-map",
-	"version": "2.0.2",
+	"version": "v2.1.0",
 	"description": "WiM generator",
 	"repository": {
 		"type": "git",
