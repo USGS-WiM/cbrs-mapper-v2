@@ -1565,6 +1565,7 @@ require([
 
             var newpoint = webMercatorUtils.xyToLngLat(long, lat);
             latLong = String(Math.round(newpoint[0] * 1000000)/1000000) + ', ' + String(Math.round(newpoint[1] * 1000000)/1000000);
+            ga('send', 'event', 'Validation', 'click', latLong)
 
             document.getElementById('selectPoint').setAttribute("class", "btn btn-success btn-fixed")
         }
@@ -1608,7 +1609,11 @@ require([
                 locDesc = 'N/A'
                 userTitle = 'CBRS Documentation'
             }
-            var datetime = new Date().toLocaleString("en-US", {timeZone: "America/New_York", timeZoneName: "short"});
+            if (navigator.appVersion.indexOf("MSIE") != -1 || navigator.appVersion.indexOf("Trident") != -1) {
+                var datetime = new Date().toLocaleString("en-US", {timeZone: "UTC", timeZoneName: "short"})
+            } else {
+                var datetime = new Date().toLocaleString("en-US", {timeZone: "America/New_York", timeZoneName: "short"});
+            }
             var date = datetime.substr(0, datetime.indexOf(','));
             $('#printProc').css('display', 'inline');
             $("#printJobsVal").find("p.toRemove").remove();
@@ -1676,7 +1681,7 @@ require([
                 "For additional information about flood insurance and the CBRS, visit: <UND><CLR blue='255'><a target='_blank' href='https://www.fws.gov/cbra/Flood-Insurance.html'>https://www.fws.gov/cbra/Flood-Insurance.html" +
                 "</a></CLR></UND>.</FNT> \r\n"
         }
-
+        
     });
 
 function stateSelected() {
