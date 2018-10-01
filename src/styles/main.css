@@ -74,6 +74,22 @@ body {
         display:none;
     }
 
+    #titles {
+        padding: 15px 0px;
+    }
+
+    #navbar .navbar-brand {
+        padding: 0px 2px;
+    }
+
+    #navbar button {
+        margin: 0px 2px !important;
+        padding: 0 5px 2px !important;
+    }
+
+    .container-fluid {
+        padding-right: 2px;
+    }
     /*.basemapThumb {*/
     /*display: none;*/
     /*}*/

@@ -1061,7 +1061,6 @@ require([
 
             maxLegendHeight = ($('#mapDiv').height()) * 0.90;
             $('#legendElement').css('max-height', maxLegendHeight);
-            $('#legendDiv').css('max-height', maxLegendDivHeight);
 
             /*$('#legendCollapse').on('hide.bs.collapse', function () {
                 $('#legendElement').css('height', 'initial');
