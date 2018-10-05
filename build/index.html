@@ -257,9 +257,9 @@
                         maintained by the Service.</p>
                     <p>Copies of the official CBRS maps are available for viewing at the Service Headquarters office and are
                         also available for download on the CBRS Mapper and at the <a href="https://www.fws.gov/cbra/maps/index.html"
-                            target="_blank">Maps</a> web page. For information on obtaining an official determination of whether
-                        or not an area or specific property is located within the CBRS, please visit the <a href="https://www.fws.gov/cbra/Determinations.html"
-                            target="_blank">Determinations</a> web page. For information on project consultations, please visit
+                            target="_blank">Maps</a> web page. For information regarding whether or not a specific location is within
+                            or outside of the CBRS, please use the "CBRS Validation Tool" in the CBRS Mapper (<a href="https://www.fws.gov/cbra/Documentation.html"
+                            target="_blank">click here</a> for more information). For information on project consultations, please visit
                         the <a href="https://www.fws.gov/ecological-services/habitat-conservation/cbra/ConsultationS.html"
                             target="_blank">Consultations</a> web page. For general questions regarding the CBRS, you may contact
                         <a href="mailto:CBRA@fws.gov" target="_blank">cbra@fws.gov</a>. For information on the horizontal
@@ -325,6 +325,7 @@
                     <ul class="nav nav-tabs" id="aboutModalTabs">
                         <li role="presentation" class="active"><a id="aboutTab" href="#aboutTabPane" data-toggle="tab"><i class="fa fa-question-circle"></i>&nbsp;CBRS Unit Information</a></li>
                         <li role="presentation"><a id="contactTab" href="#contactTabPane" data-toggle="tab" onclick="ga('send','event','About Modal','click','Contact Us Tab');"><i class="fa fa-exclamation-circle"></i>&nbsp;Contact Us</a></li>
+                        <li role="presentation"><a id="validationTab" href="#validationTabPane" data-toggle="tab"><i class="glyphicon glyphicon-map-marker"></i>&nbsp;CBRS Validation Tool</a></li>
                         <li role="presentation"><a id="disclaimerTab" href="#disclaimerTabPane" data-toggle="tab"><i class="fa fa-exclamation-triangle"></i>&nbsp;Disclaimer</a></li>
                     </ul>
                     <div class="tab-content">
@@ -357,6 +358,19 @@
                             <p>You may contact the U.S. Fish and Wildlife Service about the Coastal Barrier Resources Act by
                                 emailing CBRA@fws.gov or calling 703-358-2171.</p>
 
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="validationTabPane">
+                            <p>The "CBRS Validation Tool" is an automated tool accessible through the CBRS Mapper that allows any user (e.g., surveyors, property owners, insurance 
+                                agents, real estate agents, Federal agencies, etc.) to select a particular location and produce a document entitled "CBRS Mapper Documentation" 
+                                which indicates whether that location is within or outside of the CBRS. For locations within the CBRS, the documentation produced by the tool 
+                                indicates the <a href="https://www.fws.gov/ecological-services/about/glossary.html#CBRA" target="_blank">flood insurance prohibition date</a> and 
+                                the <a href="https://www.fws.gov/ecological-services/about/glossary.html#CBRA" target="_blank">System Unit establishment date</a> (where applicable). 
+                                This documentation can be used to either obtain flood insurance through the National Flood Insurance Program for eligible structures or to otherwise 
+                                document a location's status within or outside of the CBRS for other purposes (e.g., real estate transactions or applications for Federal financial 
+                                assistance).</p>
+                            <p>Please note that the CBRS Validation Tool will not provide in/out CBRS documentation for locations that are within the "CBRS Buffer Zone" (i.e., 
+                                areas within about 20 feet of a CBRS boundary). Such locations require a "CBRS Property Determination" letter from the Service 
+                                (<a href="https://www.fws.gov/cbra/Documentation.html" target="_blank">click here</a> for additional information).</p>
                         </div>
                         <div role="tabpanel" class="tab-pane" id="disclaimerTabPane">
                             </br>
@@ -487,6 +501,7 @@
                                         <li>Title: <label id="titleOne"></label></li>
                                         <li class="hideNullTwo">Title 2: <label id="titleTwo"></label></li>
                                         <li class="hideNullThree">Title 3: <label id="titleThree"></label></li>
+                                        <li class="hideNullFour">Title 4: <label id="titleFour"></label></li>
                                     </ul>
                                 </div>
                                 <P class="panel-body">CBRS units extend seaward out to either the 20 or 30 foot bathymetric contour (depending
