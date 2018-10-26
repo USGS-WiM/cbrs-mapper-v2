@@ -34,8 +34,8 @@ require([
             'includeInLayerList': true,
             'layers': {
                 'CBRS Units' : {
-                    'url': 'https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/GeoCBRA/MapServer',
-                    'visibleLayers': [2,4,5,6],
+                    'url': 'https://cbrsgis.wim.usgs.gov/arcgis/rest/services/CoastalBarrierResourcesSystem/MapServer',
+                    'visibleLayers': [0,1,3,4],
                     'options': {
                         'id': 'cbrs',
                         'opacity': 0.75,
@@ -52,8 +52,8 @@ require([
                     }
                 },
                 'CBRS Footprints' : {
-                    'url': 'https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/GeoCBRA/MapServer',
-                    'visibleLayers': [0],
+                    'url': 'https://cbrsgis.wim.usgs.gov/arcgis/rest/services/CoastalBarrierResourcesSystem/MapServer',
+                    'visibleLayers': [5],
                     'options': {
                         'id': 'footprints',
                         'opacity': 0.75,
@@ -69,7 +69,7 @@ require([
                     }
                 },
                 'two' : {
-                    'url': 'https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/GeoCBRA/MapServer',
+                    'url': 'https://cbrsgis.wim.usgs.gov/arcgis/rest/services/CoastalBarrierResourcesSystem/MapServer',
                     'visibleLayers': [2],
                     'options': {
                         'id': 'footprints',
@@ -86,7 +86,7 @@ require([
                     }
                 },
                 'four' : {
-                    'url': 'https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/GeoCBRA/MapServer',
+                    'url': 'https://cbrsgis.wim.usgs.gov/arcgis/rest/services/CoastalBarrierResourcesSystem/MapServer',
                     'visibleLayers': [4],
                     'options': {
                         'id': 'footprints',
@@ -103,7 +103,7 @@ require([
                     }
                 },
                 'five' : {
-                    'url': 'https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/GeoCBRA/MapServer',
+                    'url': 'https://cbrsgis.wim.usgs.gov/arcgis/rest/services/CoastalBarrierResourcesSystem/MapServer',
                     'visibleLayers': [5],
                     'options': {
                         'id': 'footprints',
