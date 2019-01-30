@@ -367,12 +367,12 @@ require([
         identifyParams.tolerance = 0;
         identifyParams.returnGeometry = true;
         identifyParams.layerOption = IdentifyParameters.LAYER_OPTION_ALL;
-        identifyParams.layerIds = [0, 2, 4, 6];
+        identifyParams.layerIds = [0,1,3,5];
         identifyParams.spatialReference = map.spatialReference;
         identifyParams.width = map.width;
         identifyParams.height = map.height;
         //identifyTask = new esri.tasks.IdentifyTask("http://50.17.205.92/arcgis/rest/services/NAWQA/DecadalMap/MapServer");
-        identifyTask = new IdentifyTask("https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/CBRS_Prohibitions_Test/MapServer");
+        identifyTask = new IdentifyTask("https://cbrsgis.wim.usgs.gov/arcgis/rest/services/CoastalBarrierResourcesSystem/MapServer");
 
         //start LobiPanel
         $("#selectionDiv").lobiPanel({
@@ -474,7 +474,7 @@ require([
 
             if (map.getLevel()) {
                 //the deferred variable is set to the parameters defined above and will be used later to build the contents of the infoWindow.
-                identifyTask = new IdentifyTask("https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/CBRS_Prohibitions_Test/MapServer");
+                identifyTask = new IdentifyTask("https://cbrsgis.wim.usgs.gov/arcgis/rest/services/CoastalBarrierResourcesSystem/MapServer");
                 var deferredResult = identifyTask.execute(identifyParams);
                 
                 setCursorByID("mainDiv");
@@ -916,7 +916,7 @@ require([
         });
 
         //create CBRS Unit Search
-        var findCBRS = new FindTask('https://fwsprimary.wim.usgs.gov/server/rest/services/CBRAMapper/CBRS_Prohibitions_Test/MapServer');
+        var findCBRS = new FindTask('https://cbrsgis.wim.usgs.gov/arcgis/rest/services/CoastalBarrierResourcesSystem/MapServer');
         var params = new FindParameters();
         params.layerIds = [4];
         params.searchFields = ["Unit"];
