@@ -414,7 +414,9 @@ require([
             $('#validationModal').modal('hide');
         });
 
-        $('#runValidation').click(function () {
+        $('#runValidation').click(function (e) {
+            e.preventDefault();
+            $(this).button('loading');
             var proc = deferredProcess();
             proc.then(function(results) {
                 printVal();
@@ -546,7 +548,7 @@ require([
                                 }
 
 
-                            } else if (response[i].layerName == "CBRS Map Footprints" && response[i].feature.attributes.Title.search(unit) != -1) {
+                            } else if (response[i].layerName == "CBRS Map Panels" && response[i].feature.attributes.Title.search(unit) != -1) {
                                 $("#mapLink").html('<a href="' + attr["Map_Link"] + '" target="_blank">Click here for official CBRS map</a>');
                                 $("#mapDate").text(attr["Map_Date"]);
                                 $("#titleOne").text(attr["Title"]);
@@ -585,7 +587,7 @@ require([
 
                                 map.graphics.add(graphic);
 
-                            } else if (response[i].layerName == "CBRS Map Footprints" && response[i].feature.attributes.Title_2.search(unit) != -1) {
+                            } else if (response[i].layerName == "CBRS Map Panels" && response[i].feature.attributes.Title_2.search(unit) != -1) {
                                 $("#mapLink").html('<a href="' + attr["Map_Link"] + '" target="_blank">Click here for official CBRS map</a>');
                                 $("#mapDate").text(attr["Map_Date"]);
                                 $("#titleOne").text(attr["Title"]);
@@ -624,7 +626,7 @@ require([
 
                                 map.graphics.add(graphic);
 
-                            } else if (response[i].layerName == "CBRS Map Footprints" && response[i].feature.attributes.Title_3.search(unit) != -1) {
+                            } else if (response[i].layerName == "CBRS Map Panels" && response[i].feature.attributes.Title_3.search(unit) != -1) {
                                 $("#mapLink").html('<a href="' + attr["Map_Link"] + '" target="_blank">Click here for official CBRS map</a>');
                                 $("#mapDate").text(attr["Map_Date"]);
                                 $("#titleOne").text(attr["Title"]);
@@ -662,7 +664,7 @@ require([
 
                                 map.graphics.add(graphic);
 
-                            } else if (response[i].layerName == "CBRS Map Footprints" && response[i].feature.attributes.Title_4.search(unit) != -1) {
+                            } else if (response[i].layerName == "CBRS Map Panels" && response[i].feature.attributes.Title_4.search(unit) != -1) {
                                 $("#mapLink").html('<a href="' + attr["Map_Link"] + '" target="_blank">Click here for official CBRS map</a>');
                                 $("#mapDate").text(attr["Map_Date"]);
                                 $("#titleOne").text(attr["Title"]);
@@ -772,7 +774,7 @@ require([
                                     } else if (response[i].layerName == 'CBRS Buffer Zone') {
                                         inBuffer = true;
                                         pinLoc = 'buff';
-                                    } else if (response[i].layerName == 'CBRS Map Footprints') {
+                                    } else if (response[i].layerName == 'CBRS Map Panels') {
                                         mapDate = response[i].feature.attributes.Map_Date;
                                         mapNo = response[i].feature.attributes.Panel_No;
                                     }
@@ -812,7 +814,7 @@ require([
             template.preserveScale = false;
             var cbrsLegendLayer = new LegendLayer();
             cbrsLegendLayer.layerId = "cbrs";
-            cbrsLegendLayer.subLayerIds = [2,4,5];
+            cbrsLegendLayer.subLayerIds = [0,3,4];
 
             var userTitle = $("#printTitle").val();
             //if user does not provide title, use default. otherwise apply user title
@@ -835,7 +837,7 @@ require([
             //"legendLayers": [legendLayer]
             var docTitle = template.layoutOptions.titleText;
             printParams.template = template;
-            var printMap = new PrintTask("https://fwsprimary.wim.usgs.gov/server/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task");
+            var printMap = new PrintTask("https://cbrsgistest.wim.usgs.gov/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task");
             printMap.execute(printParams, printDone, printError);
 
             /* $.get("https://fwsprimary.wim.usgs.gov/pdfLoggingService/pdfLog.asmx/Log?printInfo=" + map.getScale() + "," + map.extent.xmin + "," + map.extent.ymax + "," + map.extent.xmax + "," + map.extent.ymin + ",NWIV2", function(data) {
@@ -894,9 +896,10 @@ require([
                 printCount++;
                 var printJob = $('<p><label>' + printCount + ': </label>&nbsp;&nbsp;<a href="' + event.url + '" target="_blank">' + docTitle + ' </a></p>');
                 //$("#print-form").append(printJob);
+                $("#printJobsVal").find("p.toRemove").remove();
                 $(".printJobs").append(printJob);
-                $('#printProc').css("display", "none");
                 $('#clearPrintJobs').css("display", "inline");
+                $("#runValidation").button('reset');
                 infoPar = '';
             }
         
@@ -918,7 +921,7 @@ require([
         //create CBRS Unit Search
         var findCBRS = new FindTask('https://cbrsgis.wim.usgs.gov/arcgis/rest/services/CoastalBarrierResourcesSystem/MapServer');
         var params = new FindParameters();
-        params.layerIds = [4];
+        params.layerIds = [3];
         params.searchFields = ["Unit"];
         params.outSpatialReference = map.spatialReference;
         params.returnGeometry = true;
@@ -1672,8 +1675,6 @@ require([
                 var datetime = new Date().toLocaleString("en-US", {timeZone: "America/New_York", timeZoneName: "short"});
             }
             var date = datetime.substr(0, datetime.indexOf(','));
-            $('#printProc').css('display', 'inline');
-            $("#printJobsVal").find("p.toRemove").remove();
             if (suDate == 'Null') {suDate = 'N/A'};
             if (fiDate == 'Null') {fiDate = 'N/A'};
             if (pinLoc == 'in') {
