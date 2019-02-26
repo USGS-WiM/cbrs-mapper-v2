@@ -837,7 +837,7 @@ require([
             //"legendLayers": [legendLayer]
             var docTitle = template.layoutOptions.titleText;
             printParams.template = template;
-            var printMap = new PrintTask("https://cbrsgistest.wim.usgs.gov/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task");
+            var printMap = new PrintTask("https://cbrsgis.wim.usgs.gov/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task");
             printMap.execute(printParams, printDone, printError);
 
             /* $.get("https://fwsprimary.wim.usgs.gov/pdfLoggingService/pdfLog.asmx/Log?printInfo=" + map.getScale() + "," + map.extent.xmin + "," + map.extent.ymax + "," + map.extent.xmax + "," + map.extent.ymin + ",NWIV2", function(data) {
@@ -858,6 +858,7 @@ require([
             }
 
             function printError(event) {
+                $("#printExecuteButton").button('reset');
                 alert("Sorry, an unclear print error occurred. Please try refreshing the application to fix the problem");
             }
         }
@@ -887,7 +888,7 @@ require([
             //"legendLayers": [legendLayer]
             var docTitle = valTemplate.layoutOptions.titleText;
             valParams.template = valTemplate;
-            var printMap = new PrintTask("https://fwsprimary.wim.usgs.gov/server/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task");
+            var printMap = new PrintTask("https://cbrsgis.wim.usgs.gov/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task");
             printMap.execute(valParams, printDone, printError);
         
             function printDone(event) {
@@ -904,6 +905,7 @@ require([
             }
         
             function printError(event) {
+                $("#runValidation").button('reset');
                 alert("Sorry, an unclear print error occurred. Please try refreshing the application to fix the problem");
             }
 
