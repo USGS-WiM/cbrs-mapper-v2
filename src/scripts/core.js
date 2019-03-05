@@ -875,7 +875,7 @@ require([
             };
             valTemplate.format = "PDF";
             valTemplate.layout = "Letter ANSI A Portrait CBRS Mapper V2_Prohibitions";
-            valTemplate.preserveScale = false;
+            valTemplate.preserveScale = true;
         
             valTemplate.layoutOptions = {
                 "titleText": userTitle,
