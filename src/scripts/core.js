@@ -711,7 +711,7 @@ require([
                                     $("#FIDate").text(attr["FI_Date"]);
                                     $("#SUDate").text(su_date);
                                 }
-                            } if (response[i].layerId == 2) {
+                            } if (response[i].layerId == 0) {
                                 symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID,
                                     new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
                                         new dojo.Color([0, 0, 0]), 2), new dojo.Color([0, 0, 0, 0])
@@ -736,7 +736,7 @@ require([
                                 }
 
                                 if ($("#bufferDiv").css("visibility", "visible")) {
-                                    ($("#selectionDiv").modal(hide));
+                                    ($("#selectionDiv").modal('hide'));
                                 }
                             }
 
