@@ -2,7 +2,7 @@
   {
     "name": "cbrs-mapper-v2",
     "organization": "U.S. Geological Survey",
-    "description": "Documents best practices for software development within WIM",
+    "description": "Fish and Wildlife Service Coastal Barrier Resources System mapper",
     "version": "v2.1.1",
     "status": "Production",
 
@@ -16,7 +16,7 @@
       ]
     },
 
-    "homepageURL": "https://fwsprimary.wim.usgs.gov/cbrs-mapper-v2/",
+    "homepageURL": "https://www.fws.gov/cbra/maps/mapper.html",
     "downloadURL": "https://github.com/USGS-WiM/cbrs-mapper-v2/archive/master.zip",
     "disclaimerURL": "https://github.com/USGS-WiM/cbrs-mapper-v2/blob/master/DISCLAIMER.md",
     "repositoryUrl": "https://github.com/USGS-WiM/cbrs-mapper-v2",
