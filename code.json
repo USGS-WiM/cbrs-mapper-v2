@@ -25,15 +25,12 @@
     "laborHours": null,
 
     "tags": [
-      "guidance",
-      "template"
+      "interactive map"
     ],
 
     "languages": [
-      "Markdown",
-      "html",
       "javascript",
-      "css"
+      "JQuery"
     ],
 
     "contact": {
