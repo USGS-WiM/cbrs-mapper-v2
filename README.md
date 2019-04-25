@@ -3,7 +3,7 @@
 
 # cbrs-mapper-v2
 
-This mapper provides results from the largest-ever assessment of water-quality changes in the Nation's streams and rivers.
+The CBRS mapper can be used to help property owners, local, State, and Federal stakeholders, and the public determine whether or not properties or projects fall within designated regions defined by the Coastal Barrier Resources Act..
 
 ### Prerequisites
 
