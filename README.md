@@ -3,7 +3,7 @@
 
 # cbrs-mapper-v2
 
-This mapper provides results from the largest-ever assessment of water-quality changes in the Nation's streams and rivers.
+The CBRS mapper can be used to help property owners, local, State, and Federal stakeholders, and the public determine whether or not properties or projects fall within designated regions defined by the Coastal Barrier Resources Act..
 
 ### Prerequisites
 
@@ -41,7 +41,7 @@ To push tags to remote origin: `git push origin --tags`
 ## Authors
 
 * **[Nicholas Estes](https://www.usgs.gov/staff-profiles/nicholas-j-estes)**  - *Lead Developer* - [USGS Web Informatics & Mapping](https://wim.usgs.gov/)
-* **[Lauren Privette](https://www.usgs.gov/staff-profiles/lauren-privette)**  - *Developer* - [USGS Web Informatics & Mapping](https://wim.usgs.gov/)
+* **[Katrin Jacobsen](https://www.usgs.gov/staff-profiles/katrin-jacobsen)**  - *Developer* - [USGS Web Informatics & Mapping](https://wim.usgs.gov/)
 
 See also the list of [contributors](https://github.com/USGS-WiM/cbrs-mapper-v2/contributors) who participated in this project.
 
