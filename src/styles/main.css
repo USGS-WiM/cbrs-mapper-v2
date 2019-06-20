@@ -722,14 +722,27 @@ div.tooltip-inner {
     margin-right: 20px;
 }
 
-#locationDesc {
-    margin: 5px 50px;
-    width: 80%;
+.valSteps label {
+    margin-left: 50px;
+}
+
+.valSteps input {
+    margin: 5px 10px;
+    width: 56%;
     background-color: rgba(255,255,255, 0.4);
     border-width: 1px;
     border-style: solid;
     border-color: rgba(0,0,0,0.2);
     padding: 2px;
+}
+
+#locationDesc {
+    margin: 5px 50px;
+    width: 80%;
+}
+
+#valCo {
+    width: 52%;
 }
 
 #disclaimerModal .modal-content {
@@ -755,4 +768,8 @@ div.tooltip-inner {
 
 #legendDiv_cbrs_6 {
     display: none !important;
+}
+
+.btn[disabled] {
+    pointer-events: unset;
 }

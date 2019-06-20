@@ -33,7 +33,7 @@ require([
             'showGroupHeading': false,
             'includeInLayerList': true,
             'layers': {
-                'CBRS Units' : {
+                'CBRS Units': {
                     'url': 'https://cbrsgis.wim.usgs.gov/arcgis/rest/services/CoastalBarrierResourcesSystem/MapServer',
                     'visibleLayers': [0,1,3,4],
                     'options': {
@@ -48,10 +48,10 @@ require([
                         /*'zoomScale': 144448,*/
                         'hasOpacitySlider': true,
                         'moreinfo': 'https://www.fws.gov/wetlands/Data/Wetlands-V2-Product-Summary.html',
-                        'includeLegend' : true
+                        'includeLegend': true
                     }
                 },
-                'CBRS Footprints' : {
+                'CBRS Footprints': {
                     'url': 'https://cbrsgis.wim.usgs.gov/arcgis/rest/services/CoastalBarrierResourcesSystem/MapServer',
                     'visibleLayers': [5],
                     'options': {
@@ -65,10 +65,10 @@ require([
                         'includeInLayerList': false,
                         'zoomScale': 144448,
                         'hasOpacitySlider': true,
-                        'includeLegend' : false
+                        'includeLegend': false
                     }
                 },
-                'two' : {
+                'two': {
                     'url': 'https://cbrsgis.wim.usgs.gov/arcgis/rest/services/CoastalBarrierResourcesSystem/MapServer',
                     'visibleLayers': [2],
                     'options': {
@@ -82,10 +82,10 @@ require([
                         'includeInLayerList': false,
                         'zoomScale': 144448,
                         'hasOpacitySlider': true,
-                        'includeLegend' : false
+                        'includeLegend': false
                     }
                 },
-                'four' : {
+                'four': {
                     'url': 'https://cbrsgis.wim.usgs.gov/arcgis/rest/services/CoastalBarrierResourcesSystem/MapServer',
                     'visibleLayers': [4],
                     'options': {
@@ -99,10 +99,10 @@ require([
                         'includeInLayerList': false,
                         'zoomScale': 144448,
                         'hasOpacitySlider': true,
-                        'includeLegend' : false
+                        'includeLegend': false
                     }
                 },
-                'five' : {
+                'five': {
                     'url': 'https://cbrsgis.wim.usgs.gov/arcgis/rest/services/CoastalBarrierResourcesSystem/MapServer',
                     'visibleLayers': [5],
                     'options': {

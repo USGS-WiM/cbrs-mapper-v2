@@ -234,6 +234,7 @@ require([
             map.graphics.clear();
             document.getElementById('selectPoint').setAttribute("class", "btn btn-default btn-fixed");
             document.getElementById("legendPoint").setAttribute("class", "legendPt")
+            document.getElementById('runValidation').disabled = true;
         })
 
         $('#clearPrintJobs').click(function() {
@@ -248,6 +249,20 @@ require([
         function showGetDataModal() {
             $('#getDataModal').modal('show');
         }
+
+        $('#valName').change(function(e) {
+            graphPoint = map.graphics.graphics[0];
+            if (e.target.value !== '' && document.getElementById('locationDesc').value !== '' && (graphPoint && graphPoint.geometry.type == "point")) {
+                document.getElementById('runValidation').disabled = false;
+            } else {document.getElementById('runValidation').disabled = true;}
+        })
+
+        $('#locationDesc').change(function(e) {
+            graphPoint = map.graphics.graphics[0];
+            if (e.target.value !== '' && document.getElementById('valName').value !== '' && (graphPoint && graphPoint.geometry.type == "point")) {
+                document.getElementById('runValidation').disabled = false;
+            } else {document.getElementById('runValidation').disabled = true;}
+        })
         
         /*aoiSymbol = new PictureMarkerSymbol("../images/grn-pushpin.png", 45, 45);
     
@@ -416,6 +431,7 @@ require([
 
         $('#runValidation').click(function (e) {
             e.preventDefault();
+            checkMap();
             $(this).button('loading');
             var proc = deferredProcess();
             proc.then(function(results) {
@@ -782,6 +798,9 @@ require([
                             }
                             getMapPoint(lat, long)
                             selectPointonMap = false;
+                            if (document.getElementById('valName').value === '' || document.getElementById('locationDesc').value === '') {
+                                document.getElementById('runValidation').disabled = true;
+                            } else {document.getElementById('runValidation').disabled = false; }
                         }
                     }
                 });
@@ -1188,6 +1207,10 @@ require([
         $(document).ready(function () {
             $('#validationNav').click(function () {
                 $('#validationModal').modal('show');
+                graphPoint = map.graphics.graphics[0];
+                if (document.getElementById('locationDesc').value === '' || document.getElementById('valName').value === '' || !(graphPoint && graphPoint.geometry.type == "point")) {
+                    document.getElementById('runValidation').disabled = true;
+                }
             });
 
         });
@@ -1634,7 +1657,6 @@ require([
 
         function deferredProcess() {
             var deferred = new dojo.Deferred();
-            checkMap();
             runValidation();
             setTimeout(function() {
                 deferred.resolve('success');
@@ -1643,13 +1665,8 @@ require([
         }
 
         function checkMap() {
-            graphPoint = map.graphics.graphics[0];
             if (!map._layers.cbrs.visible) {
                 document.getElementById('cbrsSelector').click();
-            }
-            
-            if (!(graphPoint && graphPoint.geometry.type == "point")) {
-                alert('No map point found. Please place point on map, then try again.')
             }
 
             if ( 19 <= map.getLevel() || map.getLevel() < 17) {
@@ -1665,8 +1682,10 @@ require([
         }
 
         function runValidation() {
-            locDesc = document.getElementById('locationDesc').value;
-            userTitle = document.getElementById('locationDesc').value;
+            locDesc = document.getElementById('locationDesc').value.replace('&','&#38;'); // ampersand causes template issues if not encoded
+            userTitle = document.getElementById('locationDesc').value.replace('&','&#38;');
+            userName = document.getElementById('valName').value.replace('&','&#38;');
+            userCompany = document.getElementById('valCo').value.replace('&','&#38;');
             if (locDesc == "") {
                 locDesc = 'N/A'
                 userTitle = 'CBRS Documentation'
@@ -1676,13 +1695,15 @@ require([
             } else {
                 var datetime = new Date().toLocaleString("en-US", {timeZone: "America/New_York", timeZoneName: "short"});
             }
+            infoPar = "<BOL>User Name: </BOL>" + userName + "\r\n";
+            if (userCompany) {infoPar += "<BOL>User Company: </BOL>" + userCompany + "\r\n"}
             var date = datetime.substr(0, datetime.indexOf(','));
             if (suDate == 'Null') {suDate = 'N/A'};
             if (fiDate == 'Null') {fiDate = 'N/A'};
             if (pinLoc == 'in') {
                 pinLocDesc = 'Within Unit ' + inUnit;
                 if (inUnitType == 'Otherwise Protected Area') {
-                    infoPar = "<BOL>User Supplied Address/Location Description: </BOL>" + locDesc + "\r\n <BOL>Pin Location: </BOL>" + pinLocDesc + "\r\n" +
+                    infoPar += "<BOL>User Supplied Address/Location Description: </BOL>" + locDesc + "\r\n <BOL>Pin Location: </BOL>" + pinLocDesc + "\r\n" +
                         "<BOL>Pin Flood Insurance Prohibition Date: </BOL>" + fiDate + "\r\n <BOL>Pin System Unit Establishment Date: </BOL>" + suDate + "\r\n \r\n" +
                         "The user placed pin is within Otherwise Protected Area (OPA) Unit " + inUnit + " of the CBRS.  For the official map depicting this area, please see the map " +
                         "numbered " + mapNo + ', dated ' + mapDate + ". The official CBRS maps are accessible at <UND><CLR blue='255'><a target='_blank' href='https://www.fws.gov/cbra/maps/index.html'>" +
@@ -1694,9 +1715,8 @@ require([
                         'substantially improved or substantially damaged since.</BOL> For more information about the restrictions on federal flood insurance, please refer to the Federal ' +
                         "Emergency Management Agency's (FEMA) regulations in Title 44 Part 71 of the Code of Federal Regulations and FEMA's Flood Insurance Manual: " +
                         "<UND><CLR blue='255'><a target='_blank' href='https://www.fema.gov/flood-insurance-manual'>https://www.fema.gov/flood-insurance-manual</a></CLR></UND>.\r\n \r\n"
-                    
                 } else if (inUnitType == 'System Unit') {
-                    infoPar = "<BOL>User Supplied Address/Location Description: </BOL>" + locDesc + "\r\n <BOL>Pin Location: </BOL>" + pinLocDesc + "\r\n" +
+                    infoPar += "<BOL>User Supplied Address/Location Description: </BOL>" + locDesc + "\r\n <BOL>Pin Location: </BOL>" + pinLocDesc + "\r\n" +
                         "<BOL>Pin Flood Insurance Prohibition Date: </BOL>" + fiDate + "\r\n <BOL>Pin System Unit Establishment Date: </BOL>" + suDate + "\r\n \r\n" +
                         'The user placed pin location is within System Unit ' + inUnit + ' of the CBRS.  For the official CBRS map depicting this area, please see the map ' +
                         'numbered ' + mapNo + ', dated ' + mapDate + ". The official CBRS maps are accessible at <UND><CLR blue='255'><a target='_blank' href='https://www.fws.gov/cbra/maps/index.html'>" +
@@ -1708,14 +1728,13 @@ require([
                         'substantially improved or substantially damaged since.</BOL> For more information about the restrictions on federal flood insurance, please refer to the Federal ' +
                         "Emergency Management Agency's (FEMA) regulations in Title 44 Part 71 of the Code of Federal Regulations and FEMA's Flood Insurance Manual: " +
                         "<UND><CLR blue='255'><a target='_blank' href='https://www.fema.gov/flood-insurance-manual'>https://www.fema.gov/flood-insurance-manual</a></CLR></UND>. " +
-                        'The prohibition on all other federal expenditures and financial assistance (besides flood insurance) for this pin location took effect on ' + suDate + '.  \r\n \r\n'
-                    
+                        'The prohibition on all other federal expenditures and financial assistance (besides flood insurance) for this pin location took effect on ' + suDate + '.\r\n \r\n'
                 }
             } else if (pinLoc == 'buff') {
                 pinLocDesc = 'Within CBRS Buffer Zone'
                 fiDate = 'Undetermined'
                 suDate = 'Undetermined'
-                infoPar = "<BOL>User Supplied Address/Location Description: </BOL>" + locDesc + "\r\n <BOL>Pin Location: </BOL>" + pinLocDesc + "\r\n" +
+                infoPar += "<BOL>User Supplied Address/Location Description: </BOL>" + locDesc + "\r\n <BOL>Pin Location: </BOL>" + pinLocDesc + "\r\n" +
                     "<BOL>Pin Flood Insurance Prohibition Date: </BOL>" + fiDate + "\r\n <BOL>Pin System Unit Establishment Date: </BOL>" + suDate + "\r\n \r\n" +
                     'The user placed pin location is within the CBRS Buffer Zone. The CBRS Buffer Zone represents the area immediately adjacent to the CBRS boundary where ' +
                     'users are advised to contact the Service for an official determination as to whether the property or project site is located "in" or "out" ' +
@@ -1725,11 +1744,11 @@ require([
             } else if (pinLoc == 'out') {
                 pinLocDesc = 'Outside CBRS'
                 if (mapNo == "") {
-                    infoPar = "<BOL>User Supplied Address/Location Description: </BOL>" + locDesc + "\r\n <BOL>Pin Location: </BOL>" + pinLocDesc + "\r\n" +
+                    infoPar += "<BOL>User Supplied Address/Location Description: </BOL>" + locDesc + "\r\n <BOL>Pin Location: </BOL>" + pinLocDesc + "\r\n" +
                     "<BOL>Pin Flood Insurance Prohibition Date: </BOL>" + fiDate + "\r\n <BOL>Pin System Unit Establishment Date: </BOL>" + suDate + "\r\n \r\n" +
                     "The user placed pin location is not within the CBRS. The official CBRS maps are accessible at <UND><CLR blue='255'><a target='_blank' href='https://www.fws.gov/cbra/maps/index.html'> https://www.fws.gov/cbra/maps/index.html</a></CLR></UND>. \r\n \r\n"
                 } else {
-                    infoPar = "<BOL>User Supplied Address/Location Description: </BOL>" + locDesc + "\r\n <BOL>Pin Location: </BOL>" + pinLocDesc + "\r\n" +
+                    infoPar += "<BOL>User Supplied Address/Location Description: </BOL>" + locDesc + "\r\n <BOL>Pin Location: </BOL>" + pinLocDesc + "\r\n" +
                     "<BOL>Pin Flood Insurance Prohibition Date: </BOL>" + fiDate + "\r\n <BOL>Pin System Unit Establishment Date: </BOL>" + suDate + "\r\n \r\n" +
                     'The user placed pin location is not within the CBRS. For the nearest official CBRS map depicting this area, please see the map numbered ' + mapNo + ', dated ' + mapDate +
                     ". The official CBRS maps are accessible at <UND><CLR blue='255'><a target='_blank' href='https://www.fws.gov/cbra/maps/index.html'> https://www.fws.gov/cbra/maps/index.html</a></CLR></UND>. \r\n \r\n"
