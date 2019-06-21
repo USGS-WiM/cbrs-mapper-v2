@@ -124,6 +124,7 @@ require([
     on,
     array
 ) {
+    var hybridTrans = new ArcGISTiledMapServiceLayer('https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Transportation/MapServer')
 
         //bring this line back after experiment////////////////////////////
         //allLayers = mapLayers;
@@ -170,10 +171,10 @@ require([
                             });*/
         // unablet to add infoWindow: popup
         map = new Map('mapDiv', {
-            basemap: 'satellite',
+            basemap: 'hybrid',
             extent: new Extent(-14638882.654811008, 2641706.3772205533, -6821514.898031538, 6403631.161302788, new SpatialReference({ wkid: 3857 })),
         });
-
+        
         var home = new HomeButton({
             map: map,
             extent: new Extent(-14638882.654811008, 2641706.3772205533, -6821514.898031538, 6403631.161302788, new SpatialReference({ wkid: 3857 }))
@@ -279,6 +280,7 @@ require([
             $('#longitude').html(initMapCenter.x.toFixed(3));
             //map.setBasemap("topo");
             //map.setBasemap("hybrid");
+            map.addLayer(hybridTrans, 1);  
         });
 
         //displays map scale on scale change (i.e. zoom level)
@@ -308,38 +310,78 @@ require([
         var nationalMapBasemap = new ArcGISTiledMapServiceLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer');
         var usgsImageryTopo = new ArcGISTiledMapServiceLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer');
 
+
         //on clicks to swap basemap. map.removeLayer is required for nat'l map b/c it is not technically a basemap, but a tiled layer.
         on(dom.byId('btnStreets'), 'click', function () {
+            var array = []
+            map.layerIds.forEach(function(item, index){
+                if (item != "cbrs" && item != "footprints") {
+                    var layer = map.getLayer(map.layerIds[index])
+                    array.push(layer);
+                }
+            })
+            for (var i=0; i < array.length; i++) {
+                map.removeLayer(array[i]);
+            }
             map.setBasemap('streets');
-            map.removeLayer(nationalMapBasemap);
-            map.removeLayer(usgsTopo);
-            map.removeLayer(usgsImageryTopo);
         });
-        on(dom.byId('btnHybrid'), 'click', function () {
-            map.setBasemap('hybrid');
-            map.removeLayer(nationalMapBasemap);
-            map.removeLayer(usgsTopo);
-            map.removeLayer(usgsImageryTopo);
-        });
+
         on(dom.byId('btnGray'), 'click', function () {
+            var array = []
+            map.layerIds.forEach(function(item, index){
+                if (item != "cbrs" && item != "footprints") {
+                    var layer = map.getLayer(map.layerIds[index])
+                    array.push(layer);
+                }
+            })
+            for (var i=0; i < array.length; i++) {
+                map.removeLayer(array[i]);
+            }
             map.setBasemap('gray');
-            map.removeLayer(nationalMapBasemap);
-            map.removeLayer(usgsTopo);
-            map.removeLayer(usgsImageryTopo);
         });
 
         on(dom.byId('btnUsgsImgTopo'), 'click', function () {
+            var array = []
+            map.layerIds.forEach(function(item, index){
+                if (item != "cbrs" && item != "footprints") {
+                    var layer = map.getLayer(map.layerIds[index])
+                    array.push(layer);
+                }
+            })
+            for (var i=0; i < array.length; i++) {
+                map.removeLayer(array[i]);
+            }
             map.setBasemap('satellite');
-            map.addLayer(usgsImageryTopo, 1);
-            map.removeLayer(nationalMapBasemap);
-            map.removeLayer(usgsTopo);
+            map.addLayer(usgsImageryTopo, 0);
         });
 
         on(dom.byId('btnUsgsTopo'), 'click', function () {
-            map.addLayer(usgsTopo, 1);
-            map.removeLayer(nationalMapBasemap);
-            map.removeLayer(usgsImageryTopo);
-        })
+            var array = []
+            map.layerIds.forEach(function(item, index){
+                if (item != "cbrs" && item != "footprints") {
+                    var layer = map.getLayer(map.layerIds[index])
+                    array.push(layer);
+                }
+            })
+            for (var i=0; i < array.length; i++) {
+                map.removeLayer(array[i]);
+            }
+            map.addLayer(usgsTopo, 0);
+        });
+        on(dom.byId('btnHybrid'), 'click', function () {
+            var array = []
+            map.layerIds.forEach(function(item, index){
+                if (item != "cbrs" && item != "footprints") {
+                    var layer = map.getLayer(map.layerIds[index])
+                    array.push(layer);
+                }
+            })
+            for (var i=0; i < array.length; i++) {
+                map.removeLayer(array[i]);
+            }
+            map.setBasemap('hybrid');
+            map.addLayer(hybridTrans, 1)
+        });
 
         identifyParams = new IdentifyParameters();
         identifyParams.tolerance = 0;
@@ -894,11 +936,9 @@ require([
             //saveCoord()
         }
 
-
         map.on('load', function () {
             map.infoWindow.set('highlight', false);
             map.infoWindow.set('titleInBody', false);
-            map.addLayer(usgsImageryTopo, 1); //Makes the Naip (USGSImageryTopo) the basemap
             $('#disclaimerModal').modal('show');
         });
 
@@ -1640,7 +1680,7 @@ require([
             map.setExtent(graphExtent);
 
             if (!(map._basemap == 'hybrid')) {
-                document.getElementById('btnSatellite').click();
+                document.getElementById('btnHybrid').click();
             }
         }
 
