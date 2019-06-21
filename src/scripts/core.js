@@ -315,20 +315,8 @@ require([
             map.removeLayer(usgsTopo);
             map.removeLayer(usgsImageryTopo);
         });
-        on(dom.byId('btnSatellite'), 'click', function () {
-            map.setBasemap('satellite');
-            map.removeLayer(nationalMapBasemap);
-            map.removeLayer(usgsTopo);
-            map.removeLayer(usgsImageryTopo);
-        });
         on(dom.byId('btnHybrid'), 'click', function () {
             map.setBasemap('hybrid');
-            map.removeLayer(nationalMapBasemap);
-            map.removeLayer(usgsTopo);
-            map.removeLayer(usgsImageryTopo);
-        });
-        on(dom.byId('btnTerrain'), 'click', function () {
-            map.setBasemap('terrain');
             map.removeLayer(nationalMapBasemap);
             map.removeLayer(usgsTopo);
             map.removeLayer(usgsImageryTopo);
@@ -337,31 +325,6 @@ require([
             map.setBasemap('gray');
             map.removeLayer(nationalMapBasemap);
             map.removeLayer(usgsTopo);
-            map.removeLayer(usgsImageryTopo);
-        });
-        on(dom.byId('btnNatGeo'), 'click', function () {
-            map.setBasemap('national-geographic');
-            map.removeLayer(nationalMapBasemap);
-            map.removeLayer(usgsTopo);
-            map.removeLayer(usgsImageryTopo);
-        });
-        on(dom.byId('btnOSM'), 'click', function () {
-            map.setBasemap('osm');
-            map.removeLayer(nationalMapBasemap);
-            map.removeLayer(usgsTopo);
-            map.removeLayer(usgsImageryTopo);
-        });
-        on(dom.byId('btnTopo'), 'click', function () {
-            map.setBasemap('topo');
-            map.removeLayer(nationalMapBasemap);
-            map.removeLayer(usgsTopo);
-            map.removeLayer(usgsImageryTopo);
-        });
-
-        on(dom.byId('btnNatlMap'), 'click', function () {
-            map.addLayer(nationalMapBasemap, 1);
-            map.removeLayer(usgsTopo);
-            map.removeLayer(usgsImageryTopo);
             map.removeLayer(usgsImageryTopo);
         });
 
@@ -1676,7 +1639,7 @@ require([
             var graphExtent = esri.graphicsExtent(map.graphics.graphics);
             map.setExtent(graphExtent);
 
-            if (!(map._basemap == 'satellite' || map._basemap == 'hybrid')) {
+            if (!(map._basemap == 'hybrid')) {
                 document.getElementById('btnSatellite').click();
             }
         }
