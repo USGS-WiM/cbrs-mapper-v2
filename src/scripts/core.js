@@ -286,7 +286,23 @@ require([
         //displays map scale on scale change (i.e. zoom level)
         on(map, "zoom-end", function () {
             var scale = map.getScale().toFixed(0);
+            var opacity = map.getLayer('cbrs').opacity
             $('#scale')[0].innerHTML = addCommas(scale);
+            if(scale > 100000 && opacity !=0.75) {
+                map.getLayer('cbrs').setOpacity(0.75)
+                console.log($('#slider'))
+                if($('#slider')) {
+                    $('#opacityValue').text('Opacity: 0.75')
+                    $('#slider').val(75)
+                } 
+
+            } else if (scale < 100000 && opacity !=0.50) {
+                map.getLayer('cbrs').setOpacity(0.5)
+                console.log($('#slider'))
+                if($('#slider')) {$('#slider').val(50) 
+                $('#opacityValue').text('Opacity: 0.5')
+            } 
+            }
         });
 
         //updates lat/lng indicator on mouse move. does not apply on devices w/out mouse. removes "map center" label
