@@ -327,8 +327,7 @@ require([
         var usgsImageryTopo = new ArcGISTiledMapServiceLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer');
 
 
-        //on clicks to swap basemap. map.removeLayer is required for nat'l map b/c it is not technically a basemap, but a tiled layer.
-        on(dom.byId('btnStreets'), 'click', function () {
+        function removeBasemaps() {
             var array = []
             map.layerIds.forEach(function(item, index){
                 if (item != "cbrs" && item != "footprints") {
@@ -339,62 +338,31 @@ require([
             for (var i=0; i < array.length; i++) {
                 map.removeLayer(array[i]);
             }
+        }
+
+        //on clicks to swap basemap. map.removeLayer is required for nat'l map b/c it is not technically a basemap, but a tiled layer.
+        on(dom.byId('btnStreets'), 'click', function () {
+            removeBasemaps();
             map.setBasemap('streets');
         });
 
         on(dom.byId('btnGray'), 'click', function () {
-            var array = []
-            map.layerIds.forEach(function(item, index){
-                if (item != "cbrs" && item != "footprints") {
-                    var layer = map.getLayer(map.layerIds[index])
-                    array.push(layer);
-                }
-            })
-            for (var i=0; i < array.length; i++) {
-                map.removeLayer(array[i]);
-            }
+            removeBasemaps()
             map.setBasemap('gray');
         });
 
         on(dom.byId('btnUsgsImgTopo'), 'click', function () {
-            var array = []
-            map.layerIds.forEach(function(item, index){
-                if (item != "cbrs" && item != "footprints") {
-                    var layer = map.getLayer(map.layerIds[index])
-                    array.push(layer);
-                }
-            })
-            for (var i=0; i < array.length; i++) {
-                map.removeLayer(array[i]);
-            }
+            removeBasemaps()
             map.setBasemap('satellite');
             map.addLayer(usgsImageryTopo, 0);
         });
 
         on(dom.byId('btnUsgsTopo'), 'click', function () {
-            var array = []
-            map.layerIds.forEach(function(item, index){
-                if (item != "cbrs" && item != "footprints") {
-                    var layer = map.getLayer(map.layerIds[index])
-                    array.push(layer);
-                }
-            })
-            for (var i=0; i < array.length; i++) {
-                map.removeLayer(array[i]);
-            }
+            removeBasemaps()
             map.addLayer(usgsTopo, 0);
         });
         on(dom.byId('btnHybrid'), 'click', function () {
-            var array = []
-            map.layerIds.forEach(function(item, index){
-                if (item != "cbrs" && item != "footprints") {
-                    var layer = map.getLayer(map.layerIds[index])
-                    array.push(layer);
-                }
-            })
-            for (var i=0; i < array.length; i++) {
-                map.removeLayer(array[i]);
-            }
+            removeBasemaps()
             map.setBasemap('hybrid');
             map.addLayer(hybridTrans, 1)
         });
