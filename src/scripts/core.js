@@ -1683,7 +1683,7 @@ require([
                 var datetime = new Date().toLocaleString("en-US", {timeZone: "America/New_York", timeZoneName: "short"});
             }
             infoPar = "<BOL>User Name: </BOL>" + userName + "\r\n";
-            if (userCompany) {infoPar += "<BOL>User Company: </BOL>" + userCompany + "\r\n"}
+            if (userCompany) {infoPar += "<BOL>User Organization: </BOL>" + userCompany + "\r\n"}
             var date = datetime.substr(0, datetime.indexOf(','));
             if (suDate == 'Null') {suDate = 'N/A'};
             if (fiDate == 'Null') {fiDate = 'N/A'};
