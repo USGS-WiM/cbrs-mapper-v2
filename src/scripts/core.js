@@ -1727,7 +1727,6 @@ require([
                     'users are advised to contact the Service for an official determination as to whether the property or project site is located "in" or "out" ' +
                     "of the CBRS. For information on obtaining an official CBRS Property Determination, please visit: <UND><CLR blue='255'><a target='_blank' href='http://www.fws.gov/cbra/Determinations.html'>" +
                     "https://www.fws.gov/cbra/documentation.html.</a></CLR></UND> \r\n \r\n"
-                
             } else if (pinLoc == 'out') {
                 pinLocDesc = 'Outside CBRS'
                 if (mapNo == "") {
@@ -1747,7 +1746,6 @@ require([
                 "For additional information about flood insurance and the CBRS, visit: <UND><CLR blue='255'><a target='_blank' href='https://www.fws.gov/cbra/Flood-Insurance.html'>https://www.fws.gov/cbra/Flood-Insurance.html" +
                 "</a></CLR></UND>.</FNT> \r\n"
         }
-        
     });
 
 function stateSelected() {
