@@ -124,6 +124,7 @@ require([
     on,
     array
 ) {
+    var hybridTrans = new ArcGISTiledMapServiceLayer('https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Transportation/MapServer')
 
         //bring this line back after experiment////////////////////////////
         //allLayers = mapLayers;
@@ -170,10 +171,10 @@ require([
                             });*/
         // unablet to add infoWindow: popup
         map = new Map('mapDiv', {
-            basemap: 'satellite',
+            basemap: 'hybrid',
             extent: new Extent(-14638882.654811008, 2641706.3772205533, -6821514.898031538, 6403631.161302788, new SpatialReference({ wkid: 3857 })),
         });
-
+        
         var home = new HomeButton({
             map: map,
             extent: new Extent(-14638882.654811008, 2641706.3772205533, -6821514.898031538, 6403631.161302788, new SpatialReference({ wkid: 3857 }))
@@ -234,6 +235,7 @@ require([
             map.graphics.clear();
             document.getElementById('selectPoint').setAttribute("class", "btn btn-default btn-fixed");
             document.getElementById("legendPoint").setAttribute("class", "legendPt")
+            document.getElementById('runValidation').disabled = true;
         })
 
         $('#clearPrintJobs').click(function() {
@@ -248,6 +250,20 @@ require([
         function showGetDataModal() {
             $('#getDataModal').modal('show');
         }
+
+        $('#valName').change(function(e) {
+            graphPoint = map.graphics.graphics[0];
+            if (e.target.value !== '' && document.getElementById('locationDesc').value !== '' && (graphPoint && graphPoint.geometry.type == "point")) {
+                document.getElementById('runValidation').disabled = false;
+            } else {document.getElementById('runValidation').disabled = true;}
+        })
+
+        $('#locationDesc').change(function(e) {
+            graphPoint = map.graphics.graphics[0];
+            if (e.target.value !== '' && document.getElementById('valName').value !== '' && (graphPoint && graphPoint.geometry.type == "point")) {
+                document.getElementById('runValidation').disabled = false;
+            } else {document.getElementById('runValidation').disabled = true;}
+        })
         
         /*aoiSymbol = new PictureMarkerSymbol("../images/grn-pushpin.png", 45, 45);
     
@@ -264,12 +280,29 @@ require([
             $('#longitude').html(initMapCenter.x.toFixed(3));
             //map.setBasemap("topo");
             //map.setBasemap("hybrid");
+            map.addLayer(hybridTrans, 1);  
         });
 
         //displays map scale on scale change (i.e. zoom level)
         on(map, "zoom-end", function () {
             var scale = map.getScale().toFixed(0);
+            var opacity = map.getLayer('cbrs').opacity
             $('#scale')[0].innerHTML = addCommas(scale);
+            if(scale > 100000 && opacity !=0.75) {
+                map.getLayer('cbrs').setOpacity(0.75)
+                console.log($('#slider'))
+                if($('#slider')) {
+                    $('#opacityValue').text('Opacity: 0.75')
+                    $('#slider').val(75)
+                } 
+
+            } else if (scale < 100000 && opacity !=0.50) {
+                map.getLayer('cbrs').setOpacity(0.5)
+                console.log($('#slider'))
+                if($('#slider')) {$('#slider').val(50) 
+                $('#opacityValue').text('Opacity: 0.5')
+            } 
+            }
         });
 
         //updates lat/lng indicator on mouse move. does not apply on devices w/out mouse. removes "map center" label
@@ -293,75 +326,46 @@ require([
         var nationalMapBasemap = new ArcGISTiledMapServiceLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer');
         var usgsImageryTopo = new ArcGISTiledMapServiceLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer');
 
+
+        function removeBasemaps() {
+            var array = []
+            map.layerIds.forEach(function(item, index){
+                if (item != "cbrs" && item != "footprints") {
+                    var layer = map.getLayer(map.layerIds[index])
+                    array.push(layer);
+                }
+            })
+            for (var i=0; i < array.length; i++) {
+                map.removeLayer(array[i]);
+            }
+        }
+
         //on clicks to swap basemap. map.removeLayer is required for nat'l map b/c it is not technically a basemap, but a tiled layer.
         on(dom.byId('btnStreets'), 'click', function () {
+            removeBasemaps();
             map.setBasemap('streets');
-            map.removeLayer(nationalMapBasemap);
-            map.removeLayer(usgsTopo);
-            map.removeLayer(usgsImageryTopo);
-        });
-        on(dom.byId('btnSatellite'), 'click', function () {
-            map.setBasemap('satellite');
-            map.removeLayer(nationalMapBasemap);
-            map.removeLayer(usgsTopo);
-            map.removeLayer(usgsImageryTopo);
-        });
-        on(dom.byId('btnHybrid'), 'click', function () {
-            map.setBasemap('hybrid');
-            map.removeLayer(nationalMapBasemap);
-            map.removeLayer(usgsTopo);
-            map.removeLayer(usgsImageryTopo);
-        });
-        on(dom.byId('btnTerrain'), 'click', function () {
-            map.setBasemap('terrain');
-            map.removeLayer(nationalMapBasemap);
-            map.removeLayer(usgsTopo);
-            map.removeLayer(usgsImageryTopo);
-        });
-        on(dom.byId('btnGray'), 'click', function () {
-            map.setBasemap('gray');
-            map.removeLayer(nationalMapBasemap);
-            map.removeLayer(usgsTopo);
-            map.removeLayer(usgsImageryTopo);
-        });
-        on(dom.byId('btnNatGeo'), 'click', function () {
-            map.setBasemap('national-geographic');
-            map.removeLayer(nationalMapBasemap);
-            map.removeLayer(usgsTopo);
-            map.removeLayer(usgsImageryTopo);
-        });
-        on(dom.byId('btnOSM'), 'click', function () {
-            map.setBasemap('osm');
-            map.removeLayer(nationalMapBasemap);
-            map.removeLayer(usgsTopo);
-            map.removeLayer(usgsImageryTopo);
-        });
-        on(dom.byId('btnTopo'), 'click', function () {
-            map.setBasemap('topo');
-            map.removeLayer(nationalMapBasemap);
-            map.removeLayer(usgsTopo);
-            map.removeLayer(usgsImageryTopo);
         });
 
-        on(dom.byId('btnNatlMap'), 'click', function () {
-            map.addLayer(nationalMapBasemap, 1);
-            map.removeLayer(usgsTopo);
-            map.removeLayer(usgsImageryTopo);
-            map.removeLayer(usgsImageryTopo);
+        on(dom.byId('btnGray'), 'click', function () {
+            removeBasemaps()
+            map.setBasemap('gray');
         });
 
         on(dom.byId('btnUsgsImgTopo'), 'click', function () {
+            removeBasemaps()
             map.setBasemap('satellite');
-            map.addLayer(usgsImageryTopo, 1);
-            map.removeLayer(nationalMapBasemap);
-            map.removeLayer(usgsTopo);
+            map.addLayer(usgsImageryTopo, 0);
         });
 
         on(dom.byId('btnUsgsTopo'), 'click', function () {
-            map.addLayer(usgsTopo, 1);
-            map.removeLayer(nationalMapBasemap);
-            map.removeLayer(usgsImageryTopo);
-        })
+            removeBasemaps()
+            map.addLayer(usgsTopo, 0);
+        });
+        on(dom.byId('btnHybrid'), 'click', function () {
+            removeBasemaps()
+            map.setBasemap('hybrid');
+            map.addLayer(hybridTrans, 1)
+        });
 
         identifyParams = new IdentifyParameters();
         identifyParams.tolerance = 0;
@@ -416,6 +420,7 @@ require([
 
         $('#runValidation').click(function (e) {
             e.preventDefault();
+            checkMap();
             $(this).button('loading');
             var proc = deferredProcess();
             proc.then(function(results) {
@@ -782,6 +787,9 @@ require([
                             }
                             getMapPoint(lat, long)
                             selectPointonMap = false;
+                            if (document.getElementById('valName').value === '' || document.getElementById('locationDesc').value === '') {
+                                document.getElementById('runValidation').disabled = true;
+                            } else {document.getElementById('runValidation').disabled = false; }
                         }
                     }
                 });
@@ -912,11 +920,9 @@ require([
             //saveCoord()
         }
 
-
         map.on('load', function () {
             map.infoWindow.set('highlight', false);
             map.infoWindow.set('titleInBody', false);
-            map.addLayer(usgsImageryTopo, 1); //Makes the Naip (USGSImageryTopo) the basemap
             $('#disclaimerModal').modal('show');
         });
 
@@ -1188,6 +1194,10 @@ require([
         $(document).ready(function () {
             $('#validationNav').click(function () {
                 $('#validationModal').modal('show');
+                graphPoint = map.graphics.graphics[0];
+                if (document.getElementById('locationDesc').value === '' || document.getElementById('valName').value === '' || !(graphPoint && graphPoint.geometry.type == "point")) {
+                    document.getElementById('runValidation').disabled = true;
+                }
             });
 
         });
@@ -1634,7 +1644,6 @@ require([
 
         function deferredProcess() {
             var deferred = new dojo.Deferred();
-            checkMap();
             runValidation();
             setTimeout(function() {
                 deferred.resolve('success');
@@ -1643,13 +1652,8 @@ require([
         }
 
         function checkMap() {
-            graphPoint = map.graphics.graphics[0];
             if (!map._layers.cbrs.visible) {
                 document.getElementById('cbrsSelector').click();
-            }
-            
-            if (!(graphPoint && graphPoint.geometry.type == "point")) {
-                alert('No map point found. Please place point on map, then try again.')
             }
 
             if ( 19 <= map.getLevel() || map.getLevel() < 17) {
@@ -1659,14 +1663,16 @@ require([
             var graphExtent = esri.graphicsExtent(map.graphics.graphics);
             map.setExtent(graphExtent);
 
-            if (!(map._basemap == 'satellite' || map._basemap == 'hybrid')) {
-                document.getElementById('btnSatellite').click();
+            if (!(map._basemap == 'hybrid')) {
+                document.getElementById('btnHybrid').click();
             }
         }
 
         function runValidation() {
-            locDesc = document.getElementById('locationDesc').value;
-            userTitle = document.getElementById('locationDesc').value;
+            locDesc = document.getElementById('locationDesc').value.replace('&','&#38;'); // ampersand causes template issues if not encoded
+            userTitle = document.getElementById('locationDesc').value.replace('&','&#38;');
+            userName = document.getElementById('valName').value.replace('&','&#38;');
+            userCompany = document.getElementById('valCo').value.replace('&','&#38;');
             if (locDesc == "") {
                 locDesc = 'N/A'
                 userTitle = 'CBRS Documentation'
@@ -1676,13 +1682,15 @@ require([
             } else {
                 var datetime = new Date().toLocaleString("en-US", {timeZone: "America/New_York", timeZoneName: "short"});
             }
+            infoPar = "<BOL>User Name: </BOL>" + userName + "\r\n";
+            if (userCompany) {infoPar += "<BOL>User Organization: </BOL>" + userCompany + "\r\n"}
             var date = datetime.substr(0, datetime.indexOf(','));
             if (suDate == 'Null') {suDate = 'N/A'};
             if (fiDate == 'Null') {fiDate = 'N/A'};
             if (pinLoc == 'in') {
                 pinLocDesc = 'Within Unit ' + inUnit;
                 if (inUnitType == 'Otherwise Protected Area') {
-                    infoPar = "<BOL>User Supplied Address/Location Description: </BOL>" + locDesc + "\r\n <BOL>Pin Location: </BOL>" + pinLocDesc + "\r\n" +
+                    infoPar += "<BOL>User Supplied Address/Location Description: </BOL>" + locDesc + "\r\n <BOL>Pin Location: </BOL>" + pinLocDesc + "\r\n" +
                         "<BOL>Pin Flood Insurance Prohibition Date: </BOL>" + fiDate + "\r\n <BOL>Pin System Unit Establishment Date: </BOL>" + suDate + "\r\n \r\n" +
                         "The user placed pin is within Otherwise Protected Area (OPA) Unit " + inUnit + " of the CBRS.  For the official map depicting this area, please see the map " +
                         "numbered " + mapNo + ', dated ' + mapDate + ". The official CBRS maps are accessible at <UND><CLR blue='255'><a target='_blank' href='https://www.fws.gov/cbra/maps/index.html'>" +
@@ -1694,9 +1702,8 @@ require([
                         'substantially improved or substantially damaged since.</BOL> For more information about the restrictions on federal flood insurance, please refer to the Federal ' +
                         "Emergency Management Agency's (FEMA) regulations in Title 44 Part 71 of the Code of Federal Regulations and FEMA's Flood Insurance Manual: " +
                         "<UND><CLR blue='255'><a target='_blank' href='https://www.fema.gov/flood-insurance-manual'>https://www.fema.gov/flood-insurance-manual</a></CLR></UND>.\r\n \r\n"
-                    
                 } else if (inUnitType == 'System Unit') {
-                    infoPar = "<BOL>User Supplied Address/Location Description: </BOL>" + locDesc + "\r\n <BOL>Pin Location: </BOL>" + pinLocDesc + "\r\n" +
+                    infoPar += "<BOL>User Supplied Address/Location Description: </BOL>" + locDesc + "\r\n <BOL>Pin Location: </BOL>" + pinLocDesc + "\r\n" +
                         "<BOL>Pin Flood Insurance Prohibition Date: </BOL>" + fiDate + "\r\n <BOL>Pin System Unit Establishment Date: </BOL>" + suDate + "\r\n \r\n" +
                         'The user placed pin location is within System Unit ' + inUnit + ' of the CBRS.  For the official CBRS map depicting this area, please see the map ' +
                         'numbered ' + mapNo + ', dated ' + mapDate + ". The official CBRS maps are accessible at <UND><CLR blue='255'><a target='_blank' href='https://www.fws.gov/cbra/maps/index.html'>" +
@@ -1708,28 +1715,26 @@ require([
                         'substantially improved or substantially damaged since.</BOL> For more information about the restrictions on federal flood insurance, please refer to the Federal ' +
                         "Emergency Management Agency's (FEMA) regulations in Title 44 Part 71 of the Code of Federal Regulations and FEMA's Flood Insurance Manual: " +
                         "<UND><CLR blue='255'><a target='_blank' href='https://www.fema.gov/flood-insurance-manual'>https://www.fema.gov/flood-insurance-manual</a></CLR></UND>. " +
-                        'The prohibition on all other federal expenditures and financial assistance (besides flood insurance) for this pin location took effect on ' + suDate + '.  \r\n \r\n'
-                    
+                        'The prohibition on all other federal expenditures and financial assistance (besides flood insurance) for this pin location took effect on ' + suDate + '.\r\n \r\n'
                 }
             } else if (pinLoc == 'buff') {
                 pinLocDesc = 'Within CBRS Buffer Zone'
                 fiDate = 'Undetermined'
                 suDate = 'Undetermined'
-                infoPar = "<BOL>User Supplied Address/Location Description: </BOL>" + locDesc + "\r\n <BOL>Pin Location: </BOL>" + pinLocDesc + "\r\n" +
+                infoPar += "<BOL>User Supplied Address/Location Description: </BOL>" + locDesc + "\r\n <BOL>Pin Location: </BOL>" + pinLocDesc + "\r\n" +
                     "<BOL>Pin Flood Insurance Prohibition Date: </BOL>" + fiDate + "\r\n <BOL>Pin System Unit Establishment Date: </BOL>" + suDate + "\r\n \r\n" +
                     'The user placed pin location is within the CBRS Buffer Zone. The CBRS Buffer Zone represents the area immediately adjacent to the CBRS boundary where ' +
                     'users are advised to contact the Service for an official determination as to whether the property or project site is located "in" or "out" ' +
                     "of the CBRS. For information on obtaining an official CBRS Property Determination, please visit: <UND><CLR blue='255'><a target='_blank' href='http://www.fws.gov/cbra/Determinations.html'>" +
                     "https://www.fws.gov/cbra/documentation.html.</a></CLR></UND> \r\n \r\n"
-                
             } else if (pinLoc == 'out') {
                 pinLocDesc = 'Outside CBRS'
                 if (mapNo == "") {
-                    infoPar = "<BOL>User Supplied Address/Location Description: </BOL>" + locDesc + "\r\n <BOL>Pin Location: </BOL>" + pinLocDesc + "\r\n" +
+                    infoPar += "<BOL>User Supplied Address/Location Description: </BOL>" + locDesc + "\r\n <BOL>Pin Location: </BOL>" + pinLocDesc + "\r\n" +
                     "<BOL>Pin Flood Insurance Prohibition Date: </BOL>" + fiDate + "\r\n <BOL>Pin System Unit Establishment Date: </BOL>" + suDate + "\r\n \r\n" +
                     "The user placed pin location is not within the CBRS. The official CBRS maps are accessible at <UND><CLR blue='255'><a target='_blank' href='https://www.fws.gov/cbra/maps/index.html'> https://www.fws.gov/cbra/maps/index.html</a></CLR></UND>. \r\n \r\n"
                 } else {
-                    infoPar = "<BOL>User Supplied Address/Location Description: </BOL>" + locDesc + "\r\n <BOL>Pin Location: </BOL>" + pinLocDesc + "\r\n" +
+                    infoPar += "<BOL>User Supplied Address/Location Description: </BOL>" + locDesc + "\r\n <BOL>Pin Location: </BOL>" + pinLocDesc + "\r\n" +
                     "<BOL>Pin Flood Insurance Prohibition Date: </BOL>" + fiDate + "\r\n <BOL>Pin System Unit Establishment Date: </BOL>" + suDate + "\r\n \r\n" +
                     'The user placed pin location is not within the CBRS. For the nearest official CBRS map depicting this area, please see the map numbered ' + mapNo + ', dated ' + mapDate +
                     ". The official CBRS maps are accessible at <UND><CLR blue='255'><a target='_blank' href='https://www.fws.gov/cbra/maps/index.html'> https://www.fws.gov/cbra/maps/index.html</a></CLR></UND>. \r\n \r\n"
@@ -1741,7 +1746,6 @@ require([
                 "For additional information about flood insurance and the CBRS, visit: <UND><CLR blue='255'><a target='_blank' href='https://www.fws.gov/cbra/Flood-Insurance.html'>https://www.fws.gov/cbra/Flood-Insurance.html" +
                 "</a></CLR></UND>.</FNT> \r\n"
         }
-        
     });
 
 function stateSelected() {

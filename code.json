@@ -3,7 +3,7 @@
     "name": "cbrs-mapper-v2",
     "organization": "U.S. Geological Survey",
     "description": "Fish and Wildlife Service Coastal Barrier Resources System mapper",
-    "version": "v2.1.1",
+    "version": "v2.2.1",
     "status": "Production",
 
     "permissions": {
