@@ -6,6 +6,14 @@ var open = require('open');
 var del = require('del');
 var wiredep = require('wiredep').stream;
 
+var versionConfig = {
+    'value': '%MDS%',
+    'append': {
+        'key': 'v',
+        'to': ['css', 'js']
+    }
+};
+
 // Load plugins
 var $ = require('gulp-load-plugins')();
 
@@ -57,6 +65,7 @@ gulp.task('html', ['styles', 'scripts', 'icons'], function () {
         .pipe(cssFilter.restore())
         .pipe($.useref.restore())
         .pipe($.useref())
+        .pipe($.versionNumber(versionConfig))
         //.pipe(rename({ extname: '.min.js' }))
         .pipe(gulp.dest('build'))
         .pipe($.size());
