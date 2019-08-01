@@ -172,9 +172,9 @@ require([
         // unablet to add infoWindow: popup
         map = new Map('mapDiv', {
             basemap: 'hybrid',
-            extent: new Extent(-14638882.654811008, 2641706.3772205533, -6821514.898031538, 6403631.161302788, new SpatialReference({ wkid: 3857 })),
+            extent: new Extent(-14638882.654811008, 2641706.3772205533, -6821514.898031538, 6403631.161302788, new SpatialReference({ wkid: 3857 }))
         });
-        
+
         var home = new HomeButton({
             map: map,
             extent: new Extent(-14638882.654811008, 2641706.3772205533, -6821514.898031538, 6403631.161302788, new SpatialReference({ wkid: 3857 }))
@@ -183,7 +183,7 @@ require([
 
         var locate = new LocateButton({
             map: map,
-            scale: 4514,
+            scale: 4514
         }, "locateButton");
         locate.startup();
 
@@ -234,14 +234,14 @@ require([
         $('#clearPoint').click(function() {
             map.graphics.clear();
             document.getElementById('selectPoint').setAttribute("class", "btn btn-default btn-fixed");
-            document.getElementById("legendPoint").setAttribute("class", "legendPt")
+            document.getElementById("legendPoint").setAttribute("class", "legendPt");
             document.getElementById('runValidation').disabled = true;
-        })
+        });
 
         $('#clearPrintJobs').click(function() {
             $('.printJobs').html('<p class="toRemove"> No print jobs yet</p><br>');
             $('#clearPrintJobs').css("display", "none");
-        })
+        });
 
         $('#getDataButton').click(function () {
             showGetDataModal();
@@ -253,20 +253,20 @@ require([
 
         $('#valName').change(function(e) {
             graphPoint = map.graphics.graphics[0];
-            if (e.target.value !== '' && document.getElementById('locationDesc').value !== '' && (graphPoint && graphPoint.geometry.type == "point")) {
+            if (e.target.value !== '' && document.getElementById('locationDesc').value !== '' &&(graphPoint && graphPoint.geometry.type == "point")) {
                 document.getElementById('runValidation').disabled = false;
             } else {document.getElementById('runValidation').disabled = true;}
-        })
+        });
 
         $('#locationDesc').change(function(e) {
             graphPoint = map.graphics.graphics[0];
             if (e.target.value !== '' && document.getElementById('valName').value !== '' && (graphPoint && graphPoint.geometry.type == "point")) {
                 document.getElementById('runValidation').disabled = false;
             } else {document.getElementById('runValidation').disabled = true;}
-        })
-        
+        });
+
         /*aoiSymbol = new PictureMarkerSymbol("../images/grn-pushpin.png", 45, 45);
-    
+
         renderer.addValue({
             symbol: aoiSymbol
         });*/
@@ -280,28 +280,29 @@ require([
             $('#longitude').html(initMapCenter.x.toFixed(3));
             //map.setBasemap("topo");
             //map.setBasemap("hybrid");
-            map.addLayer(hybridTrans, 1);  
+            map.addLayer(hybridTrans, 1);
         });
 
         //displays map scale on scale change (i.e. zoom level)
         on(map, "zoom-end", function () {
             var scale = map.getScale().toFixed(0);
-            var opacity = map.getLayer('cbrs').opacity
+            var opacity = map.getLayer('cbrs').opacity;
             $('#scale')[0].innerHTML = addCommas(scale);
             if(scale > 100000 && opacity !=0.75) {
-                map.getLayer('cbrs').setOpacity(0.75)
-                console.log($('#slider'))
+                map.getLayer('cbrs').setOpacity(0.75);
+                console.log($('#slider'));
                 if($('#slider')) {
-                    $('#opacityValue').text('Opacity: 0.75')
-                    $('#slider').val(75)
-                } 
+                    $('#opacityValue').text('Opacity: 0.75');
+                    $('#slider').val(75);
+                }
 
             } else if (scale < 100000 && opacity !=0.50) {
-                map.getLayer('cbrs').setOpacity(0.5)
-                console.log($('#slider'))
-                if($('#slider')) {$('#slider').val(50) 
-                $('#opacityValue').text('Opacity: 0.5')
-            } 
+                map.getLayer('cbrs').setOpacity(0.5);
+                console.log($('#slider'));
+                if($('#slider')) {
+                    $('#slider').val(50);
+                    $('#opacityValue').text('Opacity: 0.5');
+                }
             }
         });
 
@@ -328,13 +329,13 @@ require([
 
 
         function removeBasemaps() {
-            var array = []
+            var array = [];
             map.layerIds.forEach(function(item, index){
                 if (item != "cbrs" && item != "footprints") {
                     var layer = map.getLayer(map.layerIds[index])
                     array.push(layer);
                 }
-            })
+            });
             for (var i=0; i < array.length; i++) {
                 map.removeLayer(array[i]);
             }
@@ -1223,7 +1224,11 @@ require([
             'dojo/dom-class',
             'dojo/dom-construct',
             'dojo/dom-style',
-            'dojo/on'
+            'dojo/on',
+            'esri/layers/LayerDrawingOptions',
+            'esri/symbols/TextSymbol',
+            'esri/layers/LabelClass',
+            'esri/symbols/Font'
         ], function (
             InfoTemplate,
             Locator,
@@ -1245,7 +1250,11 @@ require([
             domClass,
             domConstruct,
             domStyle,
-            on
+            on,
+            LayerDrawingOptions,
+            TextSymbol,
+            LabelClass,
+            Font
         ) {
 
                 var layersObject = [];
@@ -1295,6 +1304,39 @@ require([
                             //map.addLayer(layer);
                             addLayer(group.groupHeading, group.showGroupHeading, layer, layerName, exclusiveGroupName, layerDetails.options, layerDetails.wimOptions);
                             //addMapServerLegend(layerName, layerDetails);
+
+                            var labelClass; var drawingOptions = new LayerDrawingOptions(); var optionsArray = [];
+                            if (layerName === 'CBRS Units') {
+                                labelClass = new LabelClass({
+                                    symbol: new TextSymbol(),
+                                    minScale: 25000,
+                                    labelPlacement: 'esriServerPolygonPlacementAlwaysHorizontal',
+                                    where: "SU_Date IS NOT NULL",
+                                    labelExpression: "\"Unit: \" CONCAT [Unit] CONCAT NEWLINE CONCAT \"FI Date: \" CONCAT [FI_Date] CONCAT NEWLINE CONCAT \"SU Date: \" CONCAT [SU_Date]"
+                                });
+                                labelClass.symbol.setOffset(0, 50);
+                                var font = new Font();
+                                font.setWeight(Font.WEIGHT_BOLD);
+                                font.setSize("11pt");
+                                font.setFamily("Arial");
+                                labelClass.symbol.setFont(font);
+
+                                labelClass2 = new LabelClass({
+                                    symbol: new TextSymbol(),
+                                    minScale: 25000,
+                                    labelPlacement: 'esriServerPolygonPlacementAlwaysHorizontal',
+                                    where: "SU_Date IS NULL",
+                                    labelExpression: "\"Unit: \" CONCAT [Unit] CONCAT NEWLINE CONCAT \"FI Date: \" CONCAT [FI_Date] CONCAT NEWLINE CONCAT \"SU Date: N/A \""
+                                });
+                                labelClass2.symbol.setOffset(0, 50);
+                                labelClass2.symbol.setFont(font);
+
+                                drawingOptions.labelingInfo = [labelClass, labelClass2];
+                                drawingOptions.showLabels = true;
+                                optionsArray[1] = drawingOptions;
+                                map.getLayer('cbrs').setLayerDrawingOptions(optionsArray);
+                                map.getLayer('cbrs').show();
+                            }
                         }
 
                     });
