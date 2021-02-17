@@ -7,23 +7,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <link rel="stylesheet" href="styles/vendor.css?v=bf66bb14ba0a2371b56ed96803dfd38c">
+    <link rel="stylesheet" href="styles/vendor.css?v=ca7db3d2543232f9ea1e7f29278e3369">
     <!-- CSS for the mapping components -->
-    <link rel="stylesheet" href="https://js.arcgis.com/3.14/dijit/themes/claro/claro.css?v=bf66bb14ba0a2371b56ed96803dfd38c">
-    <link rel="stylesheet" href="https://js.arcgis.com/3.14/esri/css/esri.css?v=bf66bb14ba0a2371b56ed96803dfd38c">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.14/dijit/themes/claro/claro.css?v=ca7db3d2543232f9ea1e7f29278e3369">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.14/esri/css/esri.css?v=ca7db3d2543232f9ea1e7f29278e3369">
 
-    <link rel="stylesheet" href="https://txpub.usgs.gov/DSS/search_api/2.1/api/search_api.css?v=bf66bb14ba0a2371b56ed96803dfd38c" />
+    <link rel="stylesheet" href="https://txpub.usgs.gov/DSS/search_api/2.1/api/search_api.css?v=ca7db3d2543232f9ea1e7f29278e3369" />
 
-    <link rel="stylesheet" href="styles/main.css?v=bf66bb14ba0a2371b56ed96803dfd38c">
-    <link rel="stylesheet" href="styles/base.css?v=bf66bb14ba0a2371b56ed96803dfd38c">
+    <link rel="stylesheet" href="styles/main.css?v=ca7db3d2543232f9ea1e7f29278e3369">
+    <link rel="stylesheet" href="styles/base.css?v=ca7db3d2543232f9ea1e7f29278e3369">
     <link rel="shortcut icon" id="favicon" type="image/png" href="images/favicon-dark.png" />
 
-    <script src="scripts/vendor.js?v=bf66bb14ba0a2371b56ed96803dfd38c"></script>
+    <script src="scripts/vendor.js?v=ca7db3d2543232f9ea1e7f29278e3369"></script>
 
-    <script src="https://js.arcgis.com/3.14/?v=bf66bb14ba0a2371b56ed96803dfd38c"></script>
-    <script type="text/javascript" src="https://txpub.usgs.gov/DSS/search_api/2.1/api/search_api.min.js?v=bf66bb14ba0a2371b56ed96803dfd38c"></script>
+    <script src="https://js.arcgis.com/3.14/?v=ca7db3d2543232f9ea1e7f29278e3369"></script>
+    <script type="text/javascript" src="https://txpub.usgs.gov/DSS/search_api/2.1/api/search_api.min.js?v=ca7db3d2543232f9ea1e7f29278e3369"></script>
 
-    <script src="scripts/combined.js?v=bf66bb14ba0a2371b56ed96803dfd38c"></script>
+    <script src="scripts/combined.js?v=ca7db3d2543232f9ea1e7f29278e3369"></script>
 
     <!-- Google Analytics -->
     <script>
@@ -281,6 +281,26 @@
         </div>
     </div>
     <!--End diclaimer modal -->
+
+    <!-- searchDownModal -->
+    <div id="searchDownModal" aria-hidden="true" class="modal fade overflow-y-hidden" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 style="text-align: center">The USGS Search is currently down.</h3>
+                </div>
+                <div class="modal-body">
+                    <p>Unfortunately, the Find Location tool is not available at the moment.</p>
+                </div>
+                <div class="modal-footer">
+                    <div style="text-align: center">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" style="background-color: #ffd1d1">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End searchDownModal modal -->
 
     <div class="modal fade overflow-y-hidden" id="printModal" style="display: none;" aria-hidden="true">
         <div class="modal-dialog">
