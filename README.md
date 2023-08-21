@@ -1,3 +1,5 @@
+# This repo has been moved to https://code.usgs.gov/WiM/cbrs-mapper-v2
+
 ![WiM](wimlogo.png)
 
 
